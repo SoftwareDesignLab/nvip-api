@@ -6,7 +6,7 @@
 		cachePrepStmts="true" prepStmtCacheSize="512"
 		prepStmtCacheSqlLimit="2048"
 		driverClassName="com.mysql.cj.jdbc.Driver"
-		url="jdbc:mysql://localhost:3306/nvip?useSSL=false&amp;allowPublicKeyRetrieval=true">
+		url="jdbc:mysql://localhost:3306/nvip?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=EST">
 	</Resource>
 
 	<Environment name="consumerKey" value=""
