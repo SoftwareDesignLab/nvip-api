@@ -79,7 +79,6 @@ public class MainServlet extends HttpServlet {
 		try {
 			resp.setContentType("text/html");
 			resp.setCharacterEncoding("UTF-8");
-			resp.addHeader("Access-Control-Allow-Origin", "*");
 			resp.getWriter().write(jObj);
 		} catch (IOException e) {
 			ServletUtil.setResponse(resp, 500, "Something is wrong!");
