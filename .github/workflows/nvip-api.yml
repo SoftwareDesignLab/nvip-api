@@ -37,7 +37,7 @@ jobs:
 
       - name: Create ZIP File
         run: |
-          zip -r ../tmp/api.zip . -x '*.git*'
+          zip -r ./tmp/api.zip . -x '*.git*'
 
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v21
