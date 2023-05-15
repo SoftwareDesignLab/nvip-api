@@ -24,9 +24,11 @@
 package servlet;
 
 import dao.MainDAO;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -40,6 +42,17 @@ import static org.mockito.Mockito.*;
 
 
 public class MainServletTest{
+    private static MockedStatic<MainDAO> mockedMain;
+
+    @BeforeClass
+    public static void init() {
+        mockedMain = mockStatic(MainDAO.class);
+    }
+
+    @AfterClass
+    public static void close() {
+        mockedMain.close();
+    }
 
     @Test
     public void testHandleRequest() {
@@ -50,11 +63,10 @@ public class MainServletTest{
         try {
             when(resp.getWriter()).thenReturn(writer);
         } catch (IOException e) {
-            System.out.println("IO Exception: " + e.getMessage());
+            System.err.println("IO Exception: " + e.getMessage());
         }
 
         //Setup mocked static classes
-        mockStatic(MainDAO.class);
         Map<String, String> mainPageCounts = new HashMap();
         mainPageCounts.put("count1", "1");
         mainPageCounts.put("count2", "2");
@@ -63,9 +75,9 @@ public class MainServletTest{
         MainServlet mainServlet = new MainServlet();
 
         try {
-            mainServlet.handleRequest(req, resp);
-        } catch (ServletException e) {
-            System.out.println("Servlet Exception " + e.getMessage());
+            mainServlet.doGet(req, resp);
+        } catch (Exception e) {
+            System.err.println("Exception Caught: " + e.getMessage());
         }
 
         assertEquals(0, resp.getStatus());

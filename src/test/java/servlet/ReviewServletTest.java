@@ -36,6 +36,7 @@ import org.mockito.MockedStatic;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
@@ -72,7 +73,7 @@ public class ReviewServletTest {
         try {
             when(rep.getWriter()).thenReturn(writer);
         } catch (IOException e) {
-            System.out.println("IO Exception: " + e.getMessage());
+            System.err.println("IO Exception: " + e.getMessage());
         }
 
         //Set output for request's user information
@@ -88,7 +89,7 @@ public class ReviewServletTest {
         try {
             reviewServlet.doGet(req, rep);
         } catch (Exception e) {
-            System.out.println("Exception Caught: " + e.getMessage());
+            System.err.println("Exception Caught: " + e.getMessage());
         }
 
         verify(writer).write("Unauthorized user!");
@@ -107,11 +108,11 @@ public class ReviewServletTest {
         try {
             when(rep.getWriter()).thenReturn(writer);
         } catch (IOException e) {
-            System.out.println("IO Exception: " + e.getMessage());
+            System.err.println("IO Exception: " + e.getMessage());
         }
 
         //Setup user information
-        when(req.getParameter("userName")).thenReturn("testUser");
+        when(req.getParameter("username")).thenReturn("testUser");
         when(req.getParameter("token")).thenReturn("1");
         User user = new User("1", "testUser", "testFirst", "testLast", "testEmail", 1);
         when(UserDAO.getRoleIDandExpirationDate("testUser", "1")).thenReturn(user);
@@ -128,7 +129,7 @@ public class ReviewServletTest {
         try {
             reviewServlet.doGet(req, rep);
         } catch (Exception e) {
-            System.out.println("Exception Caught: " + e.getMessage());
+            System.err.println("Exception Caught: " + e.getMessage());
         }
 
         assertEquals(0, rep.getStatus());
@@ -163,11 +164,11 @@ public class ReviewServletTest {
         try {
             when(rep.getWriter()).thenReturn(writer);
         } catch (IOException e) {
-            System.out.println("IO Exception: " + e.getMessage());
+            System.err.println("IO Exception: " + e.getMessage());
         }
 
         //Setup user information
-        when(req.getParameter("userName")).thenReturn("testUser");
+        when(req.getParameter("username")).thenReturn("testUser");
         when(req.getParameter("token")).thenReturn("1");
         User user = new User("1", "testUser", "testFirst", "testLast", "testEmail", 1);
         when(UserDAO.getRoleIDandExpirationDate("testUser", "1")).thenReturn(user);
@@ -181,7 +182,7 @@ public class ReviewServletTest {
         try {
             reviewServlet.doGet(req, rep);
         } catch (Exception e) {
-            System.out.println("Exception Caught: " + e.getMessage());
+            System.err.println("Exception Caught: " + e.getMessage());
         }
 
         assertEquals(0, rep.getStatus());
@@ -195,5 +196,89 @@ public class ReviewServletTest {
                 "  \"vdoGroups\": {},\n" +
                 "  \"vulnDomain\": []\n" +
                 "}");
+    }
+
+    @Test
+    public void testHandleRequestPostNoUser() {
+        //Mock servlet response/request
+        HttpServletResponse rep = mock(HttpServletResponse.class);
+        HttpServletRequest req = mock(HttpServletRequest.class);
+
+        //Setup response's writer
+        PrintWriter writer = mock(PrintWriter.class);
+        try {
+            when(rep.getWriter()).thenReturn(writer);
+        } catch (IOException e) {
+            System.err.println("IO Exception: " + e.getMessage());
+        }
+
+        //Set output for request's user information
+        String username = null;
+        String token = null;
+        when(req.getParameter("username")).thenReturn(username);
+        when(req.getParameter("token")).thenReturn(token);
+
+        User testUser = null;
+        when(UserDAO.getRoleIDandExpirationDate(username, token)).thenReturn(testUser);
+
+        ReviewServlet reviewServlet = new ReviewServlet();
+        try {
+            reviewServlet.doPost(req, rep);
+        } catch (Exception e) {
+            System.err.println("Exception Caught: " + e.getMessage());
+        }
+
+        verify(writer, atLeastOnce()).write("Unauthorized user!");
+        verify(rep, atLeastOnce()).setStatus(401);
+    }
+
+    @Test
+    public void testHandleRequestPostAtomic() {
+        //Mock servlet response/request
+        HttpServletResponse rep = mock(HttpServletResponse.class);
+        HttpServletRequest req = mock(HttpServletRequest.class);
+
+        //Setup response's writer
+        PrintWriter writer = mock(PrintWriter.class);
+        try {
+            when(rep.getWriter()).thenReturn(writer);
+        } catch (IOException e) {
+            System.err.println("IO Exception: " + e.getMessage());
+        }
+
+        //Setup request's reader
+        BufferedReader reader = mock(BufferedReader.class);
+        try {
+            when(req.getReader()).thenReturn(reader);
+        } catch (IOException e) {
+            System.err.println("IO Exception: " + e.getMessage());
+        }
+
+        //Setup user information
+        when(req.getParameter("username")).thenReturn("testUser");
+        when(req.getParameter("token")).thenReturn("1");
+        User user = new User("1", "testUser", "testFirst", "testLast", "testEmail", 1);
+        user.setUserID(1);
+        when(UserDAO.getRoleIDandExpirationDate("testUser", "1")).thenReturn(user);
+
+        when(req.getParameter("complexUpdate")).thenReturn("false");
+        when(req.getParameter("atomicUpdate")).thenReturn("true");
+        when(req.getParameter("updateDailyTable")).thenReturn("false");
+
+        when(req.getParameter("cveID")).thenReturn("123");
+        when(req.getParameter("statusID")).thenReturn("4");
+        when(req.getParameter("vulnID")).thenReturn("123");
+        when(req.getParameter("info")).thenReturn("test description");
+        when(req.getParameter("tweet")).thenReturn("false");
+
+        ReviewServlet reviewServlet = new ReviewServlet();
+        try {
+            reviewServlet.doPost(req, rep);
+        } catch (Exception e) {
+            System.err.println("Exception Caught: " + e.getMessage());
+        }
+
+        verifyNoInteractions(writer);
+        assertEquals(0, rep.getStatus());
     }
 }
