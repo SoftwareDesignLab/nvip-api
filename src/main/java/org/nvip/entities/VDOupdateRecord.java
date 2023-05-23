@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Rochester Institute of Technology (RIT). Developed with
+ * Copyright 2021 Rochester Institute of Technology (RIT). Developed with
  * government support under contract 70RSAT19CB0000020 awarded by the United
  * States Department of Homeland Security.
  * 
@@ -21,21 +21,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package util;
+package org.nvip.entities;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-import org.nvip.util.TwitterApi;
-
-
-public class TwitterApiTest {
-	@Test
-	public void testTextChop() {
-		TwitterApi tw = new TwitterApi();
-		String str = "There is an Information Disclosure vulnerability in Huawei Smartphone. Successful exploitation of this vulnerability may impair data confidentiality.";
-		String txt = tw.getTweetText("CVE-2021-22317", str);
-		assertEquals(true, (txt.length() == 212));
+public class VDOupdateRecord {
+	
+	private int labelID, groupID;
+	private double confidence;
+	
+	public VDOupdateRecord(int labelID, int groupID, double confidence) {
+		super();
+		this.labelID = labelID;
+		this.groupID = groupID;
+		this.confidence = confidence;
 	}
 
+	public int getLabelID() {
+		return labelID;
+	}
+
+	public void setLabelID(int labelID) {
+		this.labelID = labelID;
+	}
+
+	public int getGroupID() {
+		return groupID;
+	}
+
+	public void setGroupID(int groupID) {
+		this.groupID = groupID;
+	}
+
+	public double getConfidence() {
+		return confidence;
+	}
+
+	public void setConfidence(double confidence) {
+		this.confidence = confidence;
+	}
+	
+	
 }

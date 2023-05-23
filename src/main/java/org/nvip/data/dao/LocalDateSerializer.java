@@ -21,21 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package util;
+package org.nvip.data.dao;
 
-import static org.junit.Assert.assertEquals;
+import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-import org.junit.Test;
-import org.nvip.util.TwitterApi;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 
-public class TwitterApiTest {
-	@Test
-	public void testTextChop() {
-		TwitterApi tw = new TwitterApi();
-		String str = "There is an Information Disclosure vulnerability in Huawei Smartphone. Successful exploitation of this vulnerability may impair data confidentiality.";
-		String txt = tw.getTweetText("CVE-2021-22317", str);
-		assertEquals(true, (txt.length() == 212));
-	}
+public class LocalDateSerializer implements JsonSerializer<LocalDate> {
+	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    @Override
+    public JsonElement serialize(LocalDate localDate, Type srcType, JsonSerializationContext context) {
+        return new JsonPrimitive(formatter.format(localDate));
+    }
 }
