@@ -21,21 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package util;
-
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-import org.nvip.util.TwitterApi;
+package org.nvip.entities;
 
 
-public class TwitterApiTest {
-	@Test
-	public void testTextChop() {
-		TwitterApi tw = new TwitterApi();
-		String str = "There is an Information Disclosure vulnerability in Huawei Smartphone. Successful exploitation of this vulnerability may impair data confidentiality.";
-		String txt = tw.getTweetText("CVE-2021-22317", str);
-		assertEquals(true, (txt.length() == 212));
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name="vdocharacteristic")
+public class VdoCharacteristic {
+	@Id int id;
+	@Getter @Setter	String cveId;
+	@Getter @Setter private String vdoLabel;
+	@Getter @Setter private double vdoConfidence;
+	@Getter @Setter private String vdoNounGroup;
+
+	@ManyToOne Vulnerability vulnerability;
+
+	@ManyToOne
+	@JoinColumn(name="vdo_label_id")
+	VdoLabel vdoLabels;
+
+	public VdoCharacteristic(String cveId, String vdoLabel, double vdoConfidence, String vdoNounGroup) {
+		this.cveId = cveId;
+		this.vdoLabel = vdoLabel;
+		this.vdoConfidence = vdoConfidence;
+		this.vdoNounGroup = vdoNounGroup;
 	}
-
 }

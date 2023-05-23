@@ -21,21 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package util;
-
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-import org.nvip.util.TwitterApi;
+package org.nvip.entities;
 
 
-public class TwitterApiTest {
-	@Test
-	public void testTextChop() {
-		TwitterApi tw = new TwitterApi();
-		String str = "There is an Information Disclosure vulnerability in Huawei Smartphone. Successful exploitation of this vulnerability may impair data confidentiality.";
-		String txt = tw.getTweetText("CVE-2021-22317", str);
-		assertEquals(true, (txt.length() == 212));
-	}
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name="vdolabel")
+public class VdoLabel {
+	@Id @Column(name="vdo_label_id")
+	int id;
+
+	@Getter @Setter private String vdoLabelName;
+
+	@OneToOne
+	@JoinColumn(name="vdo_noun_group_id") private VDOgroup vdoNounGroup;
 }
