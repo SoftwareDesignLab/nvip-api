@@ -21,21 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package util;
+package org.nvip.api.controllers;
 
-import static org.junit.Assert.assertEquals;
+import java.io.IOException;
 
-import org.junit.Test;
-import org.nvip.util.TwitterApi;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
 
-public class TwitterApiTest {
-	@Test
-	public void testTextChop() {
-		TwitterApi tw = new TwitterApi();
-		String str = "There is an Information Disclosure vulnerability in Huawei Smartphone. Successful exploitation of this vulnerability may impair data confidentiality.";
-		String txt = tw.getTweetText("CVE-2021-22317", str);
-		assertEquals(true, (txt.length() == 212));
+public class ServletUtil {
+	
+	/**
+	 * Helper function for setting an HTMl response
+	 * All responses are displayed via pop up if there's an HTML error
+	 * @param resp
+	 * @param code
+	 * @param message
+	 * @throws ServletException
+	 */
+	public static void setResponse(HttpServletResponse resp, int code, String message) throws ServletException {
+		try {
+			resp.setStatus(code);
+			resp.setContentType("text/html");
+			resp.setCharacterEncoding("UTF-8");
+			resp.getWriter().write(message);
+			return;
+		} catch (IOException e) {
+			LogManager.getLogger(LoginServlet.class).error(e.toString());
+		}
 	}
-
 }

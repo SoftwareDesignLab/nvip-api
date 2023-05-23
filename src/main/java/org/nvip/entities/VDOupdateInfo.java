@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Rochester Institute of Technology (RIT). Developed with
+ * Copyright 2021 Rochester Institute of Technology (RIT). Developed with
  * government support under contract 70RSAT19CB0000020 awarded by the United
  * States Department of Homeland Security.
  * 
@@ -21,21 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package util;
+package org.nvip.entities;
 
-import static org.junit.Assert.assertEquals;
+import java.util.ArrayList;
 
-import org.junit.Test;
-import org.nvip.util.TwitterApi;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-
-public class TwitterApiTest {
-	@Test
-	public void testTextChop() {
-		TwitterApi tw = new TwitterApi();
-		String str = "There is an Information Disclosure vulnerability in Huawei Smartphone. Successful exploitation of this vulnerability may impair data confidentiality.";
-		String txt = tw.getTweetText("CVE-2021-22317", str);
-		assertEquals(true, (txt.length() == 212));
+public class VDOupdateInfo {
+	
+	private ArrayList<VDOupdateRecord> vdoRecords = new ArrayList<VDOupdateRecord>();
+	
+	public VDOupdateInfo(JSONObject vdoUpdateJSON) {
+				
+		JSONArray vdoUpdates = vdoUpdateJSON.getJSONArray("vdoLabels");
+		
+		for (int i=0; i<vdoUpdates.length(); i++) {
+			JSONObject vdoRecordJSON = vdoUpdates.getJSONObject(i);
+			vdoRecords.add(new VDOupdateRecord(vdoRecordJSON.getInt("labelID"), vdoRecordJSON.getInt("groupID"), vdoRecordJSON.getDouble("confidence")));
+		}
 	}
+
+	public ArrayList<VDOupdateRecord> getVdoRecords() {
+		return vdoRecords;
+	}
+	
+	
 
 }
