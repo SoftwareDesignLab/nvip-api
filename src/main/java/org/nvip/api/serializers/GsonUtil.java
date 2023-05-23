@@ -21,21 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package util;
+package org.nvip.api.serializers;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Collection;
 
-import org.junit.Test;
-import org.nvip.util.TwitterApi;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
+public class GsonUtil {
+	public static JsonArray toJsonArray(Gson gson, Collection c, Class clazz) {
+    	JsonElement element = gson.toJsonTree(c, clazz);
 
-public class TwitterApiTest {
-	@Test
-	public void testTextChop() {
-		TwitterApi tw = new TwitterApi();
-		String str = "There is an Information Disclosure vulnerability in Huawei Smartphone. Successful exploitation of this vulnerability may impair data confidentiality.";
-		String txt = tw.getTweetText("CVE-2021-22317", str);
-		assertEquals(true, (txt.length() == 212));
-	}
+    	if (!element.isJsonArray() ) {
+    	// fail appropriately
+    	    //throw new SomeException();
+    		return null;
+    	}
 
+    	return element.getAsJsonArray();
+    }
 }

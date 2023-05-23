@@ -21,21 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package util;
+package org.nvip.entities;
 
-import static org.junit.Assert.assertEquals;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import org.junit.Test;
-import org.nvip.util.TwitterApi;
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Product {
 
+    @Getter @Setter @Id
+    int productId;
+    @Getter private String cpe;
+    @Getter private String domain;
+    @Getter @Setter private String releaseDate;
+    @Getter @Setter private String version;
 
-public class TwitterApiTest {
-	@Test
-	public void testTextChop() {
-		TwitterApi tw = new TwitterApi();
-		String str = "There is an Information Disclosure vulnerability in Huawei Smartphone. Successful exploitation of this vulnerability may impair data confidentiality.";
-		String txt = tw.getTweetText("CVE-2021-22317", str);
-		assertEquals(true, (txt.length() == 212));
-	}
+    public Product(String domain, String cpe) {
+        this.productId = 0;
+        this.domain = domain;
+        this.cpe = cpe;
+    }
 
+	@Override
+    public String toString() {
+        return domain + ": " + cpe;
+    }
 }

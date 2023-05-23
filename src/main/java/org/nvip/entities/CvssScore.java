@@ -21,21 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package util;
+package org.nvip.entities;
 
-import static org.junit.Assert.assertEquals;
+import jakarta.persistence.*;
+import lombok.*;
 
-import org.junit.Test;
-import org.nvip.util.TwitterApi;
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name="cvssscore")
+public class CvssScore {
+	@Id @Getter @Setter private Integer id;
+	@Getter @Setter private String baseSeverity;
+	@Getter @Setter private double severityConfidence;
+	@Getter @Setter private String impactScore;
+	@Getter @Setter private double impactConfidence;
 
+	@ManyToOne @JoinColumn(name="cve_id")
+	Vulnerability vulnerability;
 
-public class TwitterApiTest {
-	@Test
-	public void testTextChop() {
-		TwitterApi tw = new TwitterApi();
-		String str = "There is an Information Disclosure vulnerability in Huawei Smartphone. Successful exploitation of this vulnerability may impair data confidentiality.";
-		String txt = tw.getTweetText("CVE-2021-22317", str);
-		assertEquals(true, (txt.length() == 212));
+	@OneToOne @JoinColumn(name="cvss_severity_id")
+	CvssSeverity cvssSeverity;
+
+	public CvssScore(Vulnerability vulnerability, String baseSeverity, double severityConfidence, String impactScore, double impactConfidence) {
+		this.baseSeverity = baseSeverity;
+		this.severityConfidence = severityConfidence;
+		this.impactScore = impactScore;
+		this.impactConfidence = impactConfidence;
+		this.vulnerability = vulnerability;
 	}
-
 }
