@@ -40,6 +40,7 @@ import org.nvip.util.VulnerabilityUtil;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,8 +57,6 @@ public class SearchRepository {
 	EntityManager entityManager;
 
 	private static final Logger logger = LogManager.getLogger(SearchRepository.class);
-	private static String dbType = DBConnect.getDatabaseType();
-	private final static int defaultLimit = 10000;
 
 	/**
 	 * Parses the information retrieved from the Search Form initialization query
@@ -70,7 +69,7 @@ public class SearchRepository {
 	 * @return Map with the info type as the key and an array containing all the
 	 *         entities for the given info type
 	 */
-	private static HashMap<String, String[]> parseSearchInfo(String infoType, String infoArrStr) {
+	private HashMap<String, String[]> parseSearchInfo(String infoType, String infoArrStr) {
 		HashMap<String, String[]> infoMap = new HashMap<>();
 
 		if (infoType == "cvssScores") {
@@ -95,28 +94,21 @@ public class SearchRepository {
 	 * @return Map containing parameter name of labels (i.e. CVSS Scores) and the
 	 *         label strings
 	 */
-	public static Map<String, Map<String, String[]>> getSearchInfo() {
-		try (Connection conn = DBConnect.getConnection()) {
-			Map<String, Map<String, String[]>> searchMap = new HashMap<>();
+	public Map<String, Map<String, String[]>> getSearchInfo() {
+		Map<String, Map<String, String[]>> searchResults = null;
 
-			CallableStatement stmt = conn.prepareCall("CALL getSearchFormInfo()");
+		Query query = entityManager.createNativeQuery("CALL getSearchFormInfo()", Tuple.class);
+		List<Tuple> results = (ArrayList<Tuple>) query.getResultList();
 
-			ResultSet rs = stmt.executeQuery();
+		for(Tuple row: results) {
 
-			while (rs.next()) {
-
-				searchMap = Stream
-						.of(new String[][] { { "cvssScores", rs.getString("cvss_scores") },
-								{ "vdoNounGroups", rs.getString("vdo_noun_groups") } })
-						.collect(Collectors.toMap(data -> data[0], data -> parseSearchInfo(data[0], data[1])));
-			}
-
-			return searchMap;
-		} catch (SQLException e) {
-			logger.error(e.toString());
+			searchResults = Stream
+					.of(new String[][] { { "cvssScores", row.get("cvss_scores", String.class) },
+							{ "vdoNounGroups", row.get("vdo_noun_groups", String.class) } })
+					.collect(Collectors.toMap(data -> data[0], data -> parseSearchInfo(data[0], data[1])));
 		}
 
-		return null;
+		return searchResults;
 	}
 
 	/**
@@ -191,8 +183,8 @@ public class SearchRepository {
 					result.get("cve_id", String.class),
 					result.get("description", String.class),
 					result.get("platform", String.class),
-					result.get("published_date", String.class),
-					result.get("last_modified_date", String.class),
+					LocalDateTime.parse(result.get("published_date", String.class)),
+					LocalDateTime.parse(result.get("last_modified_date", String.class)),
 					result.get("exists_at_mitre", Boolean.class),
 					result.get("exists_at_nvd", Boolean.class)
 			);
@@ -231,43 +223,5 @@ public class SearchRepository {
 		}
 
 		return searchResultMap;
-	}
-
-	/**
-	 * Calls a stored procedure to obtain vulnerabilities that match the parameters
-	 * passed in. Returns the set of vulnerabilities ordered by earliest update.
-	 * through the search form.
-	 * 
-	 * @param vulnId        - Vulnerability id. Used to define range of results
-	 *                      (above or below given id)
-	 * @param keyword       - Keyword that is within the vulnerability description
-	 * @param startDate     - Starting date for last update of the vulnerabilities
-	 * @param endDate       - End date for last update of the vulnerabilities
-	 * @param cvssScores    - Set of CVSS scores values which the vulnerabilities
-	 *                      must contain (at least one)
-	 * @param vdoNounGroups - Set of VDO Noun Groups which the vulnerabilities must
-	 *                      contain (at least one)
-	 * @param vdoLabels     - Set of VDO labels which the vulnerabilities must
-	 *                      contain (at least one)
-	 * @param inMitre       - Parameter which indicates vulnerability has an entry
-	 *                      on MITRE
-	 * @param inNvd         - Parameter which indicates vulnerability has an entry
-	 *                      on NVD
-	 * @param limitCount    - Sets the limit of vulnerabilities returned. Defaults
-	 *                      to the set default if not provided
-	 * @param isBefore      - Defines if search range before or after given id
-	 * @return Map of a list of vulnerabilities to the total count of those
-	 *         vulnerabilities
-	 */
-	public Map<Integer, List<Vulnerability>> getSearchResults(int vulnId, String keyword, LocalDate startDate,
-			LocalDate endDate, String[] cvssScores, String[] vdoLabels, int limitCount, String product) {
-
-
-
-		return null;
-	}
-
-	public static void main(String[] args) {
-
 	}
 }
