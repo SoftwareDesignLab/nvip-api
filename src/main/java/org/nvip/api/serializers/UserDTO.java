@@ -21,55 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.nvip.entities;
+package org.nvip.api.serializers;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class User {
-
-	@Id
-	@Column(name="user_id")
+@Builder
+public class UserDTO {
 	private int userID;
 	private String token;
 	private String userName;
-	private String firstName;
-	private String lastName;
-	private String email;
-	@Column(nullable = false)
-	@NonNull
-	private String passwordHash;
 	private int roleId;
-	@Column(name="token_expiration_date")
 	private LocalDateTime expirationDate;
-	private LocalDateTime lastLoginDate;
-
-	public User(String token, String userName, @NonNull String passwordHash, String firstName, String lastName, String email, int roleId) {
-		super();
-		this.token = token;
-		this.userName = userName;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.roleId = roleId;
-	}
-
-	@Override
-	public String toString() {
-		return "User [userID=" + userID + ", token=" + token + ", userName=" + userName + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", email=" + email + ", passwordHash=" + passwordHash + ", roleId="
-				+ roleId + ", expirationDate=" + expirationDate + "]";
-	}
-
 }
