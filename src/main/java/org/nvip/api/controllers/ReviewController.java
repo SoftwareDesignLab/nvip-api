@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import org.nvip.api.serializers.GsonUtil;
 import org.nvip.data.dao.LocalDateSerializer;
 import org.nvip.data.dao.ReviewDAO;
-import org.nvip.data.dao.UserDAO;
+import org.nvip.data.repositories.UserRepository;
 import org.nvip.entities.*;
 import org.nvip.util.TwitterApi;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +24,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
+
+    final UserRepository userRepository;
+
+    public ReviewController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @GetMapping
     public String searchForReviews(@RequestParam(value="cveId", defaultValue = "") String cveId){
@@ -46,7 +52,7 @@ public class ReviewController {
         if (userName == null || token == null)
             ServletUtil.setResponse(resp, 401, "Unauthorized user!");
 
-        User user = UserDAO.getRoleIDandExpirationDate(userName, token);
+        User user = userRepository.getRoleIDandExpirationDate(userName, token);
 
         if (user == null || user.getRoleId() < 1 || user.getRoleId() > 2)
             ServletUtil.setResponse(resp, 401, "Unauthorized user!");
@@ -181,7 +187,7 @@ public class ReviewController {
         if (userName == null || token == null)
             ServletUtil.setResponse(resp, 401, "Unauthorized user!");
 
-        User user = UserDAO.getRoleIDandExpirationDate(userName, token);
+        User user = userRepository.getRoleIDandExpirationDate(userName, token);
 
         if (user == null || user.getRoleId() < 1 || user.getRoleId() > 2)
             ServletUtil.setResponse(resp, 401, "Unauthorized user by id get!");
