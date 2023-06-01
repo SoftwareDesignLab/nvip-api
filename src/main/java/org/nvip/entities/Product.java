@@ -25,6 +25,7 @@ package org.nvip.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,8 +40,8 @@ public class Product {
     int productId;
     @Getter private String cpe;
     @Getter private String domain;
-    @Getter @Setter private String releaseDate;
-    @Getter @Setter private String version;
+    @Getter @Setter @Transient
+    String version;
 
     public Product(String domain, String cpe) {
         this.productId = 0;

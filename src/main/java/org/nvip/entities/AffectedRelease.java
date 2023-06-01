@@ -1,22 +1,22 @@
 package org.nvip.entities;
 
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 @Entity
 @Table(name="affectedrelease")
+@Getter
+@Setter
 public class AffectedRelease {
     @NonNull @Id Integer id;
 
-    @NonNull Integer version;
+    @NonNull String version;
 
-    @NonNull @ManyToOne @JoinColumn(name="cve_id")
+    @NonNull @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
     Vulnerability vulnerability;
 
-    @NonNull @OneToOne @JoinColumn(name="product_id")
+    @NonNull @OneToOne(fetch = FetchType.EAGER) @JoinColumn(name="product_id")
     Product product;
 }
