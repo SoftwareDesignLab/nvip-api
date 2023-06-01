@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -16,7 +18,7 @@ import java.util.List;
 public class DailyRunHistory {
     @NonNull @Id @Column(name="run_id") Integer id;
 
-    @NonNull LocalDate runDateTime;
+    @NonNull @Basic LocalDateTime runDateTime;
     @NonNull Integer notInNvdCount;
     @NonNull Integer notInMitreCount;
     @NonNull Double avgTimeGapNvd;

@@ -10,6 +10,6 @@ public class MainController {
 
     @GetMapping
     public String getVulnerabilitySummaries(){
-        return "";
+        return "Hello";
     }
 }

@@ -21,47 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.nvip.entities;
+package org.nvip.api.controllers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nvip.data.repositories.SearchRepository;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.persistence.*;
-import lombok.*;
+import javax.servlet.http.HttpServlet;
+import java.util.Map;
 
-import java.util.List;
+@RestController
+@RequestMapping("/search")
+public class SearchController extends HttpServlet {
 
-@NoArgsConstructor(force = true)
-@AllArgsConstructor
-@Entity
-@Table(name="vdocharacteristic")
-@ToString
-@Getter
-@Setter
-public class VdoCharacteristic {
-	@Id int id;
-	@Transient String cveId;
-	@Transient private String vdoLabel;
-	private double vdoConfidence;
-	@Transient private String vdoNounGroup;
+	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LogManager.getLogger(SearchController.class);
 
-	@ToString.Exclude
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name="cve_id", referencedColumnName = "cveId")
-	Vulnerability vulnerability;
+	private SearchRepository searchRepository;
 
-	@ToString.Exclude
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name="vdo_label_id")
-	VdoLabel vdoLabels;
+	public SearchController(SearchRepository searchRepository){
+		this.searchRepository = searchRepository;
+	}
 
-	@ToString.Exclude
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name="vdo_noun_group_id")
-	VDOgroup vdoGroup;
-
-	public VdoCharacteristic(String cveId, String vdoLabel, double vdoConfidence, String vdoNounGroup) {
-		this.cveId = cveId;
-		this.vdoLabel = vdoLabel;
-		this.vdoConfidence = vdoConfidence;
-		this.vdoNounGroup = vdoNounGroup;
+	@GetMapping
+	public Map<String, Map<String, String[]>> getSearchInfo(){
+		return searchRepository.getSearchInfo();
 	}
 }
