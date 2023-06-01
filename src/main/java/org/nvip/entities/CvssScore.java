@@ -30,21 +30,21 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name="cvssscore")
+@Getter
+@Setter
 public class CvssScore {
-	@Id @Getter @Setter private Integer id;
-	@Getter @Setter private String baseSeverity;
-	@Getter @Setter private double severityConfidence;
-	@Getter @Setter private String impactScore;
-	@Getter @Setter private double impactConfidence;
+	@Id private Integer id;
+	private double severityConfidence;
+	private String impactScore;
+	private double impactConfidence;
 
-	@ManyToOne @JoinColumn(name="cve_id")
+	@ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
 	Vulnerability vulnerability;
 
-	@OneToOne @JoinColumn(name="cvss_severity_id")
+	@OneToOne(fetch = FetchType.EAGER) @JoinColumn(name="cvss_severity_id")
 	CvssSeverity cvssSeverity;
 
-	public CvssScore(Vulnerability vulnerability, String baseSeverity, double severityConfidence, String impactScore, double impactConfidence) {
-		this.baseSeverity = baseSeverity;
+	public CvssScore(Vulnerability vulnerability, double severityConfidence, String impactScore, double impactConfidence) {
 		this.severityConfidence = severityConfidence;
 		this.impactScore = impactScore;
 		this.impactConfidence = impactConfidence;
