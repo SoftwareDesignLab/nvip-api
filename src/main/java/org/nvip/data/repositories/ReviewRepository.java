@@ -21,119 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.nvip.data.dao;
+package org.nvip.data.repositories;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nvip.data.DBConnect;
+import org.nvip.entities.*;
+import org.springframework.stereotype.Repository;
+
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+@Repository
+public class ReviewRepository {
 
-import org.nvip.data.DBConnect;
-import org.nvip.entities.CVSSupdate;
-import org.nvip.entities.VDOgroup;
-import org.nvip.entities.VDOupdateInfo;
-import org.nvip.entities.VulnerabilityDetails;
-import org.nvip.entities.VulnerabilityDomain;
-import org.nvip.api.serializers.VulnerabilityForReviewDTO;
+	@PersistenceContext
+	EntityManager entityManager;
 
-public class ReviewDAO {
 	private static String dbType = DBConnect.getDatabaseType();
 	private final static int defaultLimit = 10000;
-	private static Logger logger = LogManager.getLogger(ReviewDAO.class);
-
-	/**
-	 * Get search results from a Review page search query
-	 * @param searchDate
-	 * @param crawled
-	 * @param rejected
-	 * @param accepted
-	 * @param reviewed
-	 * @return
-	 */
-	public static List<VulnerabilityForReviewDTO> getSearchResults(LocalDate searchDate, boolean crawled, boolean rejected, boolean accepted, boolean reviewed) {
-		
-		String query = "SELECT v.vuln_id, v.cve_id, v.platform, v.last_modified_date, v.exists_at_nvd, v.exists_at_mitre, v.status_id, drh.run_date_time "
-				+ "from vulnerability as v inner join vulnerabilityupdate as vu on v.vuln_id=vu.vuln_id " + "inner join dailyrunhistory as drh on vu.run_id = drh.run_id "
-				+ "where drh.run_date_time BETWEEN ? AND ? and (";
-
-		if (!crawled && !rejected && !accepted && !reviewed) {
-			return null;
-		}
-		boolean orStatement = false;
-		if (crawled) {
-			query = query + "(v.status_id = 1 or v.status_id is null)";
-			orStatement = true;
-		}
-
-		if (rejected) {
-			if (orStatement) {
-				query = query + " or ";
-			}
-			query = query + "v.status_id = 2";
-			orStatement = true;
-		}
-
-		if (reviewed) {
-			if (orStatement) {
-				query = query + " or ";
-			}
-
-			query = query + "v.status_id = 3";
-			orStatement = true;
-		}
-
-		if (accepted) {
-			if (orStatement) {
-				query = query + " or ";
-			}
-
-			query = query + "v.status_id = 4";
-		}
-
-		query = query + ");";
-		
-		try (Connection conn = DBConnect.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(query)) {
-
-			// Get the CVEs for the last 3 days from 2 days ago to today (inclusive)
-			LocalDateTime today = LocalDateTime.of(searchDate, LocalTime.MIDNIGHT);
-
-			List<VulnerabilityForReviewDTO> dailyVulns = new ArrayList<VulnerabilityForReviewDTO>();
-
-			stmt.setTimestamp(1, Timestamp.valueOf(today));
-			stmt.setTimestamp(2, Timestamp.valueOf(today.plusDays(1)));
-
-			ResultSet rs = stmt.executeQuery();
-
-			while (rs.next()) {
-				String vuln_id = rs.getString("vuln_id");
-				String cve_id = rs.getString("cve_id");
-				String status_id = rs.getString("status_id");
-				String run_date_time = rs.getString("run_date_time");
-//				dailyVulns.add(new VulnerabilityForReviewDTO(vuln_id, cve_id, status_id, null, run_date_time));
-
-			}
-			rs.close();
-			return dailyVulns;
-
-		} catch (SQLException e) {
-			logger.error(e.toString());
-			e.printStackTrace();
-		}
-
-		return null;
-	}
+	private static Logger logger = LogManager.getLogger(ReviewRepository.class);
 
 	/**
 	 * TODO: Refactor this to use GROUP CONCAT for VDO Labels and products
@@ -141,7 +54,7 @@ public class ReviewDAO {
 	 * @param cveID
 	 * @return
 	 */
-	public static VulnerabilityDetails getVulnerabilityDetails(String cveID) {
+	public VulnerabilityDetails getVulnerabilityDetails(String cveID) {
 		try (Connection conn = DBConnect.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(
 						"SELECT v.vuln_id, v.cve_id, v.description, p.product_id, p.domain, p.cpe, ar.release_date, ar.version, vng.vdo_noun_group_id, vng.vdo_noun_group_name, vl.vdo_label_id, vl.vdo_label_name, vc.vdo_confidence, "
@@ -221,7 +134,8 @@ public class ReviewDAO {
 	 * @param dateRange
 	 * @return
 	 */
-	public static int updateDailyVulnerability(int dateRange) {
+	@Deprecated
+	public int updateDailyVulnerability(int dateRange) {
 		try (Connection conn = DBConnect.getConnection();
 				CallableStatement stmt = conn.prepareCall("CALL prepareDailyVulnerabilities(?, ?, ?)")) {
 
@@ -242,7 +156,6 @@ public class ReviewDAO {
 		}
 
 		return -1;
-
 	}
 
 	/**
@@ -255,38 +168,13 @@ public class ReviewDAO {
 	 * @param info
 	 * @return
 	 */
-	public static int atomicUpdateVulnerability(int status_id, int vuln_id, int user_id, String cve_id, String info) {
+	public int atomicUpdateVulnerability(int status_id, int vuln_id, int user_id, String cve_id, String info) {
 		try (Connection conn = DBConnect.getConnection()) {
 
 			conn.setAutoCommit(false);
 
 			int rs = atomicUpdateVulnerability(conn, status_id, vuln_id, user_id, cve_id, info);
 			conn.commit();
-			return rs;
-
-		} catch (SQLException e) {
-			logger.error(e.toString());
-			e.printStackTrace();
-		}
-
-		return -1;
-
-	}
-
-	/**
-	 * Updates description of a vulnerability in vulnerabilities table
-	 * @param conn
-	 * @param description
-	 * @param vuln_id
-	 * @return
-	 */
-	public static int updateVulnerabilityDescription(Connection conn, String description, int vuln_id) {
-		try(PreparedStatement stmt = conn.prepareStatement("UPDATE vulnerability SET description = ? WHERE vuln_id=?")) {
-
-			stmt.setString(1, description);
-			stmt.setInt(2, vuln_id);
-			int rs = stmt.executeUpdate();
-
 			return rs;
 
 		} catch (SQLException e) {
@@ -310,10 +198,10 @@ public class ReviewDAO {
 	 * @param info
 	 * @return
 	 */
-	public static int atomicUpdateVulnerability(Connection conn, int status_id, int vuln_id, int user_id, String cve_id, String info) {
-		
+	public int atomicUpdateVulnerability(Connection conn, int status_id, int vuln_id, int user_id, String cve_id, String info) {
+
 		try (PreparedStatement stmt1 = conn.prepareStatement("UPDATE vulnerability SET last_modified_date= ?, status_id = ? WHERE vuln_id = ?;");
-				PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO nvip.uservulnerabilityupdate (user_id, cve_id, datetime, info) VALUES (?, ?, ?, ?)")) {
+			 PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO nvip.uservulnerabilityupdate (user_id, cve_id, datetime, info) VALUES (?, ?, ?, ?)")) {
 
 			LocalDateTime today = LocalDateTime.now();
 
@@ -342,13 +230,38 @@ public class ReviewDAO {
 	}
 
 	/**
+	 * Updates description of a vulnerability in vulnerabilities table
+	 * @param conn
+	 * @param description
+	 * @param vuln_id
+	 * @return
+	 */
+	public int updateVulnerabilityDescription(Connection conn, String description, int vuln_id) {
+		try(PreparedStatement stmt = conn.prepareStatement("UPDATE vulnerability SET description = ? WHERE vuln_id=?")) {
+
+			stmt.setString(1, description);
+			stmt.setInt(2, vuln_id);
+			int rs = stmt.executeUpdate();
+
+			return rs;
+
+		} catch (SQLException e) {
+			logger.error(e.toString());
+			e.printStackTrace();
+		}
+
+		return -1;
+
+	}
+
+	/**
 	 * Updates the CVSS of a given Vulnerability
 	 * @param conn
 	 * @param cvssUpdate
 	 * @param cve_id
 	 * @return
 	 */
-	public static int updateVulnerabilityCVSS(Connection conn, CVSSupdate cvssUpdate, String cve_id) {
+	public int updateVulnerabilityCVSS(Connection conn, CVSSupdate cvssUpdate, String cve_id) {
 		try(PreparedStatement stmt1 = conn.prepareStatement("DELETE FROM CvssScore WHERE cve_id = ?");
 				PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO CvssScore (cve_id, cvss_severity_id, severity_confidence, impact_score, impact_confidence) VALUES (?,?,?,?,?)")) {
 			
@@ -382,7 +295,7 @@ public class ReviewDAO {
 	 * @param cve_id - ID of CVE that needs to have VDO updated
 	 * @return
 	 */
-	public static int updateVulnerabilityVDO(Connection conn, VDOupdateInfo vdoUpdate, String cve_id) {
+	public int updateVulnerabilityVDO(Connection conn, VDOupdateInfo vdoUpdate, String cve_id) {
 		try (PreparedStatement stmt1 = conn.prepareStatement("DELETE FROM VdoCharacteristic WHERE cve_id = ?");
 				PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO VdoCharacteristic (cve_id, vdo_label_id,vdo_confidence,vdo_noun_group_id) VALUES (?,?,?,?)")){
 
@@ -419,7 +332,7 @@ public class ReviewDAO {
 	 * @return 
 	 * 
 	 */
-	public static int removeProductsFromVulnerability(Connection conn, int[] productsID, String cve_id) {
+	public int removeProductsFromVulnerability(Connection conn, int[] productsID, String cve_id) {
 		try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM AffectedRelease where product_id = ?  AND cve_id = ?") ){
 
 			int rs = 0;
@@ -459,7 +372,7 @@ public class ReviewDAO {
 	 * @param productsToRemove - Products to remove from Affected Releases
 	 * @return -1
 	 */
-	public static int complexUpdate(boolean updateDescription, boolean updateVDO, boolean updateCVSS, boolean updateAffRel, int status_id, int vuln_id, int user_id, String cve_id, String updateInfo,
+	public int complexUpdate(boolean updateDescription, boolean updateVDO, boolean updateCVSS, boolean updateAffRel, int status_id, int vuln_id, int user_id, String cve_id, String updateInfo,
 			String cveDescription, VDOupdateInfo vdoUpdate, CVSSupdate cvssUpdate, int[] productsToRemove) {
 
 		try(Connection conn = DBConnect.getConnection()) {
