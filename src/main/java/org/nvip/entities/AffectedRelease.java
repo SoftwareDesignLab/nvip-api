@@ -12,7 +12,7 @@ import lombok.*;
 public class AffectedRelease {
     @NonNull @Id Integer id;
 
-    @NonNull String version;
+    String version;
 
     @NonNull @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
     Vulnerability vulnerability;

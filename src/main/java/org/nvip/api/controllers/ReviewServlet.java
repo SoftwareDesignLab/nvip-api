@@ -50,7 +50,7 @@ import org.nvip.entities.CVSSupdate;
 import org.nvip.entities.User;
 import org.nvip.entities.VDOupdateInfo;
 import org.nvip.entities.VulnerabilityDetails;
-import org.nvip.entities.VulnerabilityForReviewList;
+import org.nvip.api.serializers.VulnerabilityForReviewDTO;
 import org.nvip.api.serializers.GsonUtil;
 import org.nvip.util.TwitterApi;
 
@@ -244,7 +244,7 @@ public class ReviewServlet extends HttpServlet {
 			boolean accepted = req.getParameter("accepted") == null ? false : Boolean.parseBoolean(req.getParameter("accepted"));
 			boolean reviewed = req.getParameter("reviewed") == null ? false : Boolean.parseBoolean(req.getParameter("reviewed"));
 
-			List<VulnerabilityForReviewList> searchResults = ReviewDAO.getSearchResults(searchDate, crawled, rejected, accepted, reviewed);
+			List<VulnerabilityForReviewDTO> searchResults = ReviewDAO.getSearchResults(searchDate, crawled, rejected, accepted, reviewed);
 
 			int totalCount = searchResults.size();
 
