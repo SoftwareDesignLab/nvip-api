@@ -146,47 +146,6 @@ public class UserRepository {
 	}
 
 	/**
-	 * Helper function for obtaining RoleID and ExpirationDate info,
-	 * Calls to NVIP Database for users with given token and name,
-	 * Checks for duplicates if any.
-	 * @param conn
-	 * @param userName
-	 * @param token
-	 * @return
-	 */
-	private User getRoleIDandExpirationDate(Connection conn, String userName, String token) {
-
-		try (PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(u.user_id) AS userCount, user_id, role_id, token_expiration_date FROM user u " + 
-		" WHERE u.user_name = ? GROUP BY user_id")) {
-
-			stmt.setString(1, userName);
-			//stmt.setString(2, token);
-
-			ResultSet rs = stmt.executeQuery();
-
-			while (rs.next()) {
-				int userCount = rs.getInt("userCount");
-				if (userCount == 1) {
-					int role_id = rs.getInt("role_id");
-					int user_id = rs.getInt("user_id");
-					LocalDateTime expirationDate = rs.getTimestamp("token_expiration_date").toLocalDateTime();
-					User userInDB = new User(user_id, null, userName, null, null, null, null, role_id, expirationDate, null);
-					rs.close();
-					return userInDB;
-				} else {
-					rs.close();
-					return null;
-				}
-			}
-		} catch (SQLException e) {
-			logger.error(e.toString());
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
-	/**
 	 * Function that collects User info for Servlets that require to
 	 * verify user and role_id info
 	 * @param userName
@@ -194,18 +153,7 @@ public class UserRepository {
 	 * @return
 	 */
 	public User getRoleIDandExpirationDate(String userName, String token) {
-
-		try (Connection conn = DBConnect.getConnection()) {
-
-			User user = getRoleIDandExpirationDate(conn, userName, token);
-			return user;
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return null;
+		return login(userName);
 	}
 
 	/**

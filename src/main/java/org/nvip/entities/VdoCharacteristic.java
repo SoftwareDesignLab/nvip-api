@@ -44,17 +44,20 @@ public class VdoCharacteristic {
 	@Transient private String vdoNounGroup;
 
 	@ToString.Exclude
-	@ManyToOne(fetch = FetchType.EAGER)
+//	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name="cve_id", referencedColumnName = "cveId")
 	Vulnerability vulnerability;
 
 	@ToString.Exclude
-	@ManyToOne(fetch = FetchType.EAGER)
+//	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name="vdo_label_id")
 	VdoLabel vdoLabels;
 
 	@ToString.Exclude
-	@ManyToOne(fetch = FetchType.EAGER)
+//	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name="vdo_noun_group_id")
 	VDOgroup vdoGroup;
 
