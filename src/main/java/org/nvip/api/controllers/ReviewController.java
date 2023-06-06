@@ -73,7 +73,7 @@ public class ReviewController {
                 VulnerabilityForReviewDTO.VulnerabilityForReviewDTOBuilder builder = VulnerabilityForReviewDTO.builder();
                 builder.cve_id(v.getCveId())
                     .vuln_id(v.getVulnId())
-                    .status_id(v.getStatus())
+//                    .status_id(v.getStatus())
                     .description(v.getDescription());
 
                 for(VulnerabilityUpdate update: v.getUpdates()) {
