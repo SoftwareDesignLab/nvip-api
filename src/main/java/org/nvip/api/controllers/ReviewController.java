@@ -1,30 +1,15 @@
 package org.nvip.api.controllers;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.nvip.api.serializers.GsonUtil;
 import org.nvip.api.serializers.VulnerabilityForReviewDTO;
-import org.nvip.api.serializers.VulnerabilityReviewSearchDTO;
-import org.nvip.data.dao.LocalDateSerializer;
-import org.nvip.data.dao.ReviewDAO;
 import org.nvip.data.repositories.ReviewRepository;
 import org.nvip.data.repositories.UserRepository;
 import org.nvip.data.repositories.VulnerabilityRepository;
 import org.nvip.entities.*;
-import org.nvip.util.TwitterApi;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 

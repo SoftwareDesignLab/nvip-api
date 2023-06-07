@@ -43,12 +43,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 
-import org.nvip.data.dao.LocalDateSerializer;
+import org.nvip.api.serializers.LocalDateSerializer;
 import org.nvip.data.dao.ReviewDAO;
 import org.nvip.data.repositories.UserRepository;
-import org.nvip.entities.CVSSupdate;
+import org.nvip.api.serializers.CVSSupdate;
 import org.nvip.entities.User;
-import org.nvip.entities.VDOupdateInfo;
+import org.nvip.api.serializers.VDOupdateInfo;
 import org.nvip.entities.VulnerabilityDetails;
 import org.nvip.api.serializers.VulnerabilityForReviewDTO;
 import org.nvip.api.serializers.GsonUtil;

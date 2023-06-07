@@ -27,6 +27,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nvip.api.serializers.CVSSupdate;
+import org.nvip.api.serializers.VDOupdateInfo;
 import org.nvip.data.DBConnect;
 import org.nvip.entities.*;
 import org.springframework.stereotype.Repository;
@@ -35,8 +37,6 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Repository
 public class ReviewRepository {
