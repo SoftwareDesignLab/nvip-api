@@ -13,9 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build API with Maven
+      - name: Build API with Gradle
         run: |
-          mvn package -DskipTests
+          gradle test
 
   deploy-api:
     runs-on: ubuntu-latest
