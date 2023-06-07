@@ -42,10 +42,8 @@ public class MainRepository {
 	@PersistenceContext
 	EntityManager entityManager;
 
-	private static String dbType = DBConnect.getDatabaseType();
 	private static final String[] MAIN_PAGE_COUNTS = { "CvesAdded", "CvesUpdated", "not_in_nvd_count",
 			"not_in_mitre_count", "run_date_times", "avgTimeGapNvd", "avgTimeGapMitre" };
-	private static Logger logger = LogManager.getLogger(MainRepository.class);
 
 	public Map<String, String> getMainPageCounts() {
 
