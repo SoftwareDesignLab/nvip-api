@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Rochester Institute of Technology (RIT). Developed with
+ * Copyright 2021 Rochester Institute of Technology (RIT). Developed with
  * government support under contract 70RSAT19CB0000020 awarded by the United
  * States Department of Homeland Security.
  * 
@@ -21,23 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.nvip.data.dao;
+package org.nvip.api.serializers;
 
-import java.lang.reflect.Type;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.nvip.entities.VDOupdateRecord;
 
+public class VDOupdateInfo {
+	
+	private ArrayList<VDOupdateRecord> vdoRecords = new ArrayList<VDOupdateRecord>();
+	
+	public VDOupdateInfo(JSONObject vdoUpdateJSON) {
+				
+		JSONArray vdoUpdates = vdoUpdateJSON.getJSONArray("vdoLabels");
+		
+		for (int i=0; i<vdoUpdates.length(); i++) {
+			JSONObject vdoRecordJSON = vdoUpdates.getJSONObject(i);
+			vdoRecords.add(new VDOupdateRecord(vdoRecordJSON.getInt("labelID"), vdoRecordJSON.getInt("groupID"), vdoRecordJSON.getDouble("confidence")));
+		}
+	}
 
-public class LocalDateSerializer implements JsonSerializer<LocalDate> {
-	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	public ArrayList<VDOupdateRecord> getVdoRecords() {
+		return vdoRecords;
+	}
+	
+	
 
-    @Override
-    public JsonElement serialize(LocalDate localDate, Type srcType, JsonSerializationContext context) {
-        return new JsonPrimitive(formatter.format(localDate));
-    }
 }
