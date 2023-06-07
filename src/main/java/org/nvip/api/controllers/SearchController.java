@@ -37,9 +37,6 @@ import java.util.Map;
 @RequestMapping("/search")
 public class SearchController extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
-	private static final Logger logger = LogManager.getLogger(SearchController.class);
-
 	private SearchRepository searchRepository;
 
 	public SearchController(SearchRepository searchRepository){

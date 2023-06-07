@@ -51,8 +51,6 @@ import java.time.LocalDateTime;
 
 @Repository
 public class UserRepository {
-	private static String dbType = DBConnect.getDatabaseType();
-	private static Logger logger = LogManager.getLogger(UserRepository.class);
 
 	@PersistenceContext
 	EntityManager entityManager;
