@@ -40,9 +40,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.nvip.data.DBConnect;
-import org.nvip.entities.CVSSupdate;
+import org.nvip.api.serializers.CVSSupdate;
 import org.nvip.entities.VDOgroup;
-import org.nvip.entities.VDOupdateInfo;
+import org.nvip.api.serializers.VDOupdateInfo;
 import org.nvip.entities.VulnerabilityDetails;
 import org.nvip.entities.VulnerabilityDomain;
 import org.nvip.api.serializers.VulnerabilityForReviewDTO;
