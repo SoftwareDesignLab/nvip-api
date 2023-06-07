@@ -17,4 +17,5 @@ RUN gradle bootJar -x test --no-daemon
 ### Run Stage
 FROM eclipse-temurin:17-jre-alpine as deploy
 COPY --from=builder /home/app/build/libs/nvip_api-1.0.jar app.jar
+EXPOSE 8080
 ENTRYPOINT ["java","-jar","app.jar"]
