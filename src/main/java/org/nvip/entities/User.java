@@ -35,7 +35,7 @@ import java.time.LocalDateTime;
 @Table
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @AllArgsConstructor
 public class User {
 

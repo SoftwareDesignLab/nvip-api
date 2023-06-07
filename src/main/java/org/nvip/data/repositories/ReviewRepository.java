@@ -44,8 +44,6 @@ public class ReviewRepository {
 	@PersistenceContext
 	EntityManager entityManager;
 
-	private static String dbType = DBConnect.getDatabaseType();
-	private final static int defaultLimit = 10000;
 	private static Logger logger = LogManager.getLogger(ReviewRepository.class);
 
 	/**
