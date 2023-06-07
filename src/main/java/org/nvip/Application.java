@@ -26,7 +26,9 @@ public class Application {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins(
-                                "http://localhost:4200"
+                                "http://localhost:4200",
+                                "https://www-staging.cve.live",
+                                "https://www.cve.live"
                         );
             }
         };
