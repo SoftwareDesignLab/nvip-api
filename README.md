@@ -8,11 +8,11 @@
     in order to run Angular so it must be included in order for the project to run.
     	- Download Link: https://nodejs.org/en/download/
 
-### Java Maven
+### Gradle
 
-    - Java Maven is used to compile the project with its requirements.
-
-- Download Link: https://maven.apache.org/download.cgi
+    - Gradle is used to build the Spring Boot API and is required to run the project
+      if you are not using Docker.
+    	- Download Link: https://gradle.org/install/
 
 ### Apache Tomcat Server
 
