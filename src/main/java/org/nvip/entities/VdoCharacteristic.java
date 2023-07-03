@@ -41,12 +41,12 @@ import java.util.List;
 @Setter
 @JsonIgnoreProperties(value = "vulnerability")
 public class VdoCharacteristic {
-	@Id int id;
 	@Transient String cveId;
 	@Transient private String vdoLabel;
 	private double vdoConfidence;
 	@Transient private String vdoNounGroup;
 
+	@Id
 	@ToString.Exclude
 //	@ManyToOne(fetch = FetchType.EAGER)
 	@ManyToOne
