@@ -11,7 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/reviews")
@@ -50,8 +53,15 @@ public class ReviewController {
 
 
         if (cveID != null) {
-//            VulnerabilityDetails vulnDetails = ReviewDAO.getVulnerabilityDetails(cveID);
-//            jObj = gson.toJson(vulnDetails);
+           VulnerabilityDetails vulnDetails = reviewRepository.getVulnerabilityDetails(cveID);
+           if(vulnDetails != null){
+               VulnerabilityForReviewDTO.VulnerabilityForReviewDTOBuilder builder = VulnerabilityForReviewDTO.builder();
+               builder.cve_id(vulnDetails.getCve_id())
+                    .status_id(vulnDetails.getStatus_id())
+                    .description(vulnDetails.getDescription())
+                    .run_date_time(LocalDateTime.parse(vulnDetails.getRun_date_time(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonList(builder.build())) ;
+            }
         } else {
             List<Vulnerability> searchResults = vulnerabilityRepository.getVulnerabilitiesWithUpdateList(searchDate, crawled, rejected, accepted, reviewed);
             return ResponseEntity.status(HttpStatus.OK).body(searchResults.stream().map(v -> {
