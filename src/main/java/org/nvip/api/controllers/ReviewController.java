@@ -9,6 +9,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,6 +21,7 @@ import java.util.Collections;
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
+    private static final Logger logger = LogManager.getLogger(ReviewController.class);
 
     final UserRepository userRepository;
     final ReviewRepository reviewRepository;
@@ -52,7 +55,7 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 
 
-        if (cveID != null) {
+        if (cveID != null && cveID != "") {
            VulnerabilityDetails vulnDetails = reviewRepository.getVulnerabilityDetails(cveID);
            if(vulnDetails != null){
                VulnerabilityForReviewDTO.VulnerabilityForReviewDTOBuilder builder = VulnerabilityForReviewDTO.builder();
@@ -68,7 +71,7 @@ public class ReviewController {
                 VulnerabilityForReviewDTO.VulnerabilityForReviewDTOBuilder builder = VulnerabilityForReviewDTO.builder();
                 builder.cve_id(v.getCveId())
                     .vuln_id(v.getVulnId())
-//                    .status_id(v.getStatus())
+                    .status_id("" + v.getStatusId())
                     .description(v.getDescription());
 
                 for(VulnerabilityUpdate update: v.getUpdates()) {
