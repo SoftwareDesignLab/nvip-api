@@ -106,15 +106,14 @@ public class ReviewController {
     public ResponseEntity<String> createReview(
         @RequestParam(value="username") String userName,
         @RequestParam(value="token") String token,
-        @RequestParam(value="vulnID") int vulnID,
+        @RequestParam(value="vulnId") int vulnID,
         @RequestParam(value="cveId") String cveID,
+        @RequestParam(value="statusId") int statusID,
 
         @RequestParam(value="complexUpdate", required=false) boolean complexUpdate,
         @RequestParam(value="atomicUpdate", required=false) boolean atomicUpdate,
         @RequestParam(value="updateDailyTable", required=false) boolean updateDailyTable,
 
-        @RequestParam(value="statusID", required=false, defaultValue="1") int statusID,
-        @RequestParam(value="info", required=false, defaultValue="") String info,
         @RequestParam(value="tweet", required=false, defaultValue="false") boolean isTweet,
 
         @RequestParam(value="updateDescription", required=false, defaultValue="false") boolean updateDescription,
@@ -139,6 +138,10 @@ public class ReviewController {
 
        if (atomicUpdate) {
            int userID = user.getUserID();
+
+           JSONObject dataJSON = new JSONObject(updateData);
+
+           String info = dataJSON.getString("updateInfo");
 
            reviewRepository.atomicUpdateVulnerability(statusID, vulnID, userID, cveID, info);
 
@@ -186,7 +189,7 @@ public class ReviewController {
 
            JSONObject dataJSON = new JSONObject(updateData);
 
-           String descriptionToUpdate = dataJSON.getString("descriptionToUpdate");
+           String info = dataJSON.getString("updateInfo");
 
            String cveDescription = null;
            VDOupdateInfo vdoUpdate = null;
@@ -213,7 +216,7 @@ public class ReviewController {
                }
            }
 
-           reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, statusID, vulnID, userID, cveID, descriptionToUpdate, cveDescription, vdoUpdate, cvssUpdate,
+           reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, statusID, vulnID, userID, cveID, info, cveDescription, vdoUpdate, cvssUpdate,
                    productsToRemove);
 
        } else if (updateDailyTable) {
