@@ -27,6 +27,9 @@ package org.nvip.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+
 import java.util.List;
 
 @NoArgsConstructor(force = true)
@@ -36,6 +39,7 @@ import java.util.List;
 @ToString
 @Getter
 @Setter
+@JsonIgnoreProperties(value = "vulnerability")
 public class VdoCharacteristic {
 	@Id int id;
 	@Transient String cveId;
