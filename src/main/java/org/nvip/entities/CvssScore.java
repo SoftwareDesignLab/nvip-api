@@ -26,12 +26,15 @@ package org.nvip.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name="cvssscore")
 @Getter
 @Setter
+@JsonIgnoreProperties(value = "vulnerability")
 public class CvssScore {
 	@Id private Integer id;
 	private double severityConfidence;

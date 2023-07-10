@@ -1,22 +1,32 @@
 package org.nvip.api.controllers;
 
 import org.nvip.api.serializers.VulnerabilityForReviewDTO;
+import org.nvip.api.serializers.CVSSupdate;
+import org.nvip.api.serializers.VDOupdateInfo;
 import org.nvip.data.repositories.ReviewRepository;
 import org.nvip.data.repositories.UserRepository;
 import org.nvip.data.repositories.VulnerabilityRepository;
 import org.nvip.entities.*;
+import org.nvip.util.TwitterApi;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Collections;
+import java.io.IOException;
+import java.io.BufferedReader;
 
 @RestController
 @RequestMapping("/reviews")
@@ -72,7 +82,8 @@ public class ReviewController {
                 builder.cve_id(v.getCveId())
                     .vuln_id(v.getVulnId())
                     .status_id("" + v.getStatusId())
-                    .description(v.getDescription());
+                    .description(v.getDescription())
+                    .cvss_scores(v.getCvssScores());
 
                 for(VulnerabilityUpdate update: v.getUpdates()) {
                     builder.run_date_time(update.getDailyRunHistory().getRunDateTime());
@@ -83,145 +94,132 @@ public class ReviewController {
         return null;
     }
 
-//    @PostMapping
-//    public String createReview(@RequestParam(value="cveId", defaultValue = "") String cveId) {
-//        GsonBuilder gsonBuilder = new GsonBuilder();
-//        gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateSerializer());
-//        Gson gson = gsonBuilder.setPrettyPrinting().create();
-//
-//        boolean complexUpdate = Boolean.parseBoolean(req.getParameter("complexUpdate"));
-//        boolean atomicUpdate = Boolean.parseBoolean(req.getParameter("atomicUpdate"));
-//        boolean updateDailyTable = Boolean.parseBoolean(req.getParameter("updateDailyTable"));
-//
-//        String userName = req.getParameter("username");
-//        String token = req.getParameter("token");
-//
-////        TODO: Spring Security
-////        if (userName == null || token == null)
-////            ServletUtil.setResponse(resp, 401, "Unauthorized user!");
-////
-////        User user = userRepository.getRoleIDandExpirationDate(userName, token);
-////
-////        if (user == null || user.getRoleId() < 1 || user.getRoleId() > 2)
-////            ServletUtil.setResponse(resp, 401, "Unauthorized user!");
-//
-//        //Info needed for twitter
-//        boolean isTweet = false;
-//        String cveDescriptionTweet = null;
-//
-//        String cveID = req.getParameter("cveID");
-//
-//        if (atomicUpdate) {
-//            int statusID = Integer.parseInt(req.getParameter("statusID"));
-//            int userID = user.getUserID();
-//
-//            int vulnID = Integer.parseInt(req.getParameter("vulnID"));
-//            String info = req.getParameter("info");
-//            reviewRepository.atomicUpdateVulnerability(statusID, vulnID, userID, cveID, info);
-//
-//            if (statusID==4) {
-//
-//                isTweet = Boolean.parseBoolean(req.getParameter("tweet"));
-//                StringBuilder stringBuilder = new StringBuilder();
-//                BufferedReader bufferedReader = null;
-//
-//                try {
-//                    bufferedReader = req.getReader();
-//                    String line;
-//                    while ((line = bufferedReader.readLine()) != null) {
-//                        stringBuilder.append(line);
-//                        stringBuilder.append(System.lineSeparator());
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                cveDescriptionTweet = stringBuilder.toString();
-//
-//            }
-//
-//        } else if (complexUpdate) {
-//
-//            boolean updateDescription = Boolean.parseBoolean(req.getParameter("updateDescription"));
-//            boolean updateVDO = Boolean.parseBoolean(req.getParameter("updateVDO"));
-//            boolean updateCVSS = Boolean.parseBoolean(req.getParameter("updateCVSS"));
-//            boolean updateAffRel = Boolean.parseBoolean(req.getParameter("updateAffRel"));
-//
-//            int statusID = Integer.parseInt(req.getParameter("statusID"));
-//            int userID = user.getUserID();
-//            int vulnID = Integer.parseInt(req.getParameter("vulnID"));
-//
-//            StringBuilder stringBuilder = new StringBuilder();
-//            BufferedReader bufferedReader = null;
-//
-//            try {
-//                bufferedReader = req.getReader();
-//                String line;
-//                while ((line = bufferedReader.readLine()) != null) {
-//                    stringBuilder.append(line);
-//                    stringBuilder.append(System.lineSeparator());
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            String dataString = stringBuilder.toString();
-//            if (dataString == null)
-//                return;
-//
-//            JSONObject dataJSON = new JSONObject(dataString);
-//
-//            String descriptionToUpdate = dataJSON.getString("descriptionToUpdate");
-//
-//            String cveDescription = null;
-//            VDOupdateInfo vdoUpdate = null;
-//            CVSSupdate cvssUpdate = null;
-//            int[] productsToRemove = null;
-//
-//            if (updateDescription) {
-//                cveDescription = dataJSON.getString("description");
-//            }
-//
-//            if (updateVDO) {
-//                vdoUpdate = new VDOupdateInfo(dataJSON.getJSONObject("vdoUpdates"));
-//            }
-//
-//            if (updateCVSS) {
-//                cvssUpdate = new CVSSupdate(dataJSON.getJSONObject("cvss"));
-//            }
-//
-//            if (updateAffRel) {
-//                JSONArray jsonArray = dataJSON.getJSONArray("prodToRemove");
-//                productsToRemove = new int[jsonArray.length()];
-//                for (int i = 0; i < jsonArray.length(); i++) {
-//                    productsToRemove[i] = jsonArray.getInt(i);
-//                }
-//            }
-//
-//            reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, statusID, vulnID, userID, cveID, descriptionToUpdate, cveDescription, vdoUpdate, cvssUpdate,
-//                    productsToRemove);
-//
-//        } else if (updateDailyTable) {
-//            int out = reviewRepository.updateDailyVulnerability(3);
-//
-//            try {
-//                resp.setContentType("text/html");
-//                resp.setCharacterEncoding("UTF-8");
-//                resp.getWriter().write(Integer.toString(out));
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        /**
-//         * Enable to tweet approved CVEs. <cveDescription> should be set to the approved
-//         * CVE description
-//         */
-//        if (isTweet && cveDescriptionTweet!=null && cveDescriptionTweet.length()>0) {
-//            TwitterApi twitterApi = new TwitterApi();
-//            twitterApi.postTweet(cveID, cveDescriptionTweet, false);
-//        }
-//
-//        return "";
-//    }
+    @PostMapping
+    public ResponseEntity<String> createReview(
+        @RequestParam(value="username") String userName,
+        @RequestParam(value="token") String token,
+        @RequestParam(value="complexUpdate", required=false) boolean complexUpdate,
+        @RequestParam(value="atomicUpdate", required=false) boolean atomicUpdate,
+        @RequestParam(value="updateDailyTable", required=false) boolean updateDailyTable,
+        @RequestParam(value="cveId", defaultValue = "") String cveID,
+        @RequestParam(value="statusID") int statusID,
+        @RequestParam(value="vulnID") int vulnID,
+        @RequestParam(value="info", required=false) String info,
+        @RequestParam(value="tweet", required=false, defaultValue="false") boolean isTweet,
+        @RequestParam(value="updateDescription", required=false, defaultValue="false") boolean updateDescription,
+        @RequestParam(value="updateVDO", required=false, defaultValue="false") boolean updateVDO,
+        @RequestParam(value="updateCVSS", required=false, defaultValue="false") boolean updateCVSS,
+        @RequestParam(value="updateAffRel", required=false, defaultValue="false") boolean updateAffRel,
+
+        @RequestBody String test
+    ) 
+    {
+        logger.info("Body test: {}", test);
+        if (userName == null || token == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+
+        User user = userRepository.getRoleIDandExpirationDate(userName, token);
+
+        if (user == null || user.getRoleId() < 1 || user.getRoleId() > 2)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+
+       //Info needed for twitter
+       String cveDescriptionTweet = null;
+
+       if (atomicUpdate) {
+           int userID = user.getUserID();
+
+           reviewRepository.atomicUpdateVulnerability(statusID, vulnID, userID, cveID, info);
+
+           if (statusID==4) {
+
+               StringBuilder stringBuilder = new StringBuilder();
+               BufferedReader bufferedReader = null;
+
+               // try {
+               //     bufferedReader = req.getReader();
+               //     String line;
+               //     while ((line = bufferedReader.readLine()) != null) {
+               //         stringBuilder.append(line);
+               //         stringBuilder.append(System.lineSeparator());
+               //     }
+               // } catch (IOException e) {
+               //     e.printStackTrace();
+               // }
+
+               cveDescriptionTweet = stringBuilder.toString();
+
+           }
+
+       } else if (complexUpdate) {
+
+           int userID = user.getUserID();
+
+           StringBuilder stringBuilder = new StringBuilder();
+           BufferedReader bufferedReader = null;
+
+           // try {
+           //     bufferedReader = req.getReader();
+           //     String line;
+           //     while ((line = bufferedReader.readLine()) != null) {
+           //         stringBuilder.append(line);
+           //         stringBuilder.append(System.lineSeparator());
+           //     }
+           // } catch (IOException e) {
+           //     e.printStackTrace();
+           // }
+
+           String dataString = stringBuilder.toString();
+           if (dataString == null)
+               return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
+
+           JSONObject dataJSON = new JSONObject(dataString);
+
+           String descriptionToUpdate = dataJSON.getString("descriptionToUpdate");
+
+           String cveDescription = null;
+           VDOupdateInfo vdoUpdate = null;
+           CVSSupdate cvssUpdate = null;
+           int[] productsToRemove = null;
+
+           if (updateDescription) {
+               cveDescription = dataJSON.getString("description");
+           }
+
+           if (updateVDO) {
+               vdoUpdate = new VDOupdateInfo(dataJSON.getJSONObject("vdoUpdates"));
+           }
+
+           if (updateCVSS) {
+               cvssUpdate = new CVSSupdate(dataJSON.getJSONObject("cvss"));
+           }
+
+           if (updateAffRel) {
+               JSONArray jsonArray = dataJSON.getJSONArray("prodToRemove");
+               productsToRemove = new int[jsonArray.length()];
+               for (int i = 0; i < jsonArray.length(); i++) {
+                   productsToRemove[i] = jsonArray.getInt(i);
+               }
+           }
+
+           reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, statusID, vulnID, userID, cveID, descriptionToUpdate, cveDescription, vdoUpdate, cvssUpdate,
+                   productsToRemove);
+
+       } else if (updateDailyTable) {
+           int out = reviewRepository.updateDailyVulnerability(3);
+
+           return ResponseEntity.status(HttpStatus.OK).body("" + out);
+       }
+
+       /**
+        * Enable to tweet approved CVEs. <cveDescription> should be set to the approved
+        * CVE description
+        */
+       if (isTweet && cveDescriptionTweet!=null && cveDescriptionTweet.length()>0) {
+           TwitterApi twitterApi = new TwitterApi();
+           twitterApi.postTweet(cveID, cveDescriptionTweet, false);
+       }
+
+       return ResponseEntity.status(HttpStatus.OK).body("");
+   }
 }
