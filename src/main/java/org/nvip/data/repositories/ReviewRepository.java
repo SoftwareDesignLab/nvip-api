@@ -205,8 +205,8 @@ public class ReviewRepository {
 	 * @return
 	 */
 	public int updateVulnerabilityCVSS(Connection conn, CVSSupdate cvssUpdate, String cve_id) {
-		try(PreparedStatement stmt1 = conn.prepareStatement("DELETE FROM CvssScore WHERE cve_id = ?");
-				PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO CvssScore (cve_id, cvss_severity_id, severity_confidence, impact_score, impact_confidence) VALUES (?,?,?,?,?)")) {
+		try(PreparedStatement stmt1 = conn.prepareStatement("DELETE FROM cvssscore WHERE cve_id = ?");
+				PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO cvssscore (cve_id, cvss_severity_id, severity_confidence, impact_score, impact_confidence) VALUES (?,?,?,?,?)")) {
 			
 			stmt1.setString(1, cve_id);
 			int rs = stmt1.executeUpdate();
@@ -239,8 +239,8 @@ public class ReviewRepository {
 	 * @return
 	 */
 	public int updateVulnerabilityVDO(Connection conn, VDOupdateInfo vdoUpdate, String cve_id) {
-		try (PreparedStatement stmt1 = conn.prepareStatement("DELETE FROM VdoCharacteristic WHERE cve_id = ?");
-				PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO VdoCharacteristic (cve_id, vdo_label_id,vdo_confidence,vdo_noun_group_id) VALUES (?,?,?,?)")){
+		try (PreparedStatement stmt1 = conn.prepareStatement("DELETE FROM vdocharacteristic WHERE cve_id = ?");
+				PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO vdocharacteristic (cve_id, vdo_label_id,vdo_confidence,vdo_noun_group_id) VALUES (?,?,?,?)")){
 
 			stmt1.setString(1, cve_id);
 			int rs = stmt1.executeUpdate();
