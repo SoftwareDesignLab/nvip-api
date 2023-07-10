@@ -66,15 +66,22 @@ public class ReviewController {
 
 
         if (cveID != null && cveID != "") {
-           VulnerabilityDetails vulnDetails = reviewRepository.getVulnerabilityDetails(cveID);
-           if(vulnDetails != null){
-               VulnerabilityForReviewDTO.VulnerabilityForReviewDTOBuilder builder = VulnerabilityForReviewDTO.builder();
-               builder.cve_id(vulnDetails.getCve_id())
-                    .status_id(vulnDetails.getStatus_id())
-                    .description(vulnDetails.getDescription())
-                    .run_date_time(LocalDateTime.parse(vulnDetails.getRun_date_time(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-                return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonList(builder.build())) ;
-            }
+           List<Vulnerability> vulns = reviewRepository.getVulnerabilityDetails(cveID);
+           return ResponseEntity.status(HttpStatus.OK).body(vulns.stream().map(v -> {
+                VulnerabilityForReviewDTO.VulnerabilityForReviewDTOBuilder builder = VulnerabilityForReviewDTO.builder();
+                builder.cve_id(v.getCveId())
+                    .vuln_id(v.getVulnId())
+                    .status_id("" + v.getStatusId())
+                    .description(v.getDescription())
+                    .cvss_scores(v.getCvssScores())
+                    .vdos(v.getVdoCharacteristics())
+                    .affected_releases(v.getAffectedReleases());
+
+                for(VulnerabilityUpdate update: v.getUpdates()) {
+                    builder.run_date_time(update.getDailyRunHistory().getRunDateTime());
+                }
+                return builder.build();
+            }).toList());
         } else {
             List<Vulnerability> searchResults = vulnerabilityRepository.getVulnerabilitiesWithUpdateList(searchDate, crawled, rejected, accepted, reviewed);
             return ResponseEntity.status(HttpStatus.OK).body(searchResults.stream().map(v -> {
@@ -83,7 +90,9 @@ public class ReviewController {
                     .vuln_id(v.getVulnId())
                     .status_id("" + v.getStatusId())
                     .description(v.getDescription())
-                    .cvss_scores(v.getCvssScores());
+                    .cvss_scores(v.getCvssScores())
+                    .vdos(v.getVdoCharacteristics())
+                    .affected_releases(v.getAffectedReleases());
 
                 for(VulnerabilityUpdate update: v.getUpdates()) {
                     builder.run_date_time(update.getDailyRunHistory().getRunDateTime());
@@ -91,30 +100,32 @@ public class ReviewController {
                 return builder.build();
             }).toList());
         }
-        return null;
     }
 
     @PostMapping
     public ResponseEntity<String> createReview(
         @RequestParam(value="username") String userName,
         @RequestParam(value="token") String token,
+        @RequestParam(value="vulnID") int vulnID,
+        @RequestParam(value="cveId") String cveID,
+
         @RequestParam(value="complexUpdate", required=false) boolean complexUpdate,
         @RequestParam(value="atomicUpdate", required=false) boolean atomicUpdate,
         @RequestParam(value="updateDailyTable", required=false) boolean updateDailyTable,
-        @RequestParam(value="cveId", defaultValue = "") String cveID,
-        @RequestParam(value="statusID") int statusID,
-        @RequestParam(value="vulnID") int vulnID,
-        @RequestParam(value="info", required=false) String info,
+
+        @RequestParam(value="statusID", required=false, defaultValue="1") int statusID,
+        @RequestParam(value="info", required=false, defaultValue="") String info,
         @RequestParam(value="tweet", required=false, defaultValue="false") boolean isTweet,
+
         @RequestParam(value="updateDescription", required=false, defaultValue="false") boolean updateDescription,
         @RequestParam(value="updateVDO", required=false, defaultValue="false") boolean updateVDO,
         @RequestParam(value="updateCVSS", required=false, defaultValue="false") boolean updateCVSS,
         @RequestParam(value="updateAffRel", required=false, defaultValue="false") boolean updateAffRel,
 
-        @RequestBody String test
+        @RequestBody String updateData
     ) 
     {
-        logger.info("Body test: {}", test);
+        logger.info("Body test: {}", updateData);
         if (userName == null || token == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 
@@ -155,8 +166,8 @@ public class ReviewController {
 
            int userID = user.getUserID();
 
-           StringBuilder stringBuilder = new StringBuilder();
-           BufferedReader bufferedReader = null;
+           // StringBuilder stringBuilder = new StringBuilder();
+           // BufferedReader bufferedReader = null;
 
            // try {
            //     bufferedReader = req.getReader();
@@ -169,11 +180,11 @@ public class ReviewController {
            //     e.printStackTrace();
            // }
 
-           String dataString = stringBuilder.toString();
-           if (dataString == null)
-               return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
+           // String dataString = stringBuilder.toString();
+           // if (dataString == null)
+           //     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
 
-           JSONObject dataJSON = new JSONObject(dataString);
+           JSONObject dataJSON = new JSONObject(updateData);
 
            String descriptionToUpdate = dataJSON.getString("descriptionToUpdate");
 
