@@ -150,17 +150,6 @@ public class ReviewController {
                StringBuilder stringBuilder = new StringBuilder();
                BufferedReader bufferedReader = null;
 
-               // try {
-               //     bufferedReader = req.getReader();
-               //     String line;
-               //     while ((line = bufferedReader.readLine()) != null) {
-               //         stringBuilder.append(line);
-               //         stringBuilder.append(System.lineSeparator());
-               //     }
-               // } catch (IOException e) {
-               //     e.printStackTrace();
-               // }
-
                cveDescriptionTweet = stringBuilder.toString();
 
            }
@@ -168,24 +157,6 @@ public class ReviewController {
        } else if (complexUpdate) {
 
            int userID = user.getUserID();
-
-           // StringBuilder stringBuilder = new StringBuilder();
-           // BufferedReader bufferedReader = null;
-
-           // try {
-           //     bufferedReader = req.getReader();
-           //     String line;
-           //     while ((line = bufferedReader.readLine()) != null) {
-           //         stringBuilder.append(line);
-           //         stringBuilder.append(System.lineSeparator());
-           //     }
-           // } catch (IOException e) {
-           //     e.printStackTrace();
-           // }
-
-           // String dataString = stringBuilder.toString();
-           // if (dataString == null)
-           //     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
 
            JSONObject dataJSON = new JSONObject(updateData);
 
