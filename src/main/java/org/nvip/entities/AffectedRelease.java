@@ -3,12 +3,15 @@ package org.nvip.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 @Entity
 @Table(name="affectedrelease")
 @Getter
 @Setter
+@JsonIgnoreProperties(value = "vulnerability")
 public class AffectedRelease {
     @NonNull @Id Integer id;
 
