@@ -36,11 +36,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Setter
 @JsonIgnoreProperties(value = "vulnerability")
 public class CvssScore {
-	@Id private Integer id;
 	private double severityConfidence;
 	private String impactScore;
 	private double impactConfidence;
 
+	@Id
 	@ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
 	Vulnerability vulnerability;
 
