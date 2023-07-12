@@ -296,6 +296,35 @@ public class ReviewRepository {
 
 	}
 
+	private static final String[] labels = {
+		"Man-in-the-Middle",
+		"Channel",
+		"Authentication Bypass",
+		"Physical Hardware",
+		"Application",
+		"Host OS",
+		"Firmware",
+		"Code Execution",
+		"Context Escape",
+		"Guest OS",
+		"Hypervisor",
+		"Sandboxed",
+		"Physical Security",
+		"ASLR",
+		"Limited Rmt",
+		"Local",
+		"Read",
+		"Resource Removal",
+		"HPKP/HSTS",
+		"MultiFactor Authentication",
+		"Remote",
+		"Write",
+		"Indirect Disclosure",
+		"Service Interrupt",
+		"Privilege Escalation",
+		"Physical"
+	};
+
 	/**
 	 * Deletes entries from VdoCharacteristic table by CVE-ID
 	 * and replaces them with new entries from vdoUpdate parameter
@@ -322,7 +351,30 @@ public class ReviewRepository {
 
 
         for (VDOupdateRecord vdoRecord : vdoUpdate.getVdoRecords()){
-        	VdoCharacteristic vdo = new VdoCharacteristic(cve_id, ""+vdoRecord.getLabelID(), vdoRecord.getConfidence(), ""+vdoRecord.getGroupID());
+        	String noun = "";
+        	switch(vdoRecord.getGroupID()) {
+        	case 1:
+        		noun="ImpactMethod";
+        		break;
+        	case 2:
+        		noun="Context";
+        		break;
+        	case 3:
+        		noun="Mitigation";
+        		break;
+        	case 4:
+        		noun="AttackTheater";
+        		break;
+        	case 5:
+        		noun="LogicalImpact";
+        		break;
+        	}
+        	VDOgroup group = new VDOgroup(vdoRecord.getGroupID(), noun);
+        	VdoLabel label = new VdoLabel(vdoRecord.getLabelID(), labels[vdoRecord.getLabelID() - 1], group);
+        	VdoCharacteristic vdo = new VdoCharacteristic(getVulnerabilityDetails(cve_id).get(0), "", vdoRecord.getConfidence(), "");
+        	vdo.setVdoGroup(group);
+        	vdo.setVdoLabels(label);
+        	logger.info(vdo);
         	this.entityManager.persist(vdo);
         }
         
@@ -409,35 +461,25 @@ public class ReviewRepository {
 	public int complexUpdate(boolean updateDescription, boolean updateVDO, boolean updateCVSS, boolean updateAffRel, int status_id, int vuln_id, int user_id, String cve_id, String updateInfo,
 			String cveDescription, VDOupdateInfo vdoUpdate, CVSSupdate cvssUpdate, int[] productsToRemove) {
 
-		try(Connection conn = DBConnect.getConnection()) {
-			conn.setAutoCommit(false);
+		int rs = 0;
 
-			int rs = 0;
-
-			if (updateDescription) {
-				rs = updateVulnerabilityDescription(cveDescription, vuln_id);
-			}
-
-			if (updateVDO) {
-				rs = updateVulnerabilityVDO(vdoUpdate, cve_id);
-			}
-
-			if (updateCVSS) {
-				rs = updateVulnerabilityCVSS(cvssUpdate, cve_id);
-			}
-
-			if (updateAffRel) {
-				rs = removeProductsFromVulnerability(conn, productsToRemove, cve_id);
-			}
-
-			rs = atomicUpdateVulnerability(status_id, vuln_id, user_id, cve_id, updateInfo);
-
-			conn.commit();
-
-		} catch (SQLException e) {
-			logger.error(e.toString());
-			e.printStackTrace();
+		if (updateDescription) {
+			rs = updateVulnerabilityDescription(cveDescription, vuln_id);
 		}
+
+		if (updateVDO) {
+			rs = updateVulnerabilityVDO(vdoUpdate, cve_id);
+		}
+
+		if (updateCVSS) {
+			rs = updateVulnerabilityCVSS(cvssUpdate, cve_id);
+		}
+
+		// if (updateAffRel) {
+		// 	rs = removeProductsFromVulnerability(conn, productsToRemove, cve_id);
+		// }
+
+		rs = atomicUpdateVulnerability(status_id, vuln_id, user_id, cve_id, updateInfo);
 
 		return -1;
 
