@@ -140,49 +140,6 @@ public class ReviewRepository {
 	}
 
 	/**
-	 * Helper function for atomicUpdateVulnerability,
-	 * provides database connection and runs query to update uservulnerabilityupdate
-	 * table
-	 * @param conn
-	 * @param status_id
-	 * @param vuln_id
-	 * @param user_id
-	 * @param cve_id
-	 * @param info
-	 * @return
-	 */
-	// public int atomicUpdateVulnerability(Connection conn, int status_id, int vuln_id, int user_id, String cve_id, String info) {
-
-	// 	try (PreparedStatement stmt1 = conn.prepareStatement("UPDATE vulnerability SET last_modified_date= ?, status_id = ? WHERE vuln_id = ?;");
-	// 		 PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO nvip.uservulnerabilityupdate (user_id, cve_id, datetime, info) VALUES (?, ?, ?, ?)")) {
-
-	// 		LocalDateTime today = LocalDateTime.now();
-
-	// 		stmt1.setTimestamp(1, Timestamp.valueOf(today));
-	// 		stmt1.setInt(2, status_id);
-	// 		stmt1.setInt(3, vuln_id);
-
-	// 		int rs = stmt1.executeUpdate();
-
-	// 		stmt2.setInt(1, user_id);
-	// 		stmt2.setString(2, cve_id);
-	// 		stmt2.setTimestamp(3, Timestamp.valueOf(today));
-	// 		stmt2.setString(4, info);
-
-	// 		rs = stmt2.executeUpdate();
-
-	// 		return rs;
-
-	// 	} catch (SQLException e) {
-	// 		logger.error(e.toString());
-	// 		e.printStackTrace();
-	// 	}
-
-	// 	return -1;
-
-	// }
-
-	/**
 	 * Updates description of a vulnerability in vulnerabilities table
 	 * @param description
 	 * @param vuln_id
@@ -206,21 +163,6 @@ public class ReviewRepository {
  
         // perform update
         return this.entityManager.createQuery(update).executeUpdate();
-
-		// try(PreparedStatement stmt = conn.prepareStatement("UPDATE vulnerability SET description = ? WHERE vuln_id=?")) {
-
-		// 	stmt.setString(1, description);
-		// 	stmt.setInt(2, vuln_id);
-		// 	int rs = stmt.executeUpdate();
-
-		// 	return rs;
-
-		// } catch (SQLException e) {
-		// 	logger.error(e.toString());
-		// 	e.printStackTrace();
-		// }
-
-		// return -1;
 	}
 
 	/**
@@ -268,32 +210,7 @@ public class ReviewRepository {
 
         this.entityManager.persist(cvss);
 
-
         return result;
-
-
-		// try(PreparedStatement stmt1 = conn.prepareStatement("DELETE FROM cvssscore WHERE cve_id = ?");
-		// 		PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO cvssscore (cve_id, cvss_severity_id, severity_confidence, impact_score, impact_confidence) VALUES (?,?,?,?,?)")) {
-			
-		// 	stmt1.setString(1, cve_id);
-		// 	int rs = stmt1.executeUpdate();
-
-		// 	stmt2.setString(1, cve_id);
-		// 	stmt2.setInt(2, cvssUpdate.getCvss_severity_id());
-		// 	stmt2.setDouble(3, cvssUpdate.getSeverity_confidence());
-		// 	stmt2.setDouble(4, cvssUpdate.getImpact_score());
-		// 	stmt2.setDouble(5, cvssUpdate.getImpact_confidence());
-		// 	rs = stmt2.executeUpdate();
-
-		// 	return rs;
-
-		// } catch (SQLException e) {
-		// 	logger.error(e.toString());
-		// 	e.printStackTrace();
-		// }
-
-		// return -1;
-
 	}
 
 	private static final String[] labels = {
@@ -349,7 +266,6 @@ public class ReviewRepository {
         // perform delete
         int result = this.entityManager.createQuery(delete).executeUpdate();
 
-
         for (VDOupdateRecord vdoRecord : vdoUpdate.getVdoRecords()){
         	String noun = "";
         	switch(vdoRecord.getGroupID()) {
@@ -378,32 +294,7 @@ public class ReviewRepository {
         	this.entityManager.persist(vdo);
         }
         
-
-
         return result;
-		// try (PreparedStatement stmt1 = conn.prepareStatement("DELETE FROM vdocharacteristic WHERE cve_id = ?");
-		// 		PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO vdocharacteristic (cve_id, vdo_label_id,vdo_confidence,vdo_noun_group_id) VALUES (?,?,?,?)")){
-
-		// 	stmt1.setString(1, cve_id);
-		// 	int rs = stmt1.executeUpdate();
-
-		// 	for (int i = 0; i < vdoUpdate.getVdoRecords().size(); i++) {
-		// 		stmt2.setString(1, cve_id);
-		// 		stmt2.setInt(2, vdoUpdate.getVdoRecords().get(i).getLabelID());
-		// 		stmt2.setDouble(3, vdoUpdate.getVdoRecords().get(i).getConfidence());
-		// 		stmt2.setInt(4, vdoUpdate.getVdoRecords().get(i).getGroupID());
-		// 		rs = stmt2.executeUpdate();
-		// 	}
-
-		// 	return rs;
-
-		// } catch (SQLException e) {
-		// 	logger.error(e.toString());
-		// 	e.printStackTrace();
-		// }
-
-		// return -1;
-
 	}
 
 	/**
@@ -411,32 +302,32 @@ public class ReviewRepository {
 	 * Will loop through all productsIDs and delete entries with the same
 	 * productID and CVE-ID
 	 * 
-	 * @param conn - Connection to database
 	 * @param productsID - Array of product IDs to be deleted from AffectedRelease Table
 	 * @param cve_id - cve_id to be deleted from AffectedRelease table
 	 * @return 
 	 * 
 	 */
-	public int removeProductsFromVulnerability(Connection conn, int[] productsID, String cve_id) {
-		try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM AffectedRelease where product_id = ?  AND cve_id = ?") ){
+	@Transactional
+	public int removeProductsFromVulnerability(int[] productsID, String cve_id) {
+		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
 
-			int rs = 0;
+		int result = 0;
+ 
+ 		for (int prodId : productsID) {
+	        // create delete
+	        CriteriaDelete<AffectedRelease> delete = cb.createCriteriaDelete(AffectedRelease.class);
+	 
+	        // set the root class
+	        Root root = delete.from(AffectedRelease.class);
+	 
+	        // set delete and where clause
+	        delete.where(cb.and(root.get("product").get("productId").in(prodId), root.get("vulnerability").get("cveId").in(cve_id)));
+	 
+	        // perform delete
+	        result += this.entityManager.createQuery(delete).executeUpdate();
+	    }
 
-			for (int i = 0; i < productsID.length; i++) {
-				stmt.setInt(1, productsID[i]);
-				stmt.setString(2, cve_id);
-				rs = stmt.executeUpdate();
-			}
-
-			return rs;
-
-		} catch (SQLException e) {
-			logger.error(e.toString());
-			e.printStackTrace();
-		}
-
-		return -1;
-
+	    return result;
 	}
 
 	/**
@@ -475,9 +366,9 @@ public class ReviewRepository {
 			rs = updateVulnerabilityCVSS(cvssUpdate, cve_id);
 		}
 
-		// if (updateAffRel) {
-		// 	rs = removeProductsFromVulnerability(conn, productsToRemove, cve_id);
-		// }
+		if (updateAffRel) {
+			rs = removeProductsFromVulnerability(productsToRemove, cve_id);
+		}
 
 		rs = atomicUpdateVulnerability(status_id, vuln_id, user_id, cve_id, updateInfo);
 
