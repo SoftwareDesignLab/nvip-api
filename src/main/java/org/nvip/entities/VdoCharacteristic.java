@@ -73,4 +73,14 @@ public class VdoCharacteristic {
 
 		this.vdoGroup = new VDOgroup(vdoNounGroup, null, null);
 	}
+
+	public VdoCharacteristic(Vulnerability vuln, String vdoLabel, double vdoConfidence, String vdoNounGroup) {
+		this.vulnerability = vuln;
+		this.cveId = vuln.getCveId();
+		this.vdoLabel = vdoLabel;
+		this.vdoConfidence = vdoConfidence;
+		this.vdoNounGroup = vdoNounGroup;
+
+		this.vdoGroup = new VDOgroup(vdoNounGroup, null, null);
+	}
 }
