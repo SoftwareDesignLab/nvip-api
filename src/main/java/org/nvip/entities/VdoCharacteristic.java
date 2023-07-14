@@ -41,6 +41,7 @@ import java.util.List;
 @Setter
 @JsonIgnoreProperties(value = "vulnerability")
 public class VdoCharacteristic {
+	@Id private int id = 0;
 	@Transient String cveId;
 	@Transient private String vdoLabel;
 	private double vdoConfidence;
