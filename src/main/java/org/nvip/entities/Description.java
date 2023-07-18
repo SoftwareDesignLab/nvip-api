@@ -31,4 +31,9 @@ import lombok.*;
 @Setter
 @ToString
 public class Description {
+    @Id @Column(name="description_id") private int id;
+    private String description;
+    @Basic private LocalDateTime createdDate;
+    private String gptFunc;
+    private String cveId;
 }
