@@ -23,34 +23,33 @@
  */
 package org.nvip.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Product {
+@Getter
+@Setter
+@JsonIgnoreProperties(value = "vulnerability")
+public class Cvss {
+	private double baseScore;
+	private String impactScore;
+    private LocalDateTime createdDate;
 
-    @Getter @Setter @Id
-    int productId;
-    @Getter private String cpe;
-    @Getter private String domain;
-    @Getter @Setter @Transient
-    String version;
+	@Id
+	@ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
+	Vulnerability vulnerability;
 
-    public Product(String domain, String cpe) {
-        this.productId = 0;
-        this.domain = domain;
-        this.cpe = cpe;
-    }
 
-	@Override
-    public String toString() {
-        return domain + ": " + cpe;
-    }
+	public CvssScore(Vulnerability vulnerability, double severityConfidence, String impactScore, double impactConfidence) {
+		this.severityConfidence = severityConfidence;
+		this.impactScore = impactScore;
+		this.impactConfidence = impactConfidence;
+		this.vulnerability = vulnerability;
+	}
 }
