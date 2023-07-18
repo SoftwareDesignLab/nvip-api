@@ -73,35 +73,6 @@ public class ReviewRepository {
 	}
 
 	/**
-	 * Updates Daily Vulnerability
-	 * @param dateRange
-	 * @return
-	 */
-	@Deprecated
-	public int updateDailyVulnerability(int dateRange) {
-		try (Connection conn = DBConnect.getConnection();
-				CallableStatement stmt = conn.prepareCall("CALL prepareDailyVulnerabilities(?, ?, ?)")) {
-
-			LocalDateTime today = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT).plusDays(1);
-
-			stmt.setTimestamp(1, Timestamp.valueOf(today.minusDays(dateRange)));
-			stmt.setTimestamp(2, Timestamp.valueOf(today));
-
-			stmt.registerOutParameter("cveCount", Types.INTEGER);
-
-			stmt.execute();
-
-			return stmt.getInt("cveCount");
-
-		} catch (SQLException e) {
-			logger.error(e.toString());
-			e.printStackTrace();
-		}
-
-		return -1;
-	}
-
-	/**
 	 * Adds manual update log to uservulnerabilityupdate table to keep track
 	 * of manual updates to vulnerabilities
 	 * @param status_id
