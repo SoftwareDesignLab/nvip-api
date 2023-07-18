@@ -41,46 +41,13 @@ import java.util.List;
 @Setter
 @JsonIgnoreProperties(value = "vulnerability")
 public class VdoCharacteristic {
-	@Id private int id;
-	@Transient String cveId;
-	@Transient private String vdoLabel;
+	@Id @Column(name="vdo_characteristic_id") private int id;
+	private String vdoLabel;
 	private double vdoConfidence;
-	@Transient private String vdoNounGroup;
+	private String vdoNounGroup;
 
 	@ToString.Exclude
-//	@ManyToOne(fetch = FetchType.EAGER)
 	@ManyToOne
 	@JoinColumn(name="cve_id", referencedColumnName = "cveId")
 	Vulnerability vulnerability;
-
-	@ToString.Exclude
-//	@ManyToOne(fetch = FetchType.EAGER)
-	@ManyToOne
-	@JoinColumn(name="vdo_label_id")
-	VdoLabel vdoLabels;
-
-	@ToString.Exclude
-//	@ManyToOne(fetch = FetchType.EAGER)
-	@ManyToOne
-	@JoinColumn(name="vdo_noun_group_id")
-	VDOgroup vdoGroup;
-
-	public VdoCharacteristic(String cveId, String vdoLabel, double vdoConfidence, String vdoNounGroup) {
-		this.cveId = cveId;
-		this.vdoLabel = vdoLabel;
-		this.vdoConfidence = vdoConfidence;
-		this.vdoNounGroup = vdoNounGroup;
-
-		this.vdoGroup = new VDOgroup(vdoNounGroup, null, null);
-	}
-
-	public VdoCharacteristic(Vulnerability vuln, String vdoLabel, double vdoConfidence, String vdoNounGroup) {
-		this.vulnerability = vuln;
-		this.cveId = vuln.getCveId();
-		this.vdoLabel = vdoLabel;
-		this.vdoConfidence = vdoConfidence;
-		this.vdoNounGroup = vdoNounGroup;
-
-		this.vdoGroup = new VDOgroup(vdoNounGroup, null, null);
-	}
 }
