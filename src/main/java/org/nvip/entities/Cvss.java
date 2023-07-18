@@ -38,7 +38,7 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(value = "vulnerability")
 public class Cvss {
 	private double baseScore;
-	private String impactScore;
+	private double impactScore;
     private LocalDateTime createdDate;
 
 	@Id
@@ -46,10 +46,10 @@ public class Cvss {
 	Vulnerability vulnerability;
 
 
-	public CvssScore(Vulnerability vulnerability, double severityConfidence, String impactScore, double impactConfidence) {
-		this.severityConfidence = severityConfidence;
-		this.impactScore = impactScore;
-		this.impactConfidence = impactConfidence;
-		this.vulnerability = vulnerability;
-	}
+	// public Cvss(Vulnerability vulnerability, double baseScore, double impactScore) {
+	// 	this.severityConfidence = severityConfidence;
+	// 	this.impactScore = impactScore;
+	// 	this.impactConfidence = impactConfidence;
+	// 	this.vulnerability = vulnerability;
+	// }
 }
