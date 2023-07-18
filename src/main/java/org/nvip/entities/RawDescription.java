@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Rochester Institute of Technology (RIT). Developed with
+ * Copyright 2023 Rochester Institute of Technology (RIT). Developed with
  * government support under contract 70RSAT19CB0000020 awarded by the United
  * States Department of Homeland Security.
  * 
@@ -21,32 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.nvip.api.serializers;
+package org.nvip.entities;
 
-import java.util.ArrayList;
+import jakarta.persistence.*;
+import lombok.*;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.nvip.entities.VdoCharacteristic;
+@Entity
+@Getter
+@Setter
+@ToString
+public class RawDescription {
+    @Id @Column(name="raw_description_id") private int id;
 
-public class VDOupdateInfo {
-	
-	private ArrayList<VdoCharacteristic> vdoRecords = new ArrayList<VdoCharacteristic>();
-	
-	public VDOupdateInfo(JSONObject vdoUpdateJSON) {
-				
-		JSONArray vdoUpdates = vdoUpdateJSON.getJSONArray("vdoLabels");
-		
-		for (int i=0; i<vdoUpdates.length(); i++) {
-			JSONObject vdoRecordJSON = vdoUpdates.getJSONObject(i);
-			vdoRecords.add(new VDOupdateRecord(vdoRecordJSON.getInt("labelID"), vdoRecordJSON.getInt("groupID"), vdoRecordJSON.getDouble("confidence")));
-		}
-	}
-
-	public ArrayList<VdoCharacteristic> getVdoRecords() {
-		return vdoRecords;
-	}
-	
-	
-
+    private String rawDescription;
+    private String cveId;
+    @Basic private LocalDateTime createdDate;
+    @Basic private LocalDateTime publishedDate;
+    @Basic private LocalDateTime lastModifiedDate;
+    private String sourceUrl;
+    @Column(name = "is_garbage", columnDefinition = "int")
+    private boolean isGarbage;
+    private String sourceType;
+    private String parserType;
 }
