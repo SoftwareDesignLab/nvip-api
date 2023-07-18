@@ -36,4 +36,11 @@ public class Description {
     @Basic private LocalDateTime createdDate;
     private String gptFunc;
     private String cveId;
+
+    public Description(String description, LocalDateTime createdDate, String gptFunc, String cveId) {
+        this.description = description;
+        this.createdDate = createdDate;
+        this.gptFunc = gptFunc;
+        this.cveId = cveId;
+    }
 }
