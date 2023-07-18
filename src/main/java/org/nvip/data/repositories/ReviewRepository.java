@@ -62,8 +62,6 @@ public class ReviewRepository {
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Vulnerability> cq = criteriaBuilder.createQuery(Vulnerability.class);
 		Root<Vulnerability> root = cq.from(Vulnerability.class);
-		Join<Vulnerability, VulnerabilityUpdate> updateJoin = root.join("updates", JoinType.LEFT);
-		Join<VulnerabilityUpdate, DailyRunHistory> dailyRunHistoryJoin = updateJoin.join("dailyRunHistory", JoinType.LEFT);
 
 		List<Predicate> predicates = new ArrayList<>();
 
@@ -133,8 +131,9 @@ public class ReviewRepository {
         // perform update
         int result = this.entityManager.createQuery(update).executeUpdate();
 
-    	UserVulnerabilityUpdate uvu = new UserVulnerabilityUpdate(user_id, cve_id, today, info);
-    	this.entityManager.persist(uvu);
+        // Currently no UserVulnerabilityUpdate in the new DB schema
+    	// UserVulnerabilityUpdate uvu = new UserVulnerabilityUpdate(user_id, cve_id, today, info);
+    	// this.entityManager.persist(uvu);
 
     	return result;
 	}
