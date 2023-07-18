@@ -26,31 +26,9 @@ package org.nvip.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name="cvssscore")
 @Getter
 @Setter
-@JsonIgnoreProperties(value = "vulnerability")
-public class CvssScore {
-	private double severityConfidence;
-	private String impactScore;
-	private double impactConfidence;
-
-	@Id
-	@ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
-	Vulnerability vulnerability;
-
-	@OneToOne(fetch = FetchType.EAGER) @JoinColumn(name="cvss_severity_id")
-	CvssSeverity cvssSeverity;
-
-	public CvssScore(Vulnerability vulnerability, double severityConfidence, String impactScore, double impactConfidence) {
-		this.severityConfidence = severityConfidence;
-		this.impactScore = impactScore;
-		this.impactConfidence = impactConfidence;
-		this.vulnerability = vulnerability;
-	}
+@ToString
+public class Description {
 }
