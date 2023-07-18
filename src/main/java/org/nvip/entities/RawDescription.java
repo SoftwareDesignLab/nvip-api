@@ -43,4 +43,17 @@ public class RawDescription {
     private boolean isGarbage;
     private String sourceType;
     private String parserType;
+
+    public RawDescription(String rawDescription, String cveId, LocalDateTime createdDate, LocalDateTime publishedDate, LocalDateTime lastModifiedDate,
+                String sourceUrl, boolean isGarbage, String sourceType, String parserType) {
+        this.rawDescription = rawDescription;
+        this.cveId = cveId;
+        this.createdDate = createdDate;
+        this.publishedDate = publishedDate;
+        this.lastModifiedDate = lastModifiedDate;
+        this.sourceUrl = sourceUrl;
+        this.isGarbage = isGarbage;
+        this.sourceType = sourceType;
+        this.parserType = parserType;
+    }
 }
