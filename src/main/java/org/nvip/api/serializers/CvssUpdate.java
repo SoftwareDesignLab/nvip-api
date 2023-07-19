@@ -23,47 +23,22 @@
  */
 package org.nvip.api.serializers;
 
+import lombok.*;
+
 import org.json.JSONObject;
 
-public class CVSSupdate {
+import java.time.LocalDateTime;
+
+@Getter
+public class CvssUpdate {
 	
-	private int cvss_severity_id;
-	private double severity_confidence,	impact_score, impact_confidence;
+	private double baseScore;
+	private double impactScore;
+	private LocalDateTime createdDate;
 	
 	public CVSSupdate(JSONObject cvssUpdateJSON) {
-				
-		cvss_severity_id = cvssUpdateJSON.getInt("cvss_severity_id");
-		severity_confidence = cvssUpdateJSON.getDouble("severity_confidence");
-		impact_score = cvssUpdateJSON.getDouble("impact_score");
-		impact_confidence = cvssUpdateJSON.getDouble("impact_confidence");
-		
+		this.baseScore = cvssUpdateJSON.getDouble("base_score");
+		this.impactScore = cvssUpdateJSON.getDouble("impact_score");
+		this.createdDate = LocalDateTime.now();
 	}
-	
-	public int getCvss_severity_id() {
-		return cvss_severity_id;
-	}
-	public void setCvss_severity_id(int cvss_severity_id) {
-		this.cvss_severity_id = cvss_severity_id;
-	}
-	public double getSeverity_confidence() {
-		return severity_confidence;
-	}
-	public void setSeverity_confidence(double severity_confidence) {
-		this.severity_confidence = severity_confidence;
-	}
-	public double getImpact_score() {
-		return impact_score;
-	}
-	public void setImpact_score(double impact_score) {
-		this.impact_score = impact_score;
-	}
-	public double getImpact_confidence() {
-		return impact_confidence;
-	}
-	public void setImpact_confidence(double impact_confidence) {
-		this.impact_confidence = impact_confidence;
-	}
-	
-	
-
 }
