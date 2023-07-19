@@ -29,9 +29,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.nvip.entities.VdoCharacteristic;
 
-public class VDOupdateInfo {
+public class VdoUpdate {
 	
-	private ArrayList<VdoCharacteristic> vdoRecords = new ArrayList<VdoCharacteristic>();
+	private ArrayList<VdoUpdateRecord> vdoRecords = new ArrayList<VdoUpdateRecord>();
 	
 	public VDOupdateInfo(JSONObject vdoUpdateJSON) {
 				
@@ -39,11 +39,11 @@ public class VDOupdateInfo {
 		
 		for (int i=0; i<vdoUpdates.length(); i++) {
 			JSONObject vdoRecordJSON = vdoUpdates.getJSONObject(i);
-			vdoRecords.add(new VDOupdateRecord(vdoRecordJSON.getInt("labelID"), vdoRecordJSON.getInt("groupID"), vdoRecordJSON.getDouble("confidence")));
+			vdoRecords.add(new VdoUpdateRecord(vdoRecordJSON.getString("label"), vdoRecordJSON.getString("group"), vdoRecordJSON.getDouble("confidence")));
 		}
 	}
 
-	public ArrayList<VdoCharacteristic> getVdoRecords() {
+	public ArrayList<VdoUpdateRecord> getVdoRecords() {
 		return vdoRecords;
 	}
 	
