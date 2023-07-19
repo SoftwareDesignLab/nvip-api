@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(force = true)
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Entity
 @Getter
 @Setter
