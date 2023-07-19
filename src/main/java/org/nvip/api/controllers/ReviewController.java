@@ -176,7 +176,7 @@ public class ReviewController {
            }
 
            if (updateCVSS) {
-               cvssUpdate = new CVSSupdate(dataJSON.getJSONObject("cvss"));
+               cvssUpdate = new CvssUpdate(dataJSON.getJSONObject("cvss"));
            }
 
            if (updateAffRel) {

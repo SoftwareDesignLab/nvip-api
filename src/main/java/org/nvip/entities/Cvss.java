@@ -25,8 +25,9 @@ package org.nvip.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 
@@ -37,14 +38,12 @@ import java.time.LocalDateTime;
 @Setter
 @JsonIgnoreProperties(value = "vulnerability")
 public class Cvss {
+    @Id
+    @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
+    Vulnerability vulnerability;
 	private double baseScore;
 	private double impactScore;
     private LocalDateTime createdDate;
-
-	@Id
-	@ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
-	Vulnerability vulnerability;
-
 
 	// public Cvss(Vulnerability vulnerability, double baseScore, double impactScore) {
 	// 	this.severityConfidence = severityConfidence;
