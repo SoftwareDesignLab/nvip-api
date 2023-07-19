@@ -164,35 +164,6 @@ public class ReviewRepository {
         return result;
 	}
 
-	private static final String[] labels = {
-		"Man-in-the-Middle",
-		"Channel",
-		"Authentication Bypass",
-		"Physical Hardware",
-		"Application",
-		"Host OS",
-		"Firmware",
-		"Code Execution",
-		"Context Escape",
-		"Guest OS",
-		"Hypervisor",
-		"Sandboxed",
-		"Physical Security",
-		"ASLR",
-		"Limited Rmt",
-		"Local",
-		"Read",
-		"Resource Removal",
-		"HPKP/HSTS",
-		"MultiFactor Authentication",
-		"Remote",
-		"Write",
-		"Indirect Disclosure",
-		"Service Interrupt",
-		"Privilege Escalation",
-		"Physical"
-	};
-
 	/**
 	 * Deletes entries from VdoCharacteristic table by CVE-ID
 	 * and replaces them with new entries from vdoUpdate parameter
@@ -236,20 +207,20 @@ public class ReviewRepository {
 	 * 
 	 */
 	@Transactional
-	public int removeProductsFromVulnerability(int[] productsID, String cve_id) {
+	public int removeProductsFromVulnerability(String[] productNames, String cve_id) {
 		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
 
 		int result = 0;
  
- 		for (int prodId : productsID) {
+ 		for (int prodName : productNames) {
 	        // create delete
-	        CriteriaDelete<AffectedRelease> delete = cb.createCriteriaDelete(AffectedRelease.class);
+	        CriteriaDelete<AffectedProduct> delete = cb.createCriteriaDelete(AffectedProduct.class);
 	 
 	        // set the root class
-	        Root root = delete.from(AffectedRelease.class);
+	        Root root = delete.from(AffectedProduct.class);
 	 
 	        // set delete and where clause
-	        delete.where(cb.and(root.get("product").get("productId").in(prodId), root.get("vulnerability").get("cveId").in(cve_id)));
+	        delete.where(cb.and(root.get("productName").in(prodName), root.get("vulnerability").get("cveId").in(cve_id)));
 	 
 	        // perform delete
 	        result += this.entityManager.createQuery(delete).executeUpdate();
