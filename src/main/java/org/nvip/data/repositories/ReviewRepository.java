@@ -202,7 +202,7 @@ public class ReviewRepository {
 	 * @return
 	 */
 	@Transactional
-	public int updateVulnerabilityVDO(CvssUpdate vdoUpdate, String cve_id) {
+	public int updateVulnerabilityVDO(VdoUpdate vdoUpdate, String cve_id) {
 		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
  
         // create delete
@@ -217,35 +217,10 @@ public class ReviewRepository {
         // perform delete
         int result = this.entityManager.createQuery(delete).executeUpdate();
 
-
-
-        // for (VDOupdateRecord vdoRecord : vdoUpdate.getVdoRecords()){
-        // 	String noun = "";
-        // 	switch(vdoRecord.getGroupID()) {
-        // 	case 1:
-        // 		noun="ImpactMethod";
-        // 		break;
-        // 	case 2:
-        // 		noun="Context";
-        // 		break;
-        // 	case 3:
-        // 		noun="Mitigation";
-        // 		break;
-        // 	case 4:
-        // 		noun="AttackTheater";
-        // 		break;
-        // 	case 5:
-        // 		noun="LogicalImpact";
-        // 		break;
-        // 	}
-        // 	VDOgroup group = new VDOgroup(vdoRecord.getGroupID(), noun);
-        // 	VdoLabel label = new VdoLabel(vdoRecord.getLabelID(), labels[vdoRecord.getLabelID() - 1], group);
-        // 	VdoCharacteristic vdo = new VdoCharacteristic(getVulnerabilityDetails(cve_id).get(0), "", vdoRecord.getConfidence(), "");
-        // 	vdo.setVdoGroup(group);
-        // 	vdo.setVdoLabels(label);
-        // 	logger.info(vdo);
-        // 	this.entityManager.persist(vdo);
-        // }
+        for (VDOupdateRecord vdoRecord : vdoUpdate.getVdoRecords()){
+        	VdoCharacteristic vdo = new VdoCharacteristic(getVulnerabilityDetails(cve_id).get(0), vdoRecord.getCreatedDate(), vdoRecord.getLabel(), vdoRecord.getGroup(), vdoRecord.getConfidence());
+        	this.entityManager.persist(vdo);
+        }
         
         return result;
 	}

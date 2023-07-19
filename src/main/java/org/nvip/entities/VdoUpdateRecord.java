@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Rochester Institute of Technology (RIT). Developed with
+ * Copyright 2021 Rochester Institute of Technology (RIT). Developed with
  * government support under contract 70RSAT19CB0000020 awarded by the United
  * States Department of Homeland Security.
  * 
@@ -23,39 +23,21 @@
  */
 package org.nvip.entities;
 
-
-import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDateTime;
 
-@NoArgsConstructor(force = true)
-@AllArgsConstructor
-@Entity
-@Table(name="vdocharacteristic")
-@ToString
 @Getter
-@Setter
-@JsonIgnoreProperties(value = "vulnerability")
-public class VdoCharacteristic {
-	@Id @Column(name="vdo_characteristic_id") private int id;
-
-    @ToString.Exclude
-    @ManyToOne
-    @JoinColumn(name="cve_id", referencedColumnName = "cveId")
-    Vulnerability vulnerability;
-
+public class VdoUpdateRecord {
+	private String label;
+    private String group;
+    private double confidence;
     private LocalDateTime createdDate;
-	private String vdoLabel;
-	private String vdoNounGroup;
-    private double vdoConfidence;
-
-    public VdoCharacteristic(Vulnerability vulnerability, LocalDateTime createdDate, String vdoLabel, String vdoNounGroup, double vdoConfidence) {
-        this.vulnerability = vulnerability;
-        this.createdDate = createdDate;
-        this.vdoLabel = vdoLabel;
-        this.vdoNounGroup = vdoNounGroup;
-        this.vdoConfidence = vdoConfidence;
-    }
+	
+	public VdoUpdateRecord(String label, String group, double confidence) {
+		this.label = label;
+		this.group = group;
+		this.confidence = confidence;
+        this.createdDate = LocalDateTime.now();
+	}
 }
