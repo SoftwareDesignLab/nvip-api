@@ -286,7 +286,7 @@ public class ReviewRepository {
         		break;
         	}
         	VDOgroup group = new VDOgroup(vdoRecord.getGroupID(), noun);
-        	VdoLabel label = new VdoLabel(vdoRecord.getLabelID(), labels[vdoRecord.getLabelID() - 1], group);
+        	VdoLabel label = new VdoLabel(vdoRecord.getLabelID(), labels[vdoRecord.getLabelID()], group);
         	VdoCharacteristic vdo = new VdoCharacteristic(getVulnerabilityDetails(cve_id).get(0), "", vdoRecord.getConfidence(), "");
         	vdo.setVdoGroup(group);
         	vdo.setVdoLabels(label);
