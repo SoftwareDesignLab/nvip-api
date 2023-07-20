@@ -30,7 +30,8 @@ import jakarta.persistence.Tuple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nvip.data.DBConnect;
-import org.nvip.entities.Cvss;
+import org.nvip.entities.CvssScore;
+import org.nvip.entities.Product;
 import org.nvip.entities.VdoCharacteristic;
 import org.nvip.entities.Vulnerability;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,16 +97,20 @@ public class SearchRepository {
 	public Map<String, Map<String, String[]>> getSearchInfo() {
 		Map<String, Map<String, String[]>> searchResults = null;
 
-		Query query = entityManager.createNativeQuery("CALL getSearchFormInfo()", Tuple.class);
-		List<Tuple> results = (ArrayList<Tuple>) query.getResultList();
+		// Query query = entityManager.createNativeQuery("CALL getSearchFormInfo()", Tuple.class);
+		// List<Tuple> results = (ArrayList<Tuple>) query.getResultList();
+		// logger.info("Results: {}", results.size());
 
-		for(Tuple row: results) {
+		// for(Tuple row: results) {
+			// logger.info("Row: {}\nRow: {}", row.get("cvss_scores", String.class), row.get("vdo_noun_groups", String.class));
 
 			searchResults = Stream
-					.of(new String[][] { { "cvssScores", row.get("cvss_scores", String.class) },
-							{ "vdoNounGroups", row.get("vdo_noun_groups", String.class) } })
+					.of(new String[][] { { "cvssScores", "CRITICAL;HIGH;LOW;MEDIUM" },
+							{ "vdoNounGroups", "Impact Method:Man-in-the-Middle;Authentication Bypass;Code Execution;Context Escape;Trust Failure|Context:Channel;Physical Hardware;Application;Host OS;Firmware;Guest OS;Hypervisor|Mitigation:Physical Security;MultiFactor Authentication;HPKP/HSTS;ASLR;Sandboxed|Attack Theater:Limited Rmt;Local;Remote;Physical|Logical Impact:Read;Resource Removal;Write;Indirect Disclosure;Service Interrupt;Privilege Escalation" } })
 					.collect(Collectors.toMap(data -> data[0], data -> parseSearchInfo(data[0], data[1])));
-		}
+		// }
+
+		logger.info(searchResults);
 
 		return searchResults;
 	}
@@ -132,25 +137,22 @@ public class SearchRepository {
 				v.exists_at_mitre,
 				v.exists_at_nvd,
 				v.last_modified_date,
-				ar.version,
-				p.product_id,
-				p.cpe,
-				p.domain,
+				ap.version,
+				ap.product_id,
+				ap.cpe,
+				ap.domain,
 				group_concat(vc.vdo_confidence SEPARATOR ';') AS vdo_label_confidences,
 				group_concat(vc.vdo_label_id SEPARATOR ';') AS label_ids,
-				group_concat(vl.vdo_label_name SEPARATOR ';') AS vdo_labels,
-				group_concat(vn.vdo_noun_group_name SEPARATOR ';') AS vdo_noun_groups,
-				cvsever.cvss_severity_class as base_severity,
-				cvscore.severity_confidence,
+				group_concat(vc.vdo_label_name SEPARATOR ';') AS vdo_labels,
+				group_concat(vc.vdo_noun_group_name SEPARATOR ';') AS vdo_noun_groups,
+				cvscore.base_score,
 				cvscore.impact_score,
-				cvscore.impact_confidence,
 				ex.publisher_url
 			FROM vulnerability v
 				LEFT JOIN exploit ex ON ex.vuln_id = v.vuln_id
-				LEFT JOIN affectedrelease ar ON ar.cve_id = v.cve_id
+				LEFT JOIN affectedproduct af ON af.cve_id = v.cve_id
 				LEFT JOIN vdocharacteristic vc ON vc.cve_id = v.cve_id
-				LEFT JOIN cvssscore cvscore ON cvscore.cve_id = v.cve_id
-				LEFT JOIN product p ON p.product_id = ar.product_id
+				LEFT JOIN cvss cvscore ON cvscore.cve_id = v.cve_id
 				LEFT JOIN vdolabel vl ON vl.vdo_label_id = vc.vdo_label_id
 				LEFT JOIN vdonoungroup vn ON vn.vdo_noun_group_id = vl.vdo_noun_group_id
 				LEFT JOIN cvssseverity cvsever ON cvsever.cvss_severity_id = cvscore.cvss_severity_id
