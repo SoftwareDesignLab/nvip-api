@@ -27,13 +27,13 @@ import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.nvip.entities.VdoCharacteristic;
+import org.nvip.entities.VdoUpdateRecord;
 
 public class VdoUpdate {
 	
 	private ArrayList<VdoUpdateRecord> vdoRecords = new ArrayList<VdoUpdateRecord>();
 	
-	public VDOupdateInfo(JSONObject vdoUpdateJSON) {
+	public VdoUpdate(JSONObject vdoUpdateJSON) {
 				
 		JSONArray vdoUpdates = vdoUpdateJSON.getJSONArray("vdoLabels");
 		
