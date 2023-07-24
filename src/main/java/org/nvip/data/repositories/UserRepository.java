@@ -35,7 +35,6 @@ import jakarta.transaction.Transactional;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nvip.data.DBConnect;
 import org.nvip.entities.*;
 import org.nvip.util.VulnerabilityUtil;
 import org.springframework.stereotype.Repository;

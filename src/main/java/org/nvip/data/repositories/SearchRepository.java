@@ -29,11 +29,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nvip.data.DBConnect;
-import org.nvip.entities.CvssScore;
-import org.nvip.entities.Product;
-import org.nvip.entities.VdoCharacteristic;
-import org.nvip.entities.Vulnerability;
+import org.nvip.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.nvip.util.VulnerabilityUtil;
@@ -126,92 +122,108 @@ public class SearchRepository {
 		List<Vulnerability> searchResults = new ArrayList<>();
 		HashMap<Integer, List<Vulnerability>> searchResultMap = new HashMap<Integer, List<Vulnerability>>();
 
-		Query query = entityManager.createNativeQuery(
-		"""
-			SELECT
-				v.vuln_id,
-				v.cve_id,
-				v.description,
-				v.platform,
-				v.published_date,
-				v.exists_at_mitre,
-				v.exists_at_nvd,
-				v.last_modified_date,
-				ap.version,
-				ap.product_name,
-				ap.cpe,
-				ap.domain,
-				group_concat(vc.vdo_confidence SEPARATOR ';') AS vdo_label_confidences,
-				group_concat(vc.vdo_label SEPARATOR ';') AS vdo_labels,
-				group_concat(vc.vdo_noun_group SEPARATOR ';') AS vdo_noun_groups,
-				cvscore.base_score,
-				cvscore.impact_score,
-				ex.publisher_url
-			FROM vulnerability v
-				LEFT JOIN description ds ON ds.cve_id = v.cve_id
-				LEFT JOIN exploit ex ON ex.vuln_id = v.vuln_id
-				LEFT JOIN affectedproduct ap ON af.cve_id = v.cve_id
-				LEFT JOIN vdocharacteristic vc ON vc.cve_id = v.cve_id
-				LEFT JOIN cvss cvscore ON cvscore.cve_id = v.cve_id
-			WHERE v.cve_id = ?
-			GROUP BY
-				v.vuln_id,
-				v.cve_id,
-				v.description,
-				v.platform,
-				v.published_date,
-				v.exists_at_mitre,
-				v.exists_at_nvd,
-				v.last_modified_date,
-				ap.version,
-				ap.product_name,
-				ap.cpe,
-				ap.domain,
-				cvscore.base_score,
-				cvscore.impact_score,
-				ex.publisher_url;""", Tuple.class
-		).setParameter(1, cve_id);
+	// 	Query query = entityManager.createNativeQuery(
+	// 	"""
+	// 		SELECT
+	// 			v.vuln_id,
+	// 			v.cve_id,
+	// 			v.platform,
+	// 			v.published_date,
+	// 			""" +
+	// 			// v.exists_at_mitre,
+	// 			// v.exists_at_nvd,
+	// 			"""
+	// 			v.last_modified_date,
+	// 			v.created_date,
+	// 			ds.description_id,
+	// 			ds.description,
+	// 			ds.created_date AS desc_created_date,
+	// 			ds.gpt_func
+	// 			ap.version,
+	// 			ap.product_name,
+	// 			ap.cpe,
+	// 			ap.domain,
+	// 			group_concat(vc.vdo_confidence SEPARATOR ';') AS vdo_label_confidences,
+	// 			group_concat(vc.vdo_label SEPARATOR ';') AS vdo_labels,
+	// 			group_concat(vc.vdo_noun_group SEPARATOR ';') AS vdo_noun_groups,
+	// 			cvscore.base_score,
+	// 			cvscore.impact_score,
+	// 			ex.publisher_url
+	// 		FROM vulnerability v
+	// 			LEFT JOIN description ds ON ds.cve_id = v.cve_id
+	// 			LEFT JOIN exploit ex ON ex.vuln_id = v.vuln_id
+	// 			LEFT JOIN affectedproduct ap ON af.cve_id = v.cve_id
+	// 			LEFT JOIN vdocharacteristic vc ON vc.cve_id = v.cve_id
+	// 			LEFT JOIN cvss cvscore ON cvscore.cve_id = v.cve_id
+	// 		WHERE v.cve_id = ?
+	// 		GROUP BY
+	// 			v.vuln_id,
+	// 			v.cve_id,
+	// 			v.description,
+	// 			v.platform,
+	// 			v.published_date,
+	// 			""" + 
+	// 			// v.exists_at_mitre,
+	// 			// v.exists_at_nvd,
+	// 			"""
+	// 			v.last_modified_date,
+	// 			ap.version,
+	// 			ap.product_name,
+	// 			ap.cpe,
+	// 			ap.domain,
+	// 			cvscore.base_score,
+	// 			cvscore.impact_score,
+	// 			ex.publisher_url;""", Tuple.class
+	// 	).setParameter(1, cve_id);
 
-		try {
-			Tuple result = (Tuple) query.getSingleResult();
-			Vulnerability vulnerability = new Vulnerability(
-					result.get("vuln_id", Integer.class),
-					result.get("cve_id", String.class),
-					result.get("description", String.class),
-					LocalDateTime.parse(result.get("published_date", String.class)),
-					LocalDateTime.parse(result.get("last_modified_date", String.class)),
-			);
+	// 	try {
+	// 		Tuple result = (Tuple) query.getSingleResult();
+	// 		Vulnerability vulnerability = new Vulnerability(
+	// 			result.get("vuln_id", Integer.class),
+	// 			result.get("cve_id", String.class),
+	// 			LocalDateTime.parse(result.get("published_date", String.class)),
+	// 			LocalDateTime.parse(result.get("last_modified_date", String.class)),
+	// 			LocalDateTime.parse(result.get("created_date", String.class))
+	// 		);
 
-			VdoCharacteristic[] vdoList = VulnerabilityUtil.parseVDOList(
-					result.get("cve_id", String.class),
-					result.get("vdo_labels", String.class),
-					result.get("vdo_label_confidences", String.class),
-					result.get("vdo_noun_groups", String.class)
-			);
-			vulnerability.setVdoList(vdoList);
+	// 		Description desc = new Description(
+	// 			result.get("description_id", Integer.class),
+	// 			result.get("description", String.class),
+	// 			LocalDateTime.parse(result.get("desc_created_date", String.class)),
+	// 			result.get("gpt_func", String.class)
+	// 		);
+	// 		desc.setVulnerability(vulnerability);
 
-			CvssScore[] cvssScoreList = vulnerabilityUtil.parseCvssScoreList(
-					result.get("cve_id", String.class),
-					result.get("base_score", String.class),
-					result.get("impact_score", String.class),
-			);
-			vulnerability.setCvssScoreList(cvssScoreList);
+	// 		VdoCharacteristic[] vdoList = VulnerabilityUtil.parseVDOList(
+	// 			result.get("cve_id", String.class),
+	// 			result.get("vdo_labels", String.class),
+	// 			result.get("vdo_label_confidences", String.class),
+	// 			result.get("vdo_noun_groups", String.class)
+	// 		);
+	// 		vulnerability.setVdoList(vdoList);
 
-			AffectedProduct[] products = VulnerabilityUtil.parseProductList(
-					result.get("product_name", String.class),
-					result.get("cpe", String.class),
-					result.get("domain", String.class),
-					result.get("version", String.class)
-			);
-			vulnerability.setProducts(products);
+	// 		CvssScore[] cvssScoreList = vulnerabilityUtil.parseCvssScoreList(
+	// 			result.get("cve_id", String.class),
+	// 			result.get("base_score", String.class),
+	// 			result.get("impact_score", String.class)
+	// 		);
+	// 		vulnerability.setCvssScoreList(cvssScoreList);
 
-			searchResults.add(vulnerability);
+	// 		AffectedProduct[] products = VulnerabilityUtil.parseProductList(
+	// 			result.get("product_name", String.class),
+	// 			result.get("cpe", String.class),
+	// 			result.get("domain", String.class),
+	// 			result.get("version", String.class)
+	// 		);
+	// 		vulnerability.setProducts(products);
 
-			searchResultMap.put(1, searchResults);
-		} catch (Exception e){
-			logger.debug("CVE not Found");
-			logger.warn(e);
-		}
+	// 		searchResults.add(vulnerability);
+
+	// 		searchResultMap.put(1, searchResults);
+	// 	} catch (Exception e){
+	// 		logger.debug("CVE not Found");
+	// 		logger.warn(e);
+	// 	}
 
 		return searchResultMap;
 	}

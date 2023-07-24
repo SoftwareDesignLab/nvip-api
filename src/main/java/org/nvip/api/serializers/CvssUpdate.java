@@ -36,7 +36,7 @@ public class CvssUpdate {
 	private double impactScore;
 	private LocalDateTime createdDate;
 	
-	public CVSSupdate(JSONObject cvssUpdateJSON) {
+	public CvssUpdate(JSONObject cvssUpdateJSON) {
 		this.baseScore = cvssUpdateJSON.getDouble("base_score");
 		this.impactScore = cvssUpdateJSON.getDouble("impact_score");
 		this.createdDate = LocalDateTime.now();

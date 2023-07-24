@@ -29,7 +29,6 @@ import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nvip.data.DBConnect;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
