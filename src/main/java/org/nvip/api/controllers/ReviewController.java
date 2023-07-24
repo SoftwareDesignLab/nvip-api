@@ -43,64 +43,64 @@ public class ReviewController {
         this.vulnerabilityRepository = vulnerabilityRepository;
     }
 
-    @GetMapping
-    public ResponseEntity<List<VulnerabilityForReviewDTO>> searchForReviews(
-            @RequestParam(value="username") String userName,
-            @RequestParam(value="token") String token,
-            @RequestParam(value="cveId", required = false) String cveID,
-            @RequestParam(value="searchDate", required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate searchDate,
-            @RequestParam(value="crawled", required = false, defaultValue = "false") Boolean crawled,
-            @RequestParam(value="rejected", required = false, defaultValue = "false") Boolean rejected,
-            @RequestParam(value="accepted", required = false, defaultValue = "false") Boolean accepted,
-            @RequestParam(value="reviewed", required = false, defaultValue = "false") Boolean reviewed
-    )
-    {
+    // @GetMapping
+    // public ResponseEntity<List<VulnerabilityForReviewDTO>> searchForReviews(
+    //         @RequestParam(value="username") String userName,
+    //         @RequestParam(value="token") String token,
+    //         @RequestParam(value="cveId", required = false) String cveID,
+    //         @RequestParam(value="searchDate", required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate searchDate,
+    //         @RequestParam(value="crawled", required = false, defaultValue = "false") Boolean crawled,
+    //         @RequestParam(value="rejected", required = false, defaultValue = "false") Boolean rejected,
+    //         @RequestParam(value="accepted", required = false, defaultValue = "false") Boolean accepted,
+    //         @RequestParam(value="reviewed", required = false, defaultValue = "false") Boolean reviewed
+    // )
+    // {
 
-        if (userName == null || token == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    //     if (userName == null || token == null)
+    //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 
-        User user = userRepository.getRoleIDandExpirationDate(userName, token);
+    //     User user = userRepository.getRoleIDandExpirationDate(userName, token);
 
-        if (user == null || user.getRoleId() < 1 || user.getRoleId() > 2)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    //     if (user == null || user.getRoleId() < 1 || user.getRoleId() > 2)
+    //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 
 
-        if (cveID != null && cveID != "") {
-           List<Vulnerability> vulns = reviewRepository.getVulnerabilityDetails(cveID);
-           return ResponseEntity.status(HttpStatus.OK).body(vulns.stream().map(v -> {
-                VulnerabilityForReviewDTO.VulnerabilityForReviewDTOBuilder builder = VulnerabilityForReviewDTO.builder();
-                builder.cve_id(v.getCveId())
-                    .vuln_id(v.getVulnId())
-                    .status_id("" + v.getStatusId())
-                    .description(v.getDescription())
-                    .cvss_scores(v.getCvssScores())
-                    .vdos(v.getVdoCharacteristics())
-                    .affected_releases(v.getAffectedReleases());
+    //     if (cveID != null && cveID != "") {
+    //        List<Vulnerability> vulns = reviewRepository.getVulnerabilityDetails(cveID);
+    //        return ResponseEntity.status(HttpStatus.OK).body(vulns.stream().map(v -> {
+    //             VulnerabilityForReviewDTO.VulnerabilityForReviewDTOBuilder builder = VulnerabilityForReviewDTO.builder();
+    //             builder.cve_id(v.getCveId())
+    //                 .vuln_id(v.getVulnId())
+    //                 .status_id("" + v.getStatusId())
+    //                 .description(v.getDescription())
+    //                 .cvss_scores(v.getCvssScores())
+    //                 .vdos(v.getVdoCharacteristics())
+    //                 .affected_releases(v.getAffectedReleases());
 
-                for(VulnerabilityUpdate update: v.getUpdates()) {
-                    builder.run_date_time(update.getDailyRunHistory().getRunDateTime());
-                }
-                return builder.build();
-            }).toList());
-        } else {
-            List<Vulnerability> searchResults = vulnerabilityRepository.getVulnerabilitiesWithUpdateList(searchDate, crawled, rejected, accepted, reviewed);
-            return ResponseEntity.status(HttpStatus.OK).body(searchResults.stream().map(v -> {
-                VulnerabilityForReviewDTO.VulnerabilityForReviewDTOBuilder builder = VulnerabilityForReviewDTO.builder();
-                builder.cve_id(v.getCveId())
-                    .vuln_id(v.getVulnId())
-                    .status_id("" + v.getStatusId())
-                    .description(v.getDescription())
-                    .cvss_scores(v.getCvssScores())
-                    .vdos(v.getVdoCharacteristics())
-                    .affected_releases(v.getAffectedReleases());
+    //             for(VulnerabilityUpdate update: v.getUpdates()) {
+    //                 builder.run_date_time(update.getDailyRunHistory().getRunDateTime());
+    //             }
+    //             return builder.build();
+    //         }).toList());
+    //     } else {
+    //         List<Vulnerability> searchResults = vulnerabilityRepository.getVulnerabilitiesWithUpdateList(searchDate, crawled, rejected, accepted, reviewed);
+    //         return ResponseEntity.status(HttpStatus.OK).body(searchResults.stream().map(v -> {
+    //             VulnerabilityForReviewDTO.VulnerabilityForReviewDTOBuilder builder = VulnerabilityForReviewDTO.builder();
+    //             builder.cve_id(v.getCveId())
+    //                 .vuln_id(v.getVulnId())
+    //                 .status_id("" + v.getStatusId())
+    //                 .description(v.getDescription())
+    //                 .cvss_scores(v.getCvssScores())
+    //                 .vdos(v.getVdoCharacteristics())
+    //                 .affected_releases(v.getAffectedReleases());
 
-                for(VulnerabilityUpdate update: v.getUpdates()) {
-                    builder.run_date_time(update.getDailyRunHistory().getRunDateTime());
-                }
-                return builder.build();
-            }).toList());
-        }
-    }
+    //             for(VulnerabilityUpdate update: v.getUpdates()) {
+    //                 builder.run_date_time(update.getDailyRunHistory().getRunDateTime());
+    //             }
+    //             return builder.build();
+    //         }).toList());
+    //     }
+    // }
 
     @PostMapping
     public ResponseEntity<String> createReview(
@@ -108,10 +108,9 @@ public class ReviewController {
         @RequestParam(value="token") String token,
         @RequestParam(value="vulnId") int vulnID,
         @RequestParam(value="cveId") String cveID,
-        @RequestParam(value="statusId") int statusID,
 
         @RequestParam(value="complexUpdate", required=false) boolean complexUpdate,
-        @RequestParam(value="atomicUpdate", required=false) boolean atomicUpdate,
+        // @RequestParam(value="atomicUpdate", required=false) boolean atomicUpdate,
         @RequestParam(value="updateDailyTable", required=false) boolean updateDailyTable,
 
         @RequestParam(value="tweet", required=false, defaultValue="false") boolean isTweet,
@@ -136,23 +135,23 @@ public class ReviewController {
        //Info needed for twitter
        String cveDescriptionTweet = null;
 
-       if (atomicUpdate) {
-           int userID = user.getUserID();
+       // if (atomicUpdate) {
+       //     int userID = user.getUserID();
 
-           JSONObject dataJSON = new JSONObject(updateData);
+       //     JSONObject dataJSON = new JSONObject(updateData);
 
-           String info = dataJSON.getString("updateInfo");
+       //     String info = dataJSON.getString("updateInfo");
 
-           reviewRepository.atomicUpdateVulnerability(statusID, vulnID, userID, cveID, info);
+           // reviewRepository.atomicUpdateVulnerability(vulnID, userID, cveID, info);
 
-           if (statusID==4) {
+           // if (statusID==4) {
 
-               StringBuilder stringBuilder = new StringBuilder();
-               BufferedReader bufferedReader = null;
+           //     StringBuilder stringBuilder = new StringBuilder();
+           //     BufferedReader bufferedReader = null;
 
-               cveDescriptionTweet = stringBuilder.toString();
+           //     cveDescriptionTweet = stringBuilder.toString();
 
-           }
+           // }
 
        } else if (complexUpdate) {
 
@@ -187,14 +186,14 @@ public class ReviewController {
                }
            }
 
-           reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, statusID, vulnID, userID, cveID, info, cveDescription, vdoUpdate, cvssUpdate,
+           reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, vulnID, userID, cveID, info, cveDescription, vdoUpdate, cvssUpdate,
                    productsToRemove);
 
-       } else if (updateDailyTable) {
-           int out = reviewRepository.updateDailyVulnerability(3);
+       // } else if (updateDailyTable) {
+       //     int out = reviewRepository.updateDailyVulnerability(3);
 
-           return ResponseEntity.status(HttpStatus.OK).body("" + out);
-       }
+       //     return ResponseEntity.status(HttpStatus.OK).body("" + out);
+       // }
 
        /**
         * Enable to tweet approved CVEs. <cveDescription> should be set to the approved
