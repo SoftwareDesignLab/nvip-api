@@ -138,24 +138,21 @@ public class SearchRepository {
 				v.exists_at_nvd,
 				v.last_modified_date,
 				ap.version,
-				ap.product_id,
+				ap.product_name,
 				ap.cpe,
 				ap.domain,
 				group_concat(vc.vdo_confidence SEPARATOR ';') AS vdo_label_confidences,
-				group_concat(vc.vdo_label_id SEPARATOR ';') AS label_ids,
-				group_concat(vc.vdo_label_name SEPARATOR ';') AS vdo_labels,
-				group_concat(vc.vdo_noun_group_name SEPARATOR ';') AS vdo_noun_groups,
+				group_concat(vc.vdo_label SEPARATOR ';') AS vdo_labels,
+				group_concat(vc.vdo_noun_group SEPARATOR ';') AS vdo_noun_groups,
 				cvscore.base_score,
 				cvscore.impact_score,
 				ex.publisher_url
 			FROM vulnerability v
+				LEFT JOIN description ds ON ds.cve_id = v.cve_id
 				LEFT JOIN exploit ex ON ex.vuln_id = v.vuln_id
-				LEFT JOIN affectedproduct af ON af.cve_id = v.cve_id
+				LEFT JOIN affectedproduct ap ON af.cve_id = v.cve_id
 				LEFT JOIN vdocharacteristic vc ON vc.cve_id = v.cve_id
 				LEFT JOIN cvss cvscore ON cvscore.cve_id = v.cve_id
-				LEFT JOIN vdolabel vl ON vl.vdo_label_id = vc.vdo_label_id
-				LEFT JOIN vdonoungroup vn ON vn.vdo_noun_group_id = vl.vdo_noun_group_id
-				LEFT JOIN cvssseverity cvsever ON cvsever.cvss_severity_id = cvscore.cvss_severity_id
 			WHERE v.cve_id = ?
 			GROUP BY
 				v.vuln_id,
@@ -166,14 +163,12 @@ public class SearchRepository {
 				v.exists_at_mitre,
 				v.exists_at_nvd,
 				v.last_modified_date,
-				ar.version,
-				p.product_id,
-				p.cpe,
-				p.domain,
-				cvsever.cvss_severity_class,
-				cvscore.severity_confidence,
+				ap.version,
+				ap.product_name,
+				ap.cpe,
+				ap.domain,
+				cvscore.base_score,
 				cvscore.impact_score,
-				cvscore.impact_confidence,
 				ex.publisher_url;""", Tuple.class
 		).setParameter(1, cve_id);
 
@@ -183,11 +178,8 @@ public class SearchRepository {
 					result.get("vuln_id", Integer.class),
 					result.get("cve_id", String.class),
 					result.get("description", String.class),
-					result.get("platform", String.class),
 					LocalDateTime.parse(result.get("published_date", String.class)),
 					LocalDateTime.parse(result.get("last_modified_date", String.class)),
-					result.get("exists_at_mitre", Boolean.class),
-					result.get("exists_at_nvd", Boolean.class)
 			);
 
 			VdoCharacteristic[] vdoList = VulnerabilityUtil.parseVDOList(
@@ -200,15 +192,13 @@ public class SearchRepository {
 
 			CvssScore[] cvssScoreList = vulnerabilityUtil.parseCvssScoreList(
 					result.get("cve_id", String.class),
-					result.get("base_severity", String.class),
-					result.get("severity_confidence", String.class),
+					result.get("base_score", String.class),
 					result.get("impact_score", String.class),
-					result.get("impact_confidence", String.class)
 			);
 			vulnerability.setCvssScoreList(cvssScoreList);
 
-			Product[] products = VulnerabilityUtil.parseProductList(
-					result.get("product_id", String.class),
+			AffectedProduct[] products = VulnerabilityUtil.parseProductList(
+					result.get("product_name", String.class),
 					result.get("cpe", String.class),
 					result.get("domain", String.class),
 					result.get("version", String.class)
