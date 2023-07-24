@@ -72,68 +72,68 @@ public class ReviewRepository {
 		return q.getResultList();
 	}
 
-	/**
-	 * Adds manual update log to uservulnerabilityupdate table to keep track
-	 * of manual updates to vulnerabilities
-	 * @param status_id
-	 * @param vuln_id
-	 * @param user_id
-	 * @param cve_id
-	 * @param info
-	 * @return
-	 */
-	@Transactional
-	public int atomicUpdateVulnerability(int status_id, int vuln_id, int user_id, String cve_id, String info) {
-		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
+	// /**
+	//  * Adds manual update log to uservulnerabilityupdate table to keep track
+	//  * of manual updates to vulnerabilities
+	//  * @param status_id
+	//  * @param vuln_id
+	//  * @param user_id
+	//  * @param cve_id
+	//  * @param info
+	//  * @return
+	//  */
+	// @Transactional
+	// public int atomicUpdateVulnerability(int vuln_id, int user_id, String cve_id, String info) {
+	// 	CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
  
-        // create update
-        CriteriaUpdate<Vulnerability> update = cb.createCriteriaUpdate(Vulnerability.class);
+    //     // create update
+    //     CriteriaUpdate<Vulnerability> update = cb.createCriteriaUpdate(Vulnerability.class);
  
-        // set the root class
-        Root root = update.from(Vulnerability.class);
+    //     // set the root class
+    //     Root root = update.from(Vulnerability.class);
 
-        LocalDateTime today = LocalDateTime.now();
+    //     LocalDateTime today = LocalDateTime.now();
  
-        // set update and where clause
-        update.set("lastModifiedDate", Timestamp.valueOf(today));
-        update.set("statusId", status_id);
-        update.where(root.get("vulnId").in(vuln_id));
+    //     // set update and where clause
+    //     update.set("lastModifiedDate", Timestamp.valueOf(today));
+    //     // update.set("statusId", status_id);
+    //     update.where(root.get("vulnId").in(vuln_id));
  
-        // perform update
-        int result = this.entityManager.createQuery(update).executeUpdate();
+    //     // perform update
+    //     int result = this.entityManager.createQuery(update).executeUpdate();
 
-        // Currently no UserVulnerabilityUpdate in the new DB schema
-    	// UserVulnerabilityUpdate uvu = new UserVulnerabilityUpdate(user_id, cve_id, today, info);
-    	// this.entityManager.persist(uvu);
+    //     // Currently no UserVulnerabilityUpdate in the new DB schema
+    // 	// UserVulnerabilityUpdate uvu = new UserVulnerabilityUpdate(user_id, cve_id, today, info);
+    // 	// this.entityManager.persist(uvu);
 
-    	return result;
-	}
+    // 	return result;
+	// }
 
-	/**
-	 * Updates description of a vulnerability in vulnerabilities table
-	 * @param description
-	 * @param vuln_id
-	 * @return
-	 */
-	@Transactional
-	public int updateVulnerabilityDescription(String description, int vuln_id) {
-		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
+	// /**
+	//  * Updates description of a vulnerability in vulnerabilities table
+	//  * @param description
+	//  * @param vuln_id
+	//  * @return
+	//  */
+	// @Transactional
+	// public int updateVulnerabilityDescription(String description, int vuln_id) {
+	// 	CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
  
-        // create update
-        CriteriaUpdate<Vulnerability> update = cb.createCriteriaUpdate(Vulnerability.class);
+    //     // create update
+    //     CriteriaUpdate<Vulnerability> update = cb.createCriteriaUpdate(Vulnerability.class);
  
-        // set the root class
-        Root root = update.from(Vulnerability.class);
+    //     // set the root class
+    //     Root root = update.from(Vulnerability.class);
 
-        LocalDateTime today = LocalDateTime.now();
+    //     LocalDateTime today = LocalDateTime.now();
  
-        // set update and where clause
-        update.set("description", description);
-        update.where(root.get("vulnId").in(vuln_id));
+    //     // set update and where clause
+    //     update.set("description", description);
+    //     update.where(root.get("vulnId").in(vuln_id));
  
-        // perform update
-        return this.entityManager.createQuery(update).executeUpdate();
-	}
+    //     // perform update
+    //     return this.entityManager.createQuery(update).executeUpdate();
+	// }
 
 	/**
 	 * Updates the CVSS of a given Vulnerability
@@ -212,7 +212,7 @@ public class ReviewRepository {
 
 		int result = 0;
  
- 		for (int prodName : productNames) {
+ 		for (String prodName : productNames) {
 	        // create delete
 	        CriteriaDelete<AffectedProduct> delete = cb.createCriteriaDelete(AffectedProduct.class);
 	 
@@ -269,7 +269,7 @@ public class ReviewRepository {
 			rs = removeProductsFromVulnerability(productsToRemove, cve_id);
 		}
 
-		rs = atomicUpdateVulnerability(status_id, vuln_id, user_id, cve_id, updateInfo);
+		rs = atomicUpdateVulnerability(vuln_id, user_id, cve_id, updateInfo);
 
 		return -1;
 
