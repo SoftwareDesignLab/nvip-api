@@ -37,12 +37,14 @@ public class Description {
     private String description;
     @Basic private LocalDateTime createdDate;
     private String gptFunc;
-    private String cveId;
 
-    public Description(String description, LocalDateTime createdDate, String gptFunc, String cveId) {
+    @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
+    private Vulnerability vulnerability;
+
+    public Description(int id, String description, LocalDateTime createdDate, String gptFunc) {
+        this.id = id;
         this.description = description;
         this.createdDate = createdDate;
         this.gptFunc = gptFunc;
-        this.cveId = cveId;
     }
 }
