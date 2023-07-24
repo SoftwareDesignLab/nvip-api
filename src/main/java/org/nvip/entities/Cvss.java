@@ -45,10 +45,9 @@ public class Cvss {
 	private double impactScore;
     private LocalDateTime createdDate;
 
-	// public Cvss(Vulnerability vulnerability, double baseScore, double impactScore) {
-	// 	this.severityConfidence = severityConfidence;
-	// 	this.impactScore = impactScore;
-	// 	this.impactConfidence = impactConfidence;
-	// 	this.vulnerability = vulnerability;
-	// }
+	public Cvss(Vulnerability vulnerability, double baseScore, double impactScore) {
+		this.baseScore = baseScore;
+		this.impactScore = impactScore;
+		this.vulnerability = vulnerability;
+	}
 }

@@ -30,9 +30,8 @@ import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.nvip.api.serializers.CVSSupdate;
-import org.nvip.api.serializers.VDOupdateInfo;
-import org.nvip.data.DBConnect;
+import org.nvip.api.serializers.CvssUpdate;
+import org.nvip.api.serializers.VdoUpdate;
 import org.nvip.entities.*;
 
 import org.springframework.stereotype.Repository;
@@ -188,7 +187,7 @@ public class ReviewRepository {
         // perform delete
         int result = this.entityManager.createQuery(delete).executeUpdate();
 
-        for (VDOupdateRecord vdoRecord : vdoUpdate.getVdoRecords()){
+        for (VdoUpdateRecord vdoRecord : vdoUpdate.getVdoRecords()){
         	VdoCharacteristic vdo = new VdoCharacteristic(getVulnerabilityDetails(cve_id).get(0), vdoRecord.getCreatedDate(), vdoRecord.getLabel(), vdoRecord.getGroup(), vdoRecord.getConfidence());
         	this.entityManager.persist(vdo);
         }
@@ -248,13 +247,13 @@ public class ReviewRepository {
 	 * @return -1
 	 */
 	@Transactional
-	public int complexUpdate(boolean updateDescription, boolean updateVDO, boolean updateCVSS, boolean updateAffRel, int status_id, int vuln_id, int user_id, String cve_id, String updateInfo,
-			String cveDescription, VDOupdateInfo vdoUpdate, CvssUpdate cvssUpdate, int[] productsToRemove) {
+	public int complexUpdate(boolean updateDescription, boolean updateVDO, boolean updateCVSS, boolean updateAffRel, int vuln_id, int user_id, String cve_id, String updateInfo,
+			String cveDescription, VdoUpdate vdoUpdate, CvssUpdate cvssUpdate, String[] productsToRemove) {
 
 		int rs = 0;
 
 		if (updateDescription) {
-			rs = updateVulnerabilityDescription(cveDescription, vuln_id);
+			// rs = updateVulnerabilityDescription(cveDescription, vuln_id);
 		}
 
 		if (updateVDO) {
@@ -269,7 +268,7 @@ public class ReviewRepository {
 			rs = removeProductsFromVulnerability(productsToRemove, cve_id);
 		}
 
-		rs = atomicUpdateVulnerability(vuln_id, user_id, cve_id, updateInfo);
+		// rs = atomicUpdateVulnerability(vuln_id, user_id, cve_id, updateInfo);
 
 		return -1;
 

@@ -1,8 +1,8 @@
 package org.nvip.api.controllers;
 
 import org.nvip.api.serializers.VulnerabilityForReviewDTO;
-import org.nvip.api.serializers.CVSSupdate;
-import org.nvip.api.serializers.VDOupdateInfo;
+import org.nvip.api.serializers.CvssUpdate;
+import org.nvip.api.serializers.VdoUpdate;
 import org.nvip.data.repositories.ReviewRepository;
 import org.nvip.data.repositories.UserRepository;
 import org.nvip.data.repositories.VulnerabilityRepository;
@@ -153,7 +153,7 @@ public class ReviewController {
 
            // }
 
-       } else if (complexUpdate) {
+       if (complexUpdate) {
 
            int userID = user.getUserID();
 
@@ -162,16 +162,16 @@ public class ReviewController {
            String info = dataJSON.getString("updateInfo");
 
            String cveDescription = null;
-           VDOupdateInfo vdoUpdate = null;
-           CVSSupdate cvssUpdate = null;
-           int[] productsToRemove = null;
+           VdoUpdate vdoUpdate = null;
+           CvssUpdate cvssUpdate = null;
+           String[] productsToRemove = null;
 
            if (updateDescription) {
                cveDescription = dataJSON.getString("description");
            }
 
            if (updateVDO) {
-               vdoUpdate = new VDOupdateInfo(dataJSON.getJSONObject("vdoUpdates"));
+               vdoUpdate = new VdoUpdate(dataJSON.getJSONObject("vdoUpdates"));
            }
 
            if (updateCVSS) {
@@ -180,14 +180,15 @@ public class ReviewController {
 
            if (updateAffRel) {
                JSONArray jsonArray = dataJSON.getJSONArray("prodToRemove");
-               productsToRemove = new int[jsonArray.length()];
+               productsToRemove = new String[jsonArray.length()];
                for (int i = 0; i < jsonArray.length(); i++) {
-                   productsToRemove[i] = jsonArray.getInt(i);
+                   productsToRemove[i] = jsonArray.getString(i);
                }
            }
 
            reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, vulnID, userID, cveID, info, cveDescription, vdoUpdate, cvssUpdate,
                    productsToRemove);
+       }
 
        // } else if (updateDailyTable) {
        //     int out = reviewRepository.updateDailyVulnerability(3);

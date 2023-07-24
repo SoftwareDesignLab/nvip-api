@@ -9,8 +9,8 @@ import lombok.Setter;
 @Builder
 public class CvssDTO {
     String cveId;
-    String baseScore;
+    double baseScore;
     // double severityConfidence;
-    String impactScore;
+    double impactScore;
     // double impactConfidence;
 }
