@@ -44,6 +44,11 @@ public class VDOgroup {
 
 	@Getter @Setter @Transient private HashMap<String, String> vdoLabel = new HashMap<>();
 
+    public VDOgroup(int id, String vdoGroupName){
+        this.id = id;
+        this.vdoGroupName = vdoGroupName;
+    }
+
 	public VDOgroup(String vdoGroupName, String vdoLabel, String vdoConf) {
 		super();
 		this.vdoGroupName = vdoGroupName;

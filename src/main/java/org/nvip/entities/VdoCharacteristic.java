@@ -27,6 +27,9 @@ package org.nvip.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+
 import java.util.List;
 
 @NoArgsConstructor(force = true)
@@ -36,19 +39,22 @@ import java.util.List;
 @ToString
 @Getter
 @Setter
+@JsonIgnoreProperties(value = "vulnerability")
 public class VdoCharacteristic {
+
 	@Transient String cveId;
 	@Transient private String vdoLabel;
 	private double vdoConfidence;
 	@Transient private String vdoNounGroup;
 
-	@Id
+
 	@ToString.Exclude
 //	@ManyToOne(fetch = FetchType.EAGER)
 	@ManyToOne
 	@JoinColumn(name="cve_id", referencedColumnName = "cveId")
 	Vulnerability vulnerability;
 
+	@Id
 	@ToString.Exclude
 //	@ManyToOne(fetch = FetchType.EAGER)
 	@ManyToOne
@@ -63,6 +69,16 @@ public class VdoCharacteristic {
 
 	public VdoCharacteristic(String cveId, String vdoLabel, double vdoConfidence, String vdoNounGroup) {
 		this.cveId = cveId;
+		this.vdoLabel = vdoLabel;
+		this.vdoConfidence = vdoConfidence;
+		this.vdoNounGroup = vdoNounGroup;
+
+		this.vdoGroup = new VDOgroup(vdoNounGroup, null, null);
+	}
+
+	public VdoCharacteristic(Vulnerability vuln, String vdoLabel, double vdoConfidence, String vdoNounGroup) {
+		this.vulnerability = vuln;
+		this.cveId = vuln.getCveId();
 		this.vdoLabel = vdoLabel;
 		this.vdoConfidence = vdoConfidence;
 		this.vdoNounGroup = vdoNounGroup;
