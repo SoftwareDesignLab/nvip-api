@@ -18,7 +18,7 @@ public class AffectedProduct {
     @NonNull @Id
     private int affectedProductId;
 
-    @NonNull @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
+    @NonNull @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cve_id")
     private Vulnerability vulnerability;
 
     @Column(columnDefinition="VARCHAR(300)", nullable=false)
