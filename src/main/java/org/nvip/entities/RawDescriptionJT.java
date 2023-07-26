@@ -26,6 +26,7 @@ package org.nvip.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Table(name="rawdescriptionjt")
 @Entity
 @Getter
 @Setter

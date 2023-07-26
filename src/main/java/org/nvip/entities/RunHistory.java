@@ -5,11 +5,12 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Table(name="runhistory")
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor(force = true)
 @RequiredArgsConstructor
-@Entity
 public class RunHistory {
     @NonNull @Id int runhistoryId;
 
