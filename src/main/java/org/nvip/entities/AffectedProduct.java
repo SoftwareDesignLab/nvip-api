@@ -15,27 +15,27 @@ import java.time.LocalDateTime;
 @Setter
 @JsonIgnoreProperties(value = "vulnerability")
 public class AffectedProduct {
-    @NonNull @Id
+    @NonNull @Id @Column(name="affected_product_id")
     private int affectedProductId;
 
-    @NonNull @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cve_id")
+    @NonNull @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
     private Vulnerability vulnerability;
 
-    @Column(columnDefinition="VARCHAR(300)", nullable=false)
+    @Column(name="cpe", columnDefinition="VARCHAR(300)", nullable=false)
     private String cpe;
 
-    @Basic @Column(nullable=false) 
+    @Basic @Column(name="release_date", nullable=false) 
     private LocalDateTime releaseDate;
 
-    @Column(columnDefinition="tinytext", nullable=false)
+    @Column(name="product_name", columnDefinition="tinytext", nullable=false)
     private String productName;
 
-    @Column(columnDefinition="tinytext", nullable=false)
+    @Column(name="version", columnDefinition="tinytext", nullable=false)
     private String version;
 
-    @Column(columnDefinition="tinytext", nullable=false)
+    @Column(name="vendor", columnDefinition="tinytext", nullable=false)
     private String vendor;
 
-    @Column(columnDefinition="tinytext", nullable=false)
+    @Column(name="purl", columnDefinition="tinytext", nullable=false)
     private String purl;
 }
