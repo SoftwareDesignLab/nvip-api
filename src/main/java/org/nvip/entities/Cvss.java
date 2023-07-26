@@ -38,12 +38,11 @@ import java.time.LocalDateTime;
 @Setter
 @JsonIgnoreProperties(value = "vulnerability")
 public class Cvss {
-    @Id
-    @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
+    @Id @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
     Vulnerability vulnerability;
 	private double baseScore;
 	private double impactScore;
-    private LocalDateTime createdDate;
+    @Basic private LocalDateTime createDate;
 
 	public Cvss(Vulnerability vulnerability, double baseScore, double impactScore) {
 		this.baseScore = baseScore;

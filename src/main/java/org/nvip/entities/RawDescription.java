@@ -28,6 +28,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Table (name="rawdescription")
 @Entity
 @Getter
 @Setter
