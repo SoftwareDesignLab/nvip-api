@@ -33,6 +33,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class RawDescription {
     @Id @Column(name="raw_description_id") private int id;
 
