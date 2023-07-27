@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 public class PatchCommit {
     @Id private int commitId;
     private int sourceUrlId;
-    @ManyToOne private Vulnerability vulnerability;
+    @ManyToOne @JoinColumn(name="cve_id", referencedColumnName="cveId")
+    private Vulnerability vulnerability;
     private String commitSha;
     private String commitMessage;
     private String uniDiff;
