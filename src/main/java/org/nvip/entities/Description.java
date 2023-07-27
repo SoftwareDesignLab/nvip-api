@@ -29,6 +29,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
