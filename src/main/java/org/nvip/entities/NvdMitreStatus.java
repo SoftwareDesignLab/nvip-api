@@ -16,7 +16,7 @@ public class NvdMitreStatus {
 
     @Basic private LocalDateTime createdDate;
 
-    @OneToOne
+    @OneToOne @JoinColumn(name = "cve_id", referencedColumnName = "cveId")
     private Vulnerability vulnerability;
 
     private int statusNvd;
