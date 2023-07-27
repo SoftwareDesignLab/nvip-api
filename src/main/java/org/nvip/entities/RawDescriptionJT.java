@@ -31,6 +31,8 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class RawDescriptionJT {
     @Id @Column(name="description_joint_id") private int id;
     private int description_id;
