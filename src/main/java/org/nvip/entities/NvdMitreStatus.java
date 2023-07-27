@@ -19,7 +19,7 @@ public class NvdMitreStatus {
     @OneToOne @JoinColumn(name = "cve_id", referencedColumnName = "cveId")
     private Vulnerability vulnerability;
 
-    private int statusNvd;
+    private int existsNvd;
 
-    private int statusMitre;
+    private int existsMitre;
 }
