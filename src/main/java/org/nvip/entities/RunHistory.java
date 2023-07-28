@@ -10,11 +10,18 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor(force = true)
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class RunHistory {
-    @NonNull @Id int runhistoryId;
+    @Id private int runhistoryId;
 
-    @NonNull @Basic LocalDateTime runStartDate;
-    @NonNull @Basic LocalDateTime runEndDate;
+    @Basic private LocalDateTime runDateTime;
 
+    private int totalCveCount;
+    private int newCveCount;
+    private int updatedCveCount;
+    private int notInNvdCount;
+    private int notInMitreCount;
+    private int notInBothCount;
+    private double avgTimeGapNvd;
+    private double avgTimeGapMitre;
 }
