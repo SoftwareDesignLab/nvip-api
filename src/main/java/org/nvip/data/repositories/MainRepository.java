@@ -53,11 +53,11 @@ public class MainRepository {
 				group_concat(drh.run_date_time SEPARATOR ';') run_date_time,
 				group_concat(drh.avg_time_gap_nvd SEPARATOR ';') avg_time_gap_nvd,
 				group_concat(drh.avg_time_gap_mitre SEPARATOR ';') avg_time_gap_mitre,
-				group_concat(drh.added_cve_count SEPARATOR ';') added_cve_count,
+				group_concat(drh.new_cve_count SEPARATOR ';') added_cve_count,
 				group_concat(drh.updated_cve_count SEPARATOR ';') updated_cve_count
 			FROM (
-				SELECT run_date_time, not_in_nvd_count, not_in_mitre_count, avg_time_gap_nvd, avg_time_gap_mitre, added_cve_count, updated_cve_count
-				FROM dailyrunhistory ORDER BY run_date_time DESC LIMIT 15
+				SELECT run_date_time, not_in_nvd_count, not_in_mitre_count, avg_time_gap_nvd, avg_time_gap_mitre, new_cve_count, updated_cve_count
+				FROM runhistory ORDER BY run_date_time DESC LIMIT 15
 			) AS drh;
 			""", Tuple.class);
 
