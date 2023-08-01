@@ -10,7 +10,5 @@ import lombok.Setter;
 public class CvssDTO {
     String cveId;
     double baseScore;
-    // double severityConfidence;
     double impactScore;
-    // double impactConfidence;
 }
