@@ -39,7 +39,10 @@ public class RawDescription {
     @Id @Column(name="raw_description_id") private int id;
 
     private String rawDescription;
-    private String cveId;
+
+    @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
+    private Vulnerability vulnerability;
+
     @Basic private LocalDateTime createdDate;
     @Basic private LocalDateTime publishedDate;
     @Basic private LocalDateTime lastModifiedDate;
@@ -49,10 +52,10 @@ public class RawDescription {
     private String sourceType;
     private String parserType;
 
-    public RawDescription(String rawDescription, String cveId, LocalDateTime createdDate, LocalDateTime publishedDate, LocalDateTime lastModifiedDate,
+    public RawDescription(String rawDescription, Vulnerability vuln, LocalDateTime createdDate, LocalDateTime publishedDate, LocalDateTime lastModifiedDate,
                 String sourceUrl, boolean isGarbage, String sourceType, String parserType) {
         this.rawDescription = rawDescription;
-        this.cveId = cveId;
+        this.vulnerability = vuln;
         this.createdDate = createdDate;
         this.publishedDate = publishedDate;
         this.lastModifiedDate = lastModifiedDate;
