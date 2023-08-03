@@ -50,8 +50,6 @@ public class ReviewController {
         @RequestParam(value="vulnId") int vulnID,
         @RequestParam(value="cveId") String cveID,
 
-        @RequestParam(value="tweet", required=false, defaultValue="false") boolean isTweet,
-
         @RequestParam(value="updateDescription", required=false, defaultValue="false") boolean updateDescription,
         @RequestParam(value="updateVDO", required=false, defaultValue="false") boolean updateVDO,
         @RequestParam(value="updateCVSS", required=false, defaultValue="false") boolean updateCVSS,
@@ -68,9 +66,6 @@ public class ReviewController {
 
         if (user == null || user.getRoleId() < 1 || user.getRoleId() > 2)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-
-       //Info needed for twitter
-       String cveDescriptionTweet = null;
 
        int userID = user.getUserID();
 
@@ -103,21 +98,6 @@ public class ReviewController {
 
        reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, vulnID, userID, cveID, cveDescription, vdoUpdate, cvssUpdate,
                productsToRemove);
-
-       // } else if (updateDailyTable) {
-       //     int out = reviewRepository.updateDailyVulnerability(3);
-
-       //     return ResponseEntity.status(HttpStatus.OK).body("" + out);
-       // }
-
-       /**
-        * Enable to tweet approved CVEs. <cveDescription> should be set to the approved
-        * CVE description
-        */
-       if (isTweet && cveDescriptionTweet!=null && cveDescriptionTweet.length()>0) {
-           TwitterApi twitterApi = new TwitterApi();
-           twitterApi.postTweet(cveID, cveDescriptionTweet, false);
-       }
 
        return ResponseEntity.status(HttpStatus.OK).body("");
    }
