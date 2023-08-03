@@ -51,88 +51,39 @@ public class ReviewRepository {
 
 	private static Logger logger = LogManager.getLogger(ReviewRepository.class);
 
-	/**
-	 * TODO: Refactor this to use GROUP CONCAT for VDO Labels and products
-	 * Obtains details of a specific vulnerability
-	 * @param cveID
-	 * @return
-	 */
-	public List<Vulnerability> getVulnerabilityDetails(String cveID) {
+	private Vulnerability getVulnerability(String cve_id) {
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Vulnerability> cq = criteriaBuilder.createQuery(Vulnerability.class);
 		Root<Vulnerability> root = cq.from(Vulnerability.class);
-
-		List<Predicate> predicates = new ArrayList<>();
-
-		predicates.add(root.get("cveId").in(cveID));
-
-		cq = cq.where(predicates.toArray(new Predicate[0]));
-		Query q = entityManager.createQuery(cq);
-		return q.getResultList();
+		CriteriaQuery<Vulnerability> query = cq.where(criteriaBuilder.equal(root.get("cveId"), cve_id));
+		return entityManager.createQuery(query).getSingleResult();
 	}
 
-	// /**
-	//  * Adds manual update log to uservulnerabilityupdate table to keep track
-	//  * of manual updates to vulnerabilities
-	//  * @param status_id
-	//  * @param vuln_id
-	//  * @param user_id
-	//  * @param cve_id
-	//  * @param info
-	//  * @return
-	//  */
-	// @Transactional
-	// public int atomicUpdateVulnerability(int vuln_id, int user_id, String cve_id, String info) {
-	// 	CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
- 
-    //     // create update
-    //     CriteriaUpdate<Vulnerability> update = cb.createCriteriaUpdate(Vulnerability.class);
- 
-    //     // set the root class
-    //     Root root = update.from(Vulnerability.class);
+	/**
+	 * Updates description of a vulnerability in vulnerabilities table
+	 * @param description
+	 * @param vuln_id
+	 * @return
+	 */
+	@Transactional
+	public void updateVulnerabilityDescription(String description, String cve_id) {
+		Vulnerability vuln = getVulnerability(cve_id);
 
-    //     LocalDateTime today = LocalDateTime.now();
- 
-    //     // set update and where clause
-    //     update.set("lastModifiedDate", Timestamp.valueOf(today));
-    //     // update.set("statusId", status_id);
-    //     update.where(root.get("vulnId").in(vuln_id));
- 
-    //     // perform update
-    //     int result = this.entityManager.createQuery(update).executeUpdate();
+		RawDescription rawDesc = new RawDescription(
+			description,
+			vuln,
+			LocalDateTime.now(),
+			LocalDateTime.now(),
+			LocalDateTime.now(),
+			"user",
+			false,
+			"user",
+			"user"
+		);
+		entityManager.persist(rawDesc);
 
-    //     // Currently no UserVulnerabilityUpdate in the new DB schema
-    // 	// UserVulnerabilityUpdate uvu = new UserVulnerabilityUpdate(user_id, cve_id, today, info);
-    // 	// this.entityManager.persist(uvu);
-
-    // 	return result;
-	// }
-
-	// /**
-	//  * Updates description of a vulnerability in vulnerabilities table
-	//  * @param description
-	//  * @param vuln_id
-	//  * @return
-	//  */
-	// @Transactional
-	// public int updateVulnerabilityDescription(String description, int vuln_id) {
-	// 	CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
- 
-    //     // create update
-    //     CriteriaUpdate<Vulnerability> update = cb.createCriteriaUpdate(Vulnerability.class);
- 
-    //     // set the root class
-    //     Root root = update.from(Vulnerability.class);
-
-    //     LocalDateTime today = LocalDateTime.now();
- 
-    //     // set update and where clause
-    //     update.set("description", description);
-    //     update.where(root.get("vulnId").in(vuln_id));
- 
-    //     // perform update
-    //     return this.entityManager.createQuery(update).executeUpdate();
-	// }
+		//SEND MESSAGE TO RABBITMQ
+	}
 
 	/**
 	 * Updates the CVSS of a given Vulnerability
@@ -141,26 +92,11 @@ public class ReviewRepository {
 	 * @return
 	 */
 	@Transactional
-	public int updateVulnerabilityCVSS(CvssUpdate cvssUpdate, String cve_id) {
-		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
- 
-        // create delete
-        CriteriaDelete<Cvss> delete = cb.createCriteriaDelete(Cvss.class);
- 
-        // set the root class
-        Root root = delete.from(Cvss.class);
- 
-        // set delete and where clause
-        delete.where(root.get("vulnerability").get("cveId").in(cve_id));
- 
-        // perform delete
-        int result = this.entityManager.createQuery(delete).executeUpdate();
-
-        Cvss cvss = new Cvss(getVulnerabilityDetails(cve_id).get(0), cvssUpdate.getBaseScore(), cvssUpdate.getImpactScore(), cvssUpdate.getCreatedDate());
-
-        this.entityManager.persist(cvss);
-
-        return result;
+	public void updateVulnerabilityCVSS(CvssUpdate cvssUpdate, String cve_id, int user_id) {
+		for (CvssUpdateRecord cvssRecord : cvssUpdate.getCvssRecords()){
+	        Cvss cvss = new Cvss(getVulnerability(cve_id), cvssRecord.getBaseScore(), cvssRecord.getImpactScore(), cvssRecord.getCreatedDate(), user_id);
+	        this.entityManager.persist(cvss);
+	    }
 	}
 
 	/**
@@ -172,27 +108,11 @@ public class ReviewRepository {
 	 * @return
 	 */
 	@Transactional
-	public int updateVulnerabilityVDO(VdoUpdate vdoUpdate, String cve_id) {
-		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
- 
-        // create delete
-        CriteriaDelete<VdoCharacteristic> delete = cb.createCriteriaDelete(VdoCharacteristic.class);
- 
-        // set the root class
-        Root root = delete.from(VdoCharacteristic.class);
- 
-        // set delete and where clause
-        delete.where(root.get("vulnerability").get("cveId").in(cve_id));
- 
-        // perform delete
-        int result = this.entityManager.createQuery(delete).executeUpdate();
-
+	public void updateVulnerabilityVDO(VdoUpdate vdoUpdate, String cve_id, int user_id) {
         for (VdoUpdateRecord vdoRecord : vdoUpdate.getVdoRecords()){
-        	VdoCharacteristic vdo = new VdoCharacteristic(getVulnerabilityDetails(cve_id).get(0), vdoRecord.getCreatedDate(), vdoRecord.getLabel(), vdoRecord.getGroup(), vdoRecord.getConfidence());
+        	VdoCharacteristic vdo = new VdoCharacteristic(getVulnerability(cve_id), vdoRecord.getCreatedDate(), vdoRecord.getLabel(), vdoRecord.getGroup(), vdoRecord.getConfidence(), user_id);
         	this.entityManager.persist(vdo);
         }
-        
-        return result;
 	}
 
 	/**
@@ -206,12 +126,12 @@ public class ReviewRepository {
 	 * 
 	 */
 	@Transactional
-	public int removeProductsFromVulnerability(String[] productNames, String cve_id) {
+	public int removeProductsFromVulnerability(int[] productIds, String cve_id) {
 		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
 
 		int result = 0;
  
- 		for (String prodName : productNames) {
+ 		for (int prodId : productIds) {
 	        // create delete
 	        CriteriaDelete<AffectedProduct> delete = cb.createCriteriaDelete(AffectedProduct.class);
 	 
@@ -219,7 +139,7 @@ public class ReviewRepository {
 	        Root root = delete.from(AffectedProduct.class);
 	 
 	        // set delete and where clause
-	        delete.where(cb.and(root.get("productName").in(prodName), root.get("vulnerability").get("cveId").in(cve_id)));
+	        delete.where(cb.and(root.get("affectedProductId").in(prodId), root.get("vulnerability").get("cveId").in(cve_id)));
 	 
 	        // perform delete
 	        result += this.entityManager.createQuery(delete).executeUpdate();
@@ -247,30 +167,28 @@ public class ReviewRepository {
 	 * @return -1
 	 */
 	@Transactional
-	public int complexUpdate(boolean updateDescription, boolean updateVDO, boolean updateCVSS, boolean updateAffRel, int vuln_id, int user_id, String cve_id, String updateInfo,
-			String cveDescription, VdoUpdate vdoUpdate, CvssUpdate cvssUpdate, String[] productsToRemove) {
+	public int complexUpdate(boolean updateDescription, boolean updateVDO, boolean updateCVSS, boolean updateAffRel, int vuln_id, int user_id, String cve_id,
+			String cveDescription, VdoUpdate vdoUpdate, CvssUpdate cvssUpdate, int[] productsToRemove) {
 
 		int rs = 0;
 
 		if (updateDescription) {
-			// rs = updateVulnerabilityDescription(cveDescription, vuln_id);
+			updateVulnerabilityDescription(cveDescription, cve_id);
 		}
 
 		if (updateVDO) {
-			rs = updateVulnerabilityVDO(vdoUpdate, cve_id);
+			updateVulnerabilityVDO(vdoUpdate, cve_id, user_id);
 		}
 
 		if (updateCVSS) {
-			rs = updateVulnerabilityCVSS(cvssUpdate, cve_id);
+			updateVulnerabilityCVSS(cvssUpdate, cve_id, user_id);
 		}
 
 		if (updateAffRel) {
-			rs = removeProductsFromVulnerability(productsToRemove, cve_id);
+			rs += removeProductsFromVulnerability(productsToRemove, cve_id);
 		}
 
-		// rs = atomicUpdateVulnerability(vuln_id, user_id, cve_id, updateInfo);
-
-		return -1;
+		return rs;
 
 	}
 

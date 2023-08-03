@@ -23,22 +23,23 @@
  */
 package org.nvip.api.serializers;
 
+import org.nvip.entities.CvssUpdateRecord;
+
 import lombok.*;
 
 import org.json.JSONObject;
+import org.json.JSONArray;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Getter
 public class CvssUpdate {
+	private ArrayList<CvssUpdateRecord> cvssRecords = new ArrayList<>();
 	
-	private double baseScore;
-	private double impactScore;
-	private LocalDateTime createdDate;
-	
-	public CvssUpdate(JSONObject cvssUpdateJSON) {
-		this.baseScore = cvssUpdateJSON.getDouble("base_score");
-		this.impactScore = cvssUpdateJSON.getDouble("impact_score");
-		this.createdDate = LocalDateTime.now();
+	public CvssUpdate(JSONArray cvssUpdateJSON) {
+		for(int i = 0; i < cvssUpdateJSON.length(); i++) {
+            JSONObject cvssRecordJSON = cvssUpdateJSON.getJSONObject(i);
+            cvssRecords.add(new CvssUpdateRecord(cvssRecordJSON.getDouble("base_score"), cvssRecordJSON.getDouble("impact_score")));
+        }
 	}
 }

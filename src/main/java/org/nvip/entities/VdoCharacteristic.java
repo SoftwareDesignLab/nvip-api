@@ -39,7 +39,7 @@ import java.time.LocalDateTime;
 @Setter
 @JsonIgnoreProperties(value = "vulnerability")
 public class VdoCharacteristic {
-	@Id @Column(name="vdo_characteristic_id") private int id;
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name="vdo_characteristic_id") private int id;
 
     @ToString.Exclude
     @ManyToOne
@@ -50,6 +50,7 @@ public class VdoCharacteristic {
 	private String vdoLabel;
 	private String vdoNounGroup;
     private double vdoConfidence;
+    private Integer userId;
 
     public VdoCharacteristic(Vulnerability vulnerability, String vdoLabel, String vdoNounGroup, double vdoConfidence) {
         this.vulnerability = vulnerability;
@@ -58,11 +59,12 @@ public class VdoCharacteristic {
         this.vdoConfidence = vdoConfidence;
     }
 
-    public VdoCharacteristic(Vulnerability vulnerability, LocalDateTime createdDate, String vdoLabel, String vdoNounGroup, double vdoConfidence) {
+    public VdoCharacteristic(Vulnerability vulnerability, LocalDateTime createdDate, String vdoLabel, String vdoNounGroup, double vdoConfidence, int userId) {
         this.vulnerability = vulnerability;
         this.createdDate = createdDate;
         this.vdoLabel = vdoLabel;
         this.vdoNounGroup = vdoNounGroup;
         this.vdoConfidence = vdoConfidence;
+        this.userId = userId;
     }
 }

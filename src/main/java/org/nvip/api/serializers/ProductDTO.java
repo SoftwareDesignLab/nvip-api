@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 @Builder
 public class ProductDTO {
+    int productId;
     String productName;
     String domain;
     String cpe;
