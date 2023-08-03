@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.nvip.api.serializers.CvssUpdate;
 import org.nvip.api.serializers.VdoUpdate;
 import org.nvip.entities.*;
+import org.nvip.util.Messenger;
 
 import org.springframework.stereotype.Repository;
 
@@ -83,6 +84,7 @@ public class ReviewRepository {
 		entityManager.persist(rawDesc);
 
 		//SEND MESSAGE TO RABBITMQ
+		Messenger.sendCveId(cve_id);
 	}
 
 	/**
