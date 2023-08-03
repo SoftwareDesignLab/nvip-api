@@ -96,7 +96,7 @@ public class ReviewController {
            }
        }
 
-       reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, vulnID, userID, cveID, cveDescription, vdoUpdate, cvssUpdate,
+       reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, vulnID, userID, userName, cveID, cveDescription, vdoUpdate, cvssUpdate,
                productsToRemove);
 
        return ResponseEntity.status(HttpStatus.OK).body("");
