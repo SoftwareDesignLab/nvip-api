@@ -23,51 +23,20 @@
  */
 package org.nvip.entities;
 
-import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
 @Getter
-@Setter
-@JsonIgnoreProperties(value = "vulnerability")
-public class Cvss {
-    @Id 
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
-    @Column(name="cvss_id") 
-    private int id;
-    @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
-    Vulnerability vulnerability;
+public class CvssUpdateRecord {
+	
 	private double baseScore;
 	private double impactScore;
-    @Basic private LocalDateTime createDate;
-    private Integer userId;
-
-    public Cvss(Vulnerability vulnerability, double baseScore, double impactScore) {
-        this.baseScore = baseScore;
-        this.impactScore = impactScore;
-        this.vulnerability = vulnerability;
-        this.userId = -1;
-    }
-
-	public Cvss(Vulnerability vulnerability, double baseScore, double impactScore, int userId) {
+	private LocalDateTime createdDate;
+	
+	public CvssUpdateRecord(double baseScore, double impactScore) {
 		this.baseScore = baseScore;
 		this.impactScore = impactScore;
-		this.vulnerability = vulnerability;
-        this.userId = userId;
+		this.createdDate = LocalDateTime.now();
 	}
-
-    public Cvss(Vulnerability vulnerability, double baseScore, double impactScore, LocalDateTime createDate, int userId) {
-        this.baseScore = baseScore;
-        this.impactScore = impactScore;
-        this.vulnerability = vulnerability;
-        this.userId = userId;
-        this.createDate = createDate;
-    }
 }
