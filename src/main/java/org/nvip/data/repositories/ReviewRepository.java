@@ -67,7 +67,7 @@ public class ReviewRepository {
 	 * @return
 	 */
 	@Transactional
-	public void updateVulnerabilityDescription(String description, String cve_id) {
+	public void updateVulnerabilityDescription(String description, String cve_id, String username) {
 		Vulnerability vuln = getVulnerability(cve_id);
 
 		RawDescription rawDesc = new RawDescription(
@@ -76,10 +76,10 @@ public class ReviewRepository {
 			LocalDateTime.now(),
 			LocalDateTime.now(),
 			LocalDateTime.now(),
-			"user",
+			"usersource-"+username,
 			false,
-			"user",
-			"user"
+			"usersource-"+username,
+			"usersource-"+username
 		);
 		entityManager.persist(rawDesc);
 
@@ -169,13 +169,13 @@ public class ReviewRepository {
 	 * @return -1
 	 */
 	@Transactional
-	public int complexUpdate(boolean updateDescription, boolean updateVDO, boolean updateCVSS, boolean updateAffRel, int vuln_id, int user_id, String cve_id,
+	public int complexUpdate(boolean updateDescription, boolean updateVDO, boolean updateCVSS, boolean updateAffRel, int vuln_id, int user_id, String username, String cve_id,
 			String cveDescription, VdoUpdate vdoUpdate, CvssUpdate cvssUpdate, int[] productsToRemove) {
 
 		int rs = 0;
 
 		if (updateDescription) {
-			updateVulnerabilityDescription(cveDescription, cve_id);
+			updateVulnerabilityDescription(cveDescription, cve_id, username);
 		}
 
 		if (updateVDO) {
