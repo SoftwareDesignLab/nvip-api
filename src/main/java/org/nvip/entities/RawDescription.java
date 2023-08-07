@@ -48,12 +48,12 @@ public class RawDescription {
     @Basic private LocalDateTime lastModifiedDate;
     private String sourceUrl;
     @Column(name = "is_garbage", columnDefinition = "int")
-    private boolean isGarbage;
+    private int isGarbage;
     private String sourceType;
     private String parserType;
 
     public RawDescription(String rawDescription, Vulnerability vuln, LocalDateTime createdDate, LocalDateTime publishedDate, LocalDateTime lastModifiedDate,
-                String sourceUrl, boolean isGarbage, String sourceType, String parserType) {
+                String sourceUrl, int isGarbage, String sourceType, String parserType) {
         this.rawDescription = rawDescription;
         this.vulnerability = vuln;
         this.createdDate = createdDate;
