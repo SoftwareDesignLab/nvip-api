@@ -77,7 +77,7 @@ public class ReviewRepository {
 			LocalDateTime.now(),
 			LocalDateTime.now(),
 			"usersource-"+username,
-			false,
+			0,
 			"usersource-"+username,
 			"usersource-"+username
 		);
