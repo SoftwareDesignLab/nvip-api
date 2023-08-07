@@ -58,7 +58,6 @@ public class ReviewController {
         @RequestBody String updateData
     ) 
     {
-        logger.info("Body test: {}", updateData);
         if (userName == null || token == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 
