@@ -57,6 +57,7 @@ public class VdoCharacteristic {
         this.vdoLabel = vdoLabel;
         this.vdoNounGroup = vdoNounGroup;
         this.vdoConfidence = vdoConfidence;
+        this.userId = -1;
     }
 
     public VdoCharacteristic(Vulnerability vulnerability, LocalDateTime createdDate, String vdoLabel, String vdoNounGroup, double vdoConfidence, int userId) {
