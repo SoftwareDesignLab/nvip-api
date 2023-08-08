@@ -55,6 +55,13 @@ public class Cvss {
         this.vulnerability = vulnerability;
         this.userId = -1;
     }
+    public Cvss(int id, Vulnerability vulnerability, double baseScore, double impactScore) {
+        this.id = id;
+        this.baseScore = baseScore;
+        this.impactScore = impactScore;
+        this.vulnerability = vulnerability;
+        this.userId = -1;
+    }
 
 	public Cvss(Vulnerability vulnerability, double baseScore, double impactScore, int userId) {
 		this.baseScore = baseScore;
