@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 @Entity
-@Table(name="affectedproduct", schema = "nvip")
+@Table(name="affectedproduct")
 @Getter
 @Setter
 @JsonIgnoreProperties(value = "vulnerability")
