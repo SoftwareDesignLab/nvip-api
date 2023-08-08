@@ -39,11 +39,11 @@ public class MainRepositoryTest {
     @Transactional
     void testPageCountsSingleHistoryEntry(){
         Query query = entityManager.createNativeQuery("""
-            INSERT INTO dailyrunhistory
-            (run_id, run_date_time, not_in_nvd_count, not_in_mitre_count, avg_time_gap_nvd, avg_time_gap_mitre, added_cve_count, updated_cve_count)
+            INSERT INTO runhistory
+            (runhistory_id, run_date_time, not_in_nvd_count, not_in_mitre_count, not_in_both_count, avg_time_gap_nvd, avg_time_gap_mitre, total_cve_count, new_cve_count, updated_cve_count)
             VALUES
             (
-                1, CURDATE(), 1, 2, 3, 4, 5, 6
+                1, CURDATE(), 1, 2, 3, 4, 5, 6, 7, 8
             );
             """);
         query.executeUpdate();
@@ -53,33 +53,35 @@ public class MainRepositoryTest {
         assertNotNull(counts.get("run_date_times"));
         assertEquals("1", counts.get("not_in_nvd_count"));
         assertEquals("2", counts.get("not_in_mitre_count"));
-        assertEquals("3.0", counts.get("avgTimeGapNvd"));
-        assertEquals("4.0", counts.get("avgTimeGapMitre"));
-        assertEquals("5", counts.get("CvesAdded"));
-        assertEquals("6", counts.get("CvesUpdated"));
+        assertEquals("4.0", counts.get("avgTimeGapNvd"));
+        assertEquals("5.0", counts.get("avgTimeGapMitre"));
+        assertEquals("7", counts.get("CvesAdded"));
+        assertEquals("8", counts.get("CvesUpdated"));
     }
 
     @Test
     @Transactional
     void testPageCountsMultipleHistoryEntry(){
         Query query = entityManager.createNativeQuery("""
-            INSERT INTO dailyrunhistory
-            (run_id, run_date_time, not_in_nvd_count, not_in_mitre_count, avg_time_gap_nvd, avg_time_gap_mitre, added_cve_count, updated_cve_count)
+            INSERT INTO runhistory
+            (runhistory_id, run_date_time, not_in_nvd_count, not_in_mitre_count, not_in_both_count, avg_time_gap_nvd, avg_time_gap_mitre, total_cve_count, new_cve_count, updated_cve_count)
             VALUES
-            (1, CURDATE(), 1, 2, 3, 4, 5, 6),
-            (2, CURDATE()-1, 7, 8, 9, 10, 11, 12)
+            (1, CURDATE(), 1, 2, 3, 4, 5, 6, 7, 8),
+            (2, CURDATE()-1, 9, 10, 11, 12, 13, 14, 15, 16)
             ;
             """);
         query.executeUpdate();
 
         Map<String, String> counts = repository.getMainPageCounts();
+                System.out.println(counts);
+
 
         assertNotNull(counts.get("run_date_times"));
-        assertEquals("1;7", counts.get("not_in_nvd_count"));
-        assertEquals("2;8", counts.get("not_in_mitre_count"));
-        assertEquals("3.0;9.0", counts.get("avgTimeGapNvd"));
-        assertEquals("4.0;10.0", counts.get("avgTimeGapMitre"));
-        assertEquals("5;11", counts.get("CvesAdded"));
-        assertEquals("6;12", counts.get("CvesUpdated"));
+        assertEquals("1;9", counts.get("not_in_nvd_count"));
+        assertEquals("2;10", counts.get("not_in_mitre_count"));
+        assertEquals("4.0;12.0", counts.get("avgTimeGapNvd"));
+        assertEquals("5.0;13.0", counts.get("avgTimeGapMitre"));
+        assertEquals("7;15", counts.get("CvesAdded"));
+        assertEquals("8;16", counts.get("CvesUpdated"));
     }
 }
