@@ -21,8 +21,6 @@ public class AffectedProduct {
     @NonNull @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
     private Vulnerability vulnerability;
 
-    @Basic private LocalDateTime releaseDate;
-
     private String cpe;
 
     private String productName;
