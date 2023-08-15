@@ -48,6 +48,7 @@ public class Cvss {
 	private double impactScore;
     @Basic private LocalDateTime createDate;
     private Integer userId;
+    private int isActive;
 
     public Cvss(Vulnerability vulnerability, double baseScore, double impactScore) {
         this.baseScore = baseScore;
@@ -55,26 +56,13 @@ public class Cvss {
         this.vulnerability = vulnerability;
         this.userId = -1;
     }
-    public Cvss(int id, Vulnerability vulnerability, double baseScore, double impactScore) {
-        this.id = id;
+
+    public Cvss(Vulnerability vulnerability, double baseScore, double impactScore, LocalDateTime createDate, int userId, int isActive) {
         this.baseScore = baseScore;
         this.impactScore = impactScore;
         this.vulnerability = vulnerability;
-        this.userId = -1;
-    }
-
-	public Cvss(Vulnerability vulnerability, double baseScore, double impactScore, int userId) {
-		this.baseScore = baseScore;
-		this.impactScore = impactScore;
-		this.vulnerability = vulnerability;
-        this.userId = userId;
-	}
-
-    public Cvss(Vulnerability vulnerability, double baseScore, double impactScore, LocalDateTime createDate, int userId) {
-        this.baseScore = baseScore;
-        this.impactScore = impactScore;
-        this.vulnerability = vulnerability;
-        this.userId = userId;
         this.createDate = createDate;
+        this.userId = userId;
+        this.isActive = isActive;
     }
 }

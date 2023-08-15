@@ -1,6 +1,5 @@
 package org.nvip.api.controllers;
 
-import org.nvip.api.serializers.VulnerabilityForReviewDTO;
 import org.nvip.api.serializers.CvssUpdate;
 import org.nvip.api.serializers.VdoUpdate;
 import org.nvip.data.repositories.ReviewRepository;
