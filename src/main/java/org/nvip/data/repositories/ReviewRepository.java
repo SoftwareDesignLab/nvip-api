@@ -63,7 +63,8 @@ public class ReviewRepository {
 	/**
 	 * Updates description of a vulnerability in vulnerabilities table
 	 * @param description
-	 * @param vuln_id
+	 * @param cve_id
+	 * @param username
 	 * @return
 	 */
 	@Transactional
@@ -157,11 +158,9 @@ public class ReviewRepository {
 	 * @param updateVDO - Checks if VDO needs to be updated
 	 * @param updateCVSS - Checks if CVSS needs to be updated
 	 * @param updateAffRel - Checks if Affected Releases table needs to be updated
-	 * @param status_id
 	 * @param vuln_id
 	 * @param user_id
 	 * @param cve_id
-	 * @param updateInfo - Info on update (For atomic update logs)
 	 * @param cveDescription - New CVE Description
 	 * @param vdoUpdate - New VDO Info
 	 * @param cvssUpdate - New CVSS Info
