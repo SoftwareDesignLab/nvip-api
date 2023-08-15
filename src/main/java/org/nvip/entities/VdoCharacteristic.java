@@ -51,6 +51,7 @@ public class VdoCharacteristic {
 	private String vdoNounGroup;
     private double vdoConfidence;
     private Integer userId;
+    private int isActive;
 
     public VdoCharacteristic(Vulnerability vulnerability, String vdoLabel, String vdoNounGroup, double vdoConfidence) {
         this.vulnerability = vulnerability;
@@ -60,21 +61,13 @@ public class VdoCharacteristic {
         this.userId = -1;
     }
 
-    public VdoCharacteristic(int id, Vulnerability vulnerability, String vdoLabel, String vdoNounGroup, double vdoConfidence) {
-        this.id = id;
-        this.vulnerability = vulnerability;
-        this.vdoLabel = vdoLabel;
-        this.vdoNounGroup = vdoNounGroup;
-        this.vdoConfidence = vdoConfidence;
-        this.userId = -1;
-    }
-
-    public VdoCharacteristic(Vulnerability vulnerability, LocalDateTime createdDate, String vdoLabel, String vdoNounGroup, double vdoConfidence, int userId) {
+    public VdoCharacteristic(Vulnerability vulnerability, LocalDateTime createdDate, String vdoLabel, String vdoNounGroup, double vdoConfidence, int userId, int isActive) {
         this.vulnerability = vulnerability;
         this.createdDate = createdDate;
         this.vdoLabel = vdoLabel;
         this.vdoNounGroup = vdoNounGroup;
         this.vdoConfidence = vdoConfidence;
         this.userId = userId;
+        this.isActive = isActive;
     }
 }
