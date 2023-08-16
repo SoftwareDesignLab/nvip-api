@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 @ToString
 public class PatchCommit {
     @Id private int commitId;
-    private int sourceUrlId;
+    @OneToOne(optional = false) @JoinColumn(name="source_url_id", referencedColumnName="sourceUrlId")
+    private PatchSourceUrl sourceUrl;
     @ManyToOne @JoinColumn(name="cve_id", referencedColumnName="cveId")
     private Vulnerability vulnerability;
     private String commitSha;
