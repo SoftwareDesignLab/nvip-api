@@ -31,12 +31,10 @@ import java.time.LocalDateTime;
 public class CvssUpdateRecord {
 	
 	private double baseScore;
-	private double impactScore;
 	private LocalDateTime createdDate;
 	
-	public CvssUpdateRecord(double baseScore, double impactScore) {
+	public CvssUpdateRecord(double baseScore) {
 		this.baseScore = baseScore;
-		this.impactScore = impactScore;
 		this.createdDate = LocalDateTime.now();
 	}
 }

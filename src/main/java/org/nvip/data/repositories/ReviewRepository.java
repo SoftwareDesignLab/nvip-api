@@ -98,7 +98,7 @@ public class ReviewRepository {
 	public void updateVulnerabilityCVSS(CvssUpdate cvssUpdate, String cve_id, int user_id) {
 		// persist new active records
 		for (CvssUpdateRecord cvssRecord : cvssUpdate.getCvssRecords()){
-	        Cvss cvss = new Cvss(getVulnerability(cve_id), cvssRecord.getBaseScore(), cvssRecord.getImpactScore(), cvssRecord.getCreatedDate(), user_id);
+	        Cvss cvss = new Cvss(getVulnerability(cve_id), cvssRecord.getBaseScore(), cvssRecord.getCreatedDate(), user_id);
 	        this.entityManager.persist(cvss);
 	    }
 	}

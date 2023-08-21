@@ -39,7 +39,7 @@ public class CvssUpdate {
 	public CvssUpdate(JSONArray cvssUpdateJSON) {
 		for(int i = 0; i < cvssUpdateJSON.length(); i++) {
             JSONObject cvssRecordJSON = cvssUpdateJSON.getJSONObject(i);
-            cvssRecords.add(new CvssUpdateRecord(cvssRecordJSON.getDouble("base_score"), cvssRecordJSON.getDouble("impact_score")));
+            cvssRecords.add(new CvssUpdateRecord(cvssRecordJSON.getDouble("base_score")));
         }
 	}
 }
