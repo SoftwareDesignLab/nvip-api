@@ -30,19 +30,13 @@ import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.nvip.api.serializers.CvssUpdate;
 import org.nvip.api.serializers.VdoUpdate;
 import org.nvip.entities.*;
 import org.nvip.util.Messenger;
 
 import org.springframework.stereotype.Repository;
 
-import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.ArrayList;
 
 @Repository
 public class ReviewRepository {
@@ -86,21 +80,6 @@ public class ReviewRepository {
 
 		//SEND MESSAGE TO RABBITMQ
 		Messenger.sendCveId(cve_id);
-	}
-
-	/**
-	 * Updates the CVSS of a given Vulnerability
-	 * @param cvssUpdate
-	 * @param cve_id
-	 * @return
-	 */
-	@Transactional
-	public void updateVulnerabilityCVSS(CvssUpdate cvssUpdate, String cve_id, int user_id) {
-		// persist new active records
-		for (CvssUpdateRecord cvssRecord : cvssUpdate.getCvssRecords()){
-	        Cvss cvss = new Cvss(getVulnerability(cve_id), cvssRecord.getBaseScore(), cvssRecord.getCreatedDate(), user_id);
-	        this.entityManager.persist(cvss);
-	    }
 	}
 
 	/**
@@ -173,13 +152,12 @@ public class ReviewRepository {
 	 * @param cve_id
 	 * @param cveDescription - New CVE Description
 	 * @param vdoUpdate - New VDO Info
-	 * @param cvssUpdate - New CVSS Info
 	 * @param productsToRemove - Products to remove from Affected Releases
 	 * @return -1
 	 */
 	@Transactional
 	public int complexUpdate(boolean updateDescription, boolean updateVDO, boolean updateCVSS, boolean updateAffRel, int vuln_id, int user_id, String username, String cve_id,
-			String cveDescription, VdoUpdate vdoUpdate, CvssUpdate cvssUpdate, int[] productsToRemove) {
+			String cveDescription, VdoUpdate vdoUpdate, int[] productsToRemove) {
 
 		int rs = 0;
 
@@ -189,10 +167,6 @@ public class ReviewRepository {
 
 		if (updateVDO) {
 			updateVulnerabilityVDO(vdoUpdate, cve_id, user_id);
-		}
-
-		if (updateCVSS) {
-			updateVulnerabilityCVSS(cvssUpdate, cve_id, user_id);
 		}
 
 		if (updateAffRel) {
