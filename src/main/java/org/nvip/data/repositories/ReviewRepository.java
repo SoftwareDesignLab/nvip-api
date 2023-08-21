@@ -96,16 +96,9 @@ public class ReviewRepository {
 	 */
 	@Transactional
 	public void updateVulnerabilityCVSS(CvssUpdate cvssUpdate, String cve_id, int user_id) {
-		// set previous records to inactive
-		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
-		CriteriaUpdate<Cvss> update = cb.createCriteriaUpdate(Cvss.class);
-		Root root = update.from(Cvss.class);
-		update.set("isActive", 0);
-		update.where(cb.and(root.get("vulnerability").get("cveId").in(cve_id), root.get("isActive").in(1)));
-		this.entityManager.createQuery(update).executeUpdate();
 		// persist new active records
 		for (CvssUpdateRecord cvssRecord : cvssUpdate.getCvssRecords()){
-	        Cvss cvss = new Cvss(getVulnerability(cve_id), cvssRecord.getBaseScore(), cvssRecord.getImpactScore(), cvssRecord.getCreatedDate(), user_id, 1);
+	        Cvss cvss = new Cvss(getVulnerability(cve_id), cvssRecord.getBaseScore(), cvssRecord.getImpactScore(), cvssRecord.getCreatedDate(), user_id);
 	        this.entityManager.persist(cvss);
 	    }
 	}
