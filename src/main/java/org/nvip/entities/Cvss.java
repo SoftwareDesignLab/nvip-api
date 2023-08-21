@@ -45,20 +45,17 @@ public class Cvss {
     @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
     Vulnerability vulnerability;
 	private double baseScore;
-	private double impactScore;
     @Basic private LocalDateTime createDate;
     private Integer userId;
 
-    public Cvss(Vulnerability vulnerability, double baseScore, double impactScore) {
+    public Cvss(Vulnerability vulnerability, double baseScore) {
         this.baseScore = baseScore;
-        this.impactScore = impactScore;
         this.vulnerability = vulnerability;
         this.userId = -1;
     }
 
-    public Cvss(Vulnerability vulnerability, double baseScore, double impactScore, LocalDateTime createDate, int userId) {
+    public Cvss(Vulnerability vulnerability, double baseScore, LocalDateTime createDate, int userId) {
         this.baseScore = baseScore;
-        this.impactScore = impactScore;
         this.vulnerability = vulnerability;
         this.createDate = createDate;
         this.userId = userId;
