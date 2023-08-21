@@ -39,7 +39,7 @@ public class VdoUpdate {
 		
 		for (int i=0; i<vdoUpdates.length(); i++) {
 			JSONObject vdoRecordJSON = vdoUpdates.getJSONObject(i);
-			vdoRecords.add(new VdoUpdateRecord(vdoRecordJSON.getString("label"), vdoRecordJSON.getString("group"), vdoRecordJSON.getDouble("confidence")));
+			vdoRecords.add(new VdoUpdateRecord(vdoRecordJSON.getString("label"), vdoRecordJSON.getString("group"), vdoRecordJSON.getDouble("confidence"), vdoRecordJSON.getInt("isActive")));
 		}
 	}
 
