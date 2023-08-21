@@ -92,16 +92,9 @@ public class ReviewRepository {
 	 */
 	@Transactional
 	public void updateVulnerabilityVDO(VdoUpdate vdoUpdate, String cve_id, int user_id) {
-		// set previous records to inactive
-		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
-		CriteriaUpdate<VdoCharacteristic> update = cb.createCriteriaUpdate(VdoCharacteristic.class);
-		Root root = update.from(VdoCharacteristic.class);
-		update.set("isActive", 0);
-		update.where(cb.and(root.get("vulnerability").get("cveId").in(cve_id), root.get("isActive").in(1)));
-		this.entityManager.createQuery(update).executeUpdate();
-		// persist new active records
+		// persist new changes
 		for (VdoUpdateRecord vdoRecord : vdoUpdate.getVdoRecords()){
-        	VdoCharacteristic vdo = new VdoCharacteristic(getVulnerability(cve_id), vdoRecord.getCreatedDate(), vdoRecord.getLabel(), vdoRecord.getGroup(), vdoRecord.getConfidence(), user_id, 1);
+        	VdoCharacteristic vdo = new VdoCharacteristic(getVulnerability(cve_id), vdoRecord.getCreatedDate(), vdoRecord.getLabel(), vdoRecord.getGroup(), vdoRecord.getConfidence(), user_id, vdoRecord.getIsActive());
         	this.entityManager.persist(vdo);
         }
 
