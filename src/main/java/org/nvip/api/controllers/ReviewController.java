@@ -1,14 +1,11 @@
 package org.nvip.api.controllers;
 
-import org.nvip.api.serializers.CvssUpdate;
 import org.nvip.api.serializers.VdoUpdate;
 import org.nvip.data.repositories.ReviewRepository;
 import org.nvip.data.repositories.UserRepository;
 import org.nvip.data.repositories.VulnerabilityRepository;
 import org.nvip.entities.*;
-import org.nvip.util.TwitterApi;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,14 +15,6 @@ import org.apache.logging.log4j.Logger;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Collections;
-import java.io.IOException;
-import java.io.BufferedReader;
 
 @RestController
 @RequestMapping("/reviews")
@@ -71,7 +60,6 @@ public class ReviewController {
 
        String cveDescription = null;
        VdoUpdate vdoUpdate = null;
-       CvssUpdate cvssUpdate = null;
        int[] productsToRemove = null;
 
        if (updateDescription) {
@@ -82,10 +70,6 @@ public class ReviewController {
            vdoUpdate = new VdoUpdate(dataJSON.getJSONObject("vdoUpdates"));
        }
 
-       if (updateCVSS) {
-           cvssUpdate = new CvssUpdate(dataJSON.getJSONArray("cvss"));
-       }
-
        if (updateAffRel) {
            JSONArray jsonArray = dataJSON.getJSONArray("prodToRemove");
            productsToRemove = new int[jsonArray.length()];
@@ -94,7 +78,7 @@ public class ReviewController {
            }
        }
 
-       reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, vulnID, userID, userName, cveID, cveDescription, vdoUpdate, cvssUpdate,
+       reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, vulnID, userID, userName, cveID, cveDescription, vdoUpdate,
                productsToRemove);
 
        return ResponseEntity.status(HttpStatus.OK).body("");
