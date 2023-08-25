@@ -15,6 +15,6 @@ public class Fix {
     @ManyToOne @JoinColumn(name="cve_id", referencedColumnName="cveId")
     private Vulnerability vulnerability;
     private String fixDescription;
-    private String sourceUrl;
+    private String sourceUrl; // This will be a direct field, not a join on fixsourceurl, as it was found to be redundant
 //    private String fixType;
 }
