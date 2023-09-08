@@ -1,6 +1,11 @@
 package org.nvip.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nvip.api.controllers.ReviewController;
+
 public enum VDOLabel {
+
     TRUST_FAILURE(1, "Trust Failure", "Trust Failure", VDONounGroup.IMPACT_METHOD),
     MAN_IN_THE_MIDDLE(2, "Man-in-the-Middle", "Man-in-the-Middle", VDONounGroup.IMPACT_METHOD),
     CHANNEL(3, "Channel", "Channel", VDONounGroup.CONTEXT),
@@ -34,6 +39,8 @@ public enum VDOLabel {
     public String vdoLabelForUI;
     public VDONounGroup vdoNounGroup;
 
+    private static final Logger logger = LogManager.getLogger(VDOLabel.class);
+
     VDOLabel(int vdoLabelId, String vdoLabelName, String vdoLabelForUI, VDONounGroup vdoNounGroup) {
         this.vdoLabelId = vdoLabelId;
         this.vdoLabelName = vdoLabelName;
@@ -44,6 +51,7 @@ public enum VDOLabel {
         return vdoLabelId;
     }
     public static VDOLabel getVdoLabel(String vdoLabelName){
+        logger.info("looking up vdo label name of {}", vdoLabelName);
         for (VDOLabel label : VDOLabel.values()){
             if (label.vdoLabelName.equals(vdoLabelName)){
                 return label;
