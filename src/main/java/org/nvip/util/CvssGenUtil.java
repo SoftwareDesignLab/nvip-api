@@ -28,7 +28,7 @@ public class CvssGenUtil {
     }
 
     private static Set<VDOLabel> mapToLabelSet(List<VdoCharacteristic> vdoCharacteristics) {
-        return vdoCharacteristics.stream().map(v->VDOLabel.valueOf(v.getVdoLabel())).collect(Collectors.toSet());
+        return vdoCharacteristics.stream().map(v->VDOLabel.getVdoLabel(v.getVdoLabel())).collect(Collectors.toSet());
     }
 
     /**
