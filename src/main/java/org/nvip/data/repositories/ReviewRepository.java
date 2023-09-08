@@ -30,19 +30,13 @@ import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.nvip.api.serializers.CvssUpdate;
 import org.nvip.api.serializers.VdoUpdate;
 import org.nvip.entities.*;
 import org.nvip.util.Messenger;
 
 import org.springframework.stereotype.Repository;
 
-import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.ArrayList;
 
 @Repository
 public class ReviewRepository {
@@ -63,7 +57,8 @@ public class ReviewRepository {
 	/**
 	 * Updates description of a vulnerability in vulnerabilities table
 	 * @param description
-	 * @param vuln_id
+	 * @param cve_id
+	 * @param username
 	 * @return
 	 */
 	@Transactional
@@ -88,20 +83,6 @@ public class ReviewRepository {
 	}
 
 	/**
-	 * Updates the CVSS of a given Vulnerability
-	 * @param cvssUpdate
-	 * @param cve_id
-	 * @return
-	 */
-	@Transactional
-	public void updateVulnerabilityCVSS(CvssUpdate cvssUpdate, String cve_id, int user_id) {
-		for (CvssUpdateRecord cvssRecord : cvssUpdate.getCvssRecords()){
-	        Cvss cvss = new Cvss(getVulnerability(cve_id), cvssRecord.getBaseScore(), cvssRecord.getImpactScore(), cvssRecord.getCreatedDate(), user_id);
-	        this.entityManager.persist(cvss);
-	    }
-	}
-
-	/**
 	 * Deletes entries from VdoCharacteristic table by CVE-ID
 	 * and replaces them with new entries from vdoUpdate parameter
 	 * @param vdoUpdate - Contains an Arraylist of VDOupdateInfo objects that obtains
@@ -111,10 +92,12 @@ public class ReviewRepository {
 	 */
 	@Transactional
 	public void updateVulnerabilityVDO(VdoUpdate vdoUpdate, String cve_id, int user_id) {
-        for (VdoUpdateRecord vdoRecord : vdoUpdate.getVdoRecords()){
-        	VdoCharacteristic vdo = new VdoCharacteristic(getVulnerability(cve_id), vdoRecord.getCreatedDate(), vdoRecord.getLabel(), vdoRecord.getGroup(), vdoRecord.getConfidence(), user_id);
+		// persist new changes
+		for (VdoUpdateRecord vdoRecord : vdoUpdate.getVdoRecords()){
+        	VdoCharacteristic vdo = new VdoCharacteristic(getVulnerability(cve_id), vdoRecord.getCreatedDate(), vdoRecord.getLabel(), vdoRecord.getGroup(), vdoRecord.getConfidence(), user_id, vdoRecord.getIsActive());
         	this.entityManager.persist(vdo);
         }
+
 	}
 
 	/**
@@ -157,20 +140,17 @@ public class ReviewRepository {
 	 * @param updateVDO - Checks if VDO needs to be updated
 	 * @param updateCVSS - Checks if CVSS needs to be updated
 	 * @param updateAffRel - Checks if Affected Releases table needs to be updated
-	 * @param status_id
 	 * @param vuln_id
 	 * @param user_id
 	 * @param cve_id
-	 * @param updateInfo - Info on update (For atomic update logs)
 	 * @param cveDescription - New CVE Description
 	 * @param vdoUpdate - New VDO Info
-	 * @param cvssUpdate - New CVSS Info
 	 * @param productsToRemove - Products to remove from Affected Releases
 	 * @return -1
 	 */
 	@Transactional
 	public int complexUpdate(boolean updateDescription, boolean updateVDO, boolean updateCVSS, boolean updateAffRel, int vuln_id, int user_id, String username, String cve_id,
-			String cveDescription, VdoUpdate vdoUpdate, CvssUpdate cvssUpdate, int[] productsToRemove) {
+			String cveDescription, VdoUpdate vdoUpdate, int[] productsToRemove) {
 
 		int rs = 0;
 
@@ -180,10 +160,6 @@ public class ReviewRepository {
 
 		if (updateVDO) {
 			updateVulnerabilityVDO(vdoUpdate, cve_id, user_id);
-		}
-
-		if (updateCVSS) {
-			updateVulnerabilityCVSS(cvssUpdate, cve_id, user_id);
 		}
 
 		if (updateAffRel) {

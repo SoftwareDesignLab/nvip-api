@@ -13,4 +13,6 @@ public class VdoCharacteristicDTO {
     String vdoLabel;
     double vdoConfidence;
     String vdoNounGroup;
+    Integer userId;
+    int isActive;
 }

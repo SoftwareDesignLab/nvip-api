@@ -33,11 +33,13 @@ public class VdoUpdateRecord {
     private String group;
     private double confidence;
     private LocalDateTime createdDate;
+	private int isActive;
 	
-	public VdoUpdateRecord(String label, String group, double confidence) {
+	public VdoUpdateRecord(String label, String group, double confidence, int isActive) {
 		this.label = label;
 		this.group = group;
 		this.confidence = confidence;
         this.createdDate = LocalDateTime.now();
+		this.isActive = isActive;
 	}
 }

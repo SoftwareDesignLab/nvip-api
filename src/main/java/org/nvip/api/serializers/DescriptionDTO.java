@@ -7,7 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class CvssDTO {
-    String cveId;
-    double baseScore;
+public class DescriptionDTO {
+    String description;
+    String createdDate;
+    int isUserGenerated;
 }
