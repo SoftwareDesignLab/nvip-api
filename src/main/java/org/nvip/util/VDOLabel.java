@@ -51,7 +51,6 @@ public enum VDOLabel {
         return vdoLabelId;
     }
     public static VDOLabel getVdoLabel(String vdoLabelName){
-        logger.info("looking up vdo label name of {}", vdoLabelName);
         for (VDOLabel label : VDOLabel.values()){
             if (label.vdoLabelName.equals(vdoLabelName)){
                 return label;

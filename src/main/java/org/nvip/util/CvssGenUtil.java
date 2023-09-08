@@ -28,9 +28,6 @@ public class CvssGenUtil {
     }
 
     private static Set<VDOLabel> mapToLabelSet(List<VdoCharacteristic> vdoCharacteristics) {
-        for (VdoCharacteristic vc: vdoCharacteristics) {
-            logger.info(vc.getVdoLabel());
-        }
         return vdoCharacteristics.stream().map(v->VDOLabel.getVdoLabel(v.getVdoLabel())).collect(Collectors.toSet());
     }
 
@@ -153,14 +150,14 @@ public class CvssGenUtil {
      */
     private static Map<CVSSVector, Double> loadScoreTable() {
         Map<CVSSVector, Double> out = new HashMap<>();
-        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/cvss_map.csv"))) {
+        try (CSVReader reader = new CSVReader(new FileReader("cvss_map.csv"))) {
             String[] line;
             while ((line=reader.readNext()) != null) {
                 out.put(new CVSSVector(line[0]), Double.parseDouble(line[1]));
             }
         } catch (IOException | CsvValidationException e) {
-//            logger.error("Error while loading CVSS score map");
-//            logger.error(e);
+            logger.error("Error while loading CVSS score map");
+            logger.error(e);
         }
         return out;
     }
