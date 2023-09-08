@@ -2,18 +2,18 @@ package org.nvip.util;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nvip.entities.Cvss;
 import org.nvip.entities.VdoCharacteristic;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CvssGenUtil {
+    private static final Logger logger = LogManager.getLogger(CvssGenUtil.class);
 
     public static Double calculateCVSSScore(List<VdoCharacteristic> vdoCharacteristics) {
         // use set of all vulns VDO labels to generate a
@@ -28,6 +28,9 @@ public class CvssGenUtil {
     }
 
     private static Set<VDOLabel> mapToLabelSet(List<VdoCharacteristic> vdoCharacteristics) {
+        for (VdoCharacteristic vc: vdoCharacteristics) {
+            logger.info(vc.getVdoLabel());
+        }
         return vdoCharacteristics.stream().map(v->VDOLabel.getVdoLabel(v.getVdoLabel())).collect(Collectors.toSet());
     }
 
@@ -160,6 +163,29 @@ public class CvssGenUtil {
 //            logger.error(e);
         }
         return out;
+    }
+
+    public static void main(String[] args) {
+        Set<VDOLabel> inputSet = new HashSet<>();
+        inputSet.add(VDOLabel.LIMITED_RMT);
+        inputSet.add(VDOLabel.LOCAL);
+        inputSet.add(VDOLabel.APPLICATION);
+        inputSet.add(VDOLabel.TRUST_FAILURE);
+        inputSet.add(VDOLabel.READ);
+        inputSet.add(VDOLabel.RESOURCE_REMOVAL);
+        inputSet.add(VDOLabel.SANDBOXED);
+        inputSet.add(VDOLabel.ASLR);
+        List<VdoCharacteristic> characteristics = new ArrayList<>();
+
+        VdoCharacteristic characteristic = new VdoCharacteristic(null, "Limited Rmt", "Attack Theater", 0);
+        characteristics.add(characteristic);
+
+        Set<VDOLabel> labels = mapToLabelSet(characteristics);
+        labels.forEach(v->System.out.println(v.vdoLabelName));
+        Map<CVSSVector, Double> scoreTable = loadScoreTable();
+        String[] vector = getCvssVector(inputSet);
+        Double score = scoreTable.get(new CVSSVector(vector));
+        System.out.println(score);
     }
 
 }
