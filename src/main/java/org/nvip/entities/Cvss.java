@@ -45,7 +45,7 @@ public class Cvss {
     @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
     Vulnerability vulnerability;
 	private double baseScore;
-	private double impactScore;
+	@Transient private double impactScore;
     @Basic private LocalDateTime createDate;
     private Integer userId;
 
