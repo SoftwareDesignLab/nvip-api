@@ -8,23 +8,26 @@ import org.nvip.entities.Cvss;
 import org.nvip.entities.VdoCharacteristic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class CvssGenUtil {
 
-    private final ApplicationContext ctx;
+//    private final ApplicationContext ctx;
+    private final ResourceLoader resourceLoader;
 
     private static final Logger logger = LogManager.getLogger(CvssGenUtil.class);
 
-    public CvssGenUtil(ApplicationContext ctx) {
-        this.ctx = ctx;
+    public CvssGenUtil(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
     }
 
     public Double calculateCVSSScore(List<VdoCharacteristic> vdoCharacteristics) {
@@ -40,7 +43,9 @@ public class CvssGenUtil {
     }
 
     private Set<VDOLabel> mapToLabelSet(List<VdoCharacteristic> vdoCharacteristics) {
-        return vdoCharacteristics.stream().peek(v -> logger.info(v.getVdoLabel())).map(v->VDOLabel.getVdoLabel(v.getVdoLabel())).collect(Collectors.toSet());
+        return vdoCharacteristics.stream()
+                .map(v->VDOLabel.getVdoLabel(v.getVdoLabel()))
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -64,7 +69,10 @@ public class CvssGenUtil {
         // values for: AV, AC, PR, UI, S, C, I, A
         // initially set to unknown
         String[] vectorCvss = new String[] { "X", "L", "X", "X", "U", "N", "N", "N" };
-        Map<VDONounGroup, Set<VDOLabel>> nounToLabels = predictionsForVuln.stream().collect(Collectors.groupingBy(v->v.vdoNounGroup, Collectors.toSet()));
+        Map<VDONounGroup, Set<VDOLabel>> nounToLabels = predictionsForVuln.stream()
+                .collect(
+                        Collectors.groupingBy(v->v.vdoNounGroup, Collectors.toSet())
+                );
 
         for (VDONounGroup vdoNounGroup : nounToLabels.keySet()) {
             Set<VDOLabel> predictionsForNounGroup = nounToLabels.get(vdoNounGroup);
@@ -162,7 +170,7 @@ public class CvssGenUtil {
      */
     private Map<CVSSVector, Double> loadScoreTable() {
         Map<CVSSVector, Double> out = new HashMap<>();
-        try (CSVReader reader = new CSVReader(new FileReader(ctx.getResource("classpath:cvss_map.csv").getFile()))) {
+        try (CSVReader reader = new CSVReader(new InputStreamReader(resourceLoader.getResource("classpath:cvss_map.csv").getInputStream()))) {
             String[] line;
             while ((line=reader.readNext()) != null) {
                 out.put(new CVSSVector(line[0]), Double.parseDouble(line[1]));
