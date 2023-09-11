@@ -6,16 +6,28 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nvip.entities.Cvss;
 import org.nvip.entities.VdoCharacteristic;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Component
 public class CvssGenUtil {
+
+    private final ApplicationContext ctx;
+
     private static final Logger logger = LogManager.getLogger(CvssGenUtil.class);
 
-    public static Double calculateCVSSScore(List<VdoCharacteristic> vdoCharacteristics) {
+    public CvssGenUtil(ApplicationContext ctx) {
+        this.ctx = ctx;
+    }
+
+    public Double calculateCVSSScore(List<VdoCharacteristic> vdoCharacteristics) {
         // use set of all vulns VDO labels to generate a
         // partial CVSS vector
         Set<VDOLabel> predictionsForVuln = mapToLabelSet(vdoCharacteristics);
@@ -27,8 +39,8 @@ public class CvssGenUtil {
         return score;
     }
 
-    private static Set<VDOLabel> mapToLabelSet(List<VdoCharacteristic> vdoCharacteristics) {
-        return vdoCharacteristics.stream().map(v->VDOLabel.getVdoLabel(v.getVdoLabel())).collect(Collectors.toSet());
+    private Set<VDOLabel> mapToLabelSet(List<VdoCharacteristic> vdoCharacteristics) {
+        return vdoCharacteristics.stream().peek(v -> logger.info(v.getVdoLabel())).map(v->VDOLabel.getVdoLabel(v.getVdoLabel())).collect(Collectors.toSet());
     }
 
     /**
@@ -47,7 +59,7 @@ public class CvssGenUtil {
      *                            and confidence for each noun group value.
      * @return
      */
-     private static String[] getCvssVector(Set<VDOLabel> predictionsForVuln) {
+     private String[] getCvssVector(Set<VDOLabel> predictionsForVuln) {
 
         // values for: AV, AC, PR, UI, S, C, I, A
         // initially set to unknown
@@ -148,9 +160,9 @@ public class CvssGenUtil {
      * This method loads a precomputed map from cvss vector -> score for a simple lookup instead.
      * @return map from cvss vector to median score among matching NVD vulnerabilities
      */
-    private static Map<CVSSVector, Double> loadScoreTable() {
+    private Map<CVSSVector, Double> loadScoreTable() {
         Map<CVSSVector, Double> out = new HashMap<>();
-        try (CSVReader reader = new CSVReader(new FileReader("cvss_map.csv"))) {
+        try (CSVReader reader = new CSVReader(new FileReader(ctx.getResource("classpath:cvss_map.csv").getFile()))) {
             String[] line;
             while ((line=reader.readNext()) != null) {
                 out.put(new CVSSVector(line[0]), Double.parseDouble(line[1]));
@@ -162,27 +174,27 @@ public class CvssGenUtil {
         return out;
     }
 
-    public static void main(String[] args) {
-        Set<VDOLabel> inputSet = new HashSet<>();
-        inputSet.add(VDOLabel.LIMITED_RMT);
-        inputSet.add(VDOLabel.LOCAL);
-        inputSet.add(VDOLabel.APPLICATION);
-        inputSet.add(VDOLabel.TRUST_FAILURE);
-        inputSet.add(VDOLabel.READ);
-        inputSet.add(VDOLabel.RESOURCE_REMOVAL);
-        inputSet.add(VDOLabel.SANDBOXED);
-        inputSet.add(VDOLabel.ASLR);
-        List<VdoCharacteristic> characteristics = new ArrayList<>();
-
-        VdoCharacteristic characteristic = new VdoCharacteristic(null, "Limited Rmt", "Attack Theater", 0);
-        characteristics.add(characteristic);
-
-        Set<VDOLabel> labels = mapToLabelSet(characteristics);
-        labels.forEach(v->System.out.println(v.vdoLabelName));
-        Map<CVSSVector, Double> scoreTable = loadScoreTable();
-        String[] vector = getCvssVector(inputSet);
-        Double score = scoreTable.get(new CVSSVector(vector));
-        System.out.println(score);
-    }
+//    public static void main(String[] args) {
+//        Set<VDOLabel> inputSet = new HashSet<>();
+//        inputSet.add(VDOLabel.LIMITED_RMT);
+//        inputSet.add(VDOLabel.LOCAL);
+//        inputSet.add(VDOLabel.APPLICATION);
+//        inputSet.add(VDOLabel.TRUST_FAILURE);
+//        inputSet.add(VDOLabel.READ);
+//        inputSet.add(VDOLabel.RESOURCE_REMOVAL);
+//        inputSet.add(VDOLabel.SANDBOXED);
+//        inputSet.add(VDOLabel.ASLR);
+//        List<VdoCharacteristic> characteristics = new ArrayList<>();
+//
+//        VdoCharacteristic characteristic = new VdoCharacteristic(null, "Limited Rmt", "Attack Theater", 0);
+//        characteristics.add(characteristic);
+//
+//        Set<VDOLabel> labels = mapToLabelSet(characteristics);
+//        labels.forEach(v->System.out.println(v.vdoLabelName));
+//        Map<CVSSVector, Double> scoreTable = loadScoreTable();
+//        String[] vector = getCvssVector(inputSet);
+//        Double score = scoreTable.get(new CVSSVector(vector));
+//        System.out.println(score);
+//    }
 
 }
