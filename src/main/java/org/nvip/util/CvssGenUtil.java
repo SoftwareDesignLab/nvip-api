@@ -1,33 +1,19 @@
 package org.nvip.util;
 
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nvip.entities.Cvss;
 import org.nvip.entities.VdoCharacteristic;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
 public class CvssGenUtil {
 
-//    private final ApplicationContext ctx;
-    private final ResourceLoader resourceLoader;
+    private final Map<CVSSVector, Double> scoreTable;
 
     private static final Logger logger = LogManager.getLogger(CvssGenUtil.class);
 
-    public CvssGenUtil(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
+    public CvssGenUtil(Map<CVSSVector, Double> scoreTable) {
+        this.scoreTable = scoreTable;
     }
 
     public Double calculateCVSSScore(List<VdoCharacteristic> vdoCharacteristics) {
@@ -35,10 +21,7 @@ public class CvssGenUtil {
         // partial CVSS vector
         Set<VDOLabel> predictionsForVuln = mapToLabelSet(vdoCharacteristics);
         String[] cvssVector = getCvssVector(predictionsForVuln);
-        // use csv map to grab new CVSS score
-        Map<CVSSVector, Double> scoreTable = loadScoreTable();
         Double score = scoreTable.get(new CVSSVector(cvssVector));
-        // return new CVSS with this score
         return score;
     }
 
@@ -161,48 +144,4 @@ public class CvssGenUtil {
 
         return vectorCvss;
     }
-
-
-    /**
-     * New (august 2023) way of computing cvss scores. The previous methodology would check a cvss vector against a large dataset and return the median matching score.
-     * This method loads a precomputed map from cvss vector -> score for a simple lookup instead.
-     * @return map from cvss vector to median score among matching NVD vulnerabilities
-     */
-    private Map<CVSSVector, Double> loadScoreTable() {
-        Map<CVSSVector, Double> out = new HashMap<>();
-        try (CSVReader reader = new CSVReader(new InputStreamReader(resourceLoader.getResource("classpath:cvss_map.csv").getInputStream()))) {
-            String[] line;
-            while ((line=reader.readNext()) != null) {
-                out.put(new CVSSVector(line[0]), Double.parseDouble(line[1]));
-            }
-        } catch (IOException | CsvValidationException e) {
-            logger.error("Error while loading CVSS score map");
-            logger.error(e);
-        }
-        return out;
-    }
-
-//    public static void main(String[] args) {
-//        Set<VDOLabel> inputSet = new HashSet<>();
-//        inputSet.add(VDOLabel.LIMITED_RMT);
-//        inputSet.add(VDOLabel.LOCAL);
-//        inputSet.add(VDOLabel.APPLICATION);
-//        inputSet.add(VDOLabel.TRUST_FAILURE);
-//        inputSet.add(VDOLabel.READ);
-//        inputSet.add(VDOLabel.RESOURCE_REMOVAL);
-//        inputSet.add(VDOLabel.SANDBOXED);
-//        inputSet.add(VDOLabel.ASLR);
-//        List<VdoCharacteristic> characteristics = new ArrayList<>();
-//
-//        VdoCharacteristic characteristic = new VdoCharacteristic(null, "Limited Rmt", "Attack Theater", 0);
-//        characteristics.add(characteristic);
-//
-//        Set<VDOLabel> labels = mapToLabelSet(characteristics);
-//        labels.forEach(v->System.out.println(v.vdoLabelName));
-//        Map<CVSSVector, Double> scoreTable = loadScoreTable();
-//        String[] vector = getCvssVector(inputSet);
-//        Double score = scoreTable.get(new CVSSVector(vector));
-//        System.out.println(score);
-//    }
-
 }
