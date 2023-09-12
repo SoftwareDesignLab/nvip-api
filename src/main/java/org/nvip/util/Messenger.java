@@ -37,6 +37,9 @@ import org.apache.logging.log4j.Logger;
 
 import org.json.JSONArray;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
 public class Messenger {
 	private static Logger logger = LogManager.getLogger(Messenger.class);
 
@@ -45,12 +48,25 @@ public class Messenger {
         cveArray.put(cveId);
         String mqHost = (System.getenv("MQ_HOST") == null) ? "localhost" : System.getenv("MQ_HOST");
         int mqPort = (System.getenv("MQ_PORT") == null) ? 5672 : Integer.parseInt(System.getenv("MQ_PORT"));
+        String mqUser = (System.getenv("MQ_USER") == null) ? "admin" :System.getenv("MQ_USER");
+        String mqPassword = (System.getenv("MQ_PASSWORD") == null) ? "admin" : System.getenv("MQ_PASSWORD");
 
         try {
             // Create a connection to the RabbitMQ server and create the channel
             ConnectionFactory factory = new ConnectionFactory();
             factory.setHost(mqHost);
             factory.setPort((int) mqPort);
+            factory.setUsername(mqUser);
+            factory.setPassword(mqPassword);
+
+            try {
+                factory.useSslProtocol();
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            } catch (KeyManagementException e) {
+                throw new RuntimeException(e);
+            }
+
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 
