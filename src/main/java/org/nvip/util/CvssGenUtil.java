@@ -52,7 +52,9 @@ public class CvssGenUtil {
         // values for: AV, AC, PR, UI, S, C, I, A
         // initially set to unknown
         String[] vectorCvss = new String[] { "X", "L", "X", "X", "U", "N", "N", "N" };
+
         Map<VDONounGroup, Set<VDOLabel>> nounToLabels = predictionsForVuln.stream()
+                .filter(Objects::nonNull)
                 .collect(
                         Collectors.groupingBy(v->v.vdoNounGroup, Collectors.toSet())
                 );

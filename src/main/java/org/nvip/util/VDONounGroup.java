@@ -1,20 +1,18 @@
 package org.nvip.util;
 
 public enum VDONounGroup{
-    IMPACT_METHOD(1, "ImpactMethod", "Impact Method"),
-    CONTEXT(2, "Context", "Context"),
-    MITIGATION(3, "Mitigation", "Mitigation"),
-    ATTACK_THEATER(4, "AttackTheater", "Attack Theater"),
-    LOGICAL_IMPACT(5, "LogicalImpact", "Logical Impact");
+    IMPACT_METHOD(1,  "Impact Method"),
+    CONTEXT(2,  "Context"),
+    MITIGATION(3, "Mitigation"),
+    ATTACK_THEATER(4,  "Attack Theater"),
+    LOGICAL_IMPACT(5, "Logical Impact");
 
     public int vdoNounGroupId;
     public String vdoNounGroupName;
-    public String vdoNameForUI;
 
-    VDONounGroup(int vdoNounGroupId, String vdoNounGroupName, String vdoNameForUI) {
+    VDONounGroup(int vdoNounGroupId, String vdoNounGroupName) {
         this.vdoNounGroupId = vdoNounGroupId;
         this.vdoNounGroupName = vdoNounGroupName;
-        this.vdoNameForUI = vdoNameForUI;
     }
     public int getVdoGroupId() {
         return vdoNounGroupId;
