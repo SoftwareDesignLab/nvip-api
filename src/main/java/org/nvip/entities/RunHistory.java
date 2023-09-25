@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 public class RunHistory {
-    @Id private int runhistoryId;
+    @Column (name="runhistory_id")
+    @Id private int runhistory__Id;
 
     @Basic private LocalDateTime runDateTime;
 
