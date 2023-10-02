@@ -25,20 +25,15 @@ package org.nvip.data.repositories;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
-import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.nvip.api.serializers.CredentialsDTO;
 import org.nvip.entities.*;
-import org.nvip.util.VulnerabilityUtil;
 import org.springframework.stereotype.Repository;
-
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -57,10 +52,10 @@ public class UserRepository {
 	/**
 	 * Function that Hash Encrypts passwords that are inputed into
 	 * the system
-	 * @param password
-	 * @param salt
-	 * @param iterations
-	 * @param keyLength
+	 * @param password - password to be hashed
+	 * @param salt - salt to be used for hashing
+	 * @param iterations - number of iterations to be used for hashing
+	 * @param keyLength - key length to be used for hashing
 	 * @return
 	 */
 	public byte[] hashPassword(final char[] password, final byte[] salt, final int iterations, final int keyLength) {
@@ -69,17 +64,26 @@ public class UserRepository {
 			SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
 			PBEKeySpec spec = new PBEKeySpec(password, salt, iterations, keyLength);
 			SecretKey key = skf.generateSecret(spec);
-			byte[] res = key.getEncoded();
-			return res;
+            return key.getEncoded();
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
+	//TODO: remove all, set as interface, reference using JPA derived queries instead of manually
+
+	/**
+	 * save a new user entry to the database
+	 */
+	public User save(User user) {
+		entityManager.persist(user);
+		return user;
+	}
+
 	/**
 	 * Function that generates Hex String for password hashing
-	 * @param s
-	 * @return
+	 * @param s - string to be converted to Hex String
+	 * @return - Hex String
 	 */
 	/* s must be an even-length string. */
 	public byte[] hexStringToByteArray(String s) {
@@ -92,13 +96,11 @@ public class UserRepository {
 	}
 
 	/**
-	 * Checks if a user with the given name exists in the NVIP Database,
-	 * if so, return true...return false otherwise
-	 * @param conn
-	 * @param userName
-	 * @return
+	 * Checks if a user with the given name exists in the NVIP Database
+	 * @param userName - username to be checked
+	 * @return - true if user exists, false otherwise
 	 */
-	private boolean checkUserExistance(String userName) {
+	private boolean checkUserExistence(String userName) {
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
 		Root<User> root = cq.from(User.class);
@@ -112,19 +114,19 @@ public class UserRepository {
 	 * Login function called by LoginServlet (POST Request),
 	 * Checks if the created user already exists,
 	 * If not, create user and add to database
-	 * @param user
-	 * @param password
-	 * @return
+	 * @param user - user to be created
+	 * @param password - password to be hashed and stored
+	 * @return - 1 if user is created, -1 if something went wrong, -2 if user already exists
 	 */
 	@Transactional
 	public int createUser(User user, String password) {
-		boolean userExist = checkUserExistance(user.getUserName());
+		boolean userExist = checkUserExistence(user.getUserName());
 		if (userExist) {
 			return -2;
 		}
 
 		SecureRandom random = new SecureRandom();
-		byte saltBytes[] = new byte[64];
+		byte[] saltBytes = new byte[64];
 		random.nextBytes(saltBytes);
 
 		String salt = Hex.encodeHexString(saltBytes);
@@ -150,59 +152,79 @@ public class UserRepository {
 	 * @return
 	 */
 	public User getRoleIDandExpirationDate(String userName, String token) {
-		return login(userName);
+//		return login(userName);
+		return null;
+	}
+
+	public User findByUserName(String userName) {
+		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<User> cq = criteriaBuilder.createQuery(User.class);
+		Root<User> root = cq.from(User.class);
+		CriteriaQuery<User> query = cq.where(criteriaBuilder.equal(root.get("userName"), userName));
+		try {
+			return entityManager.createQuery(query).getSingleResult();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	/**
 	 * Login function called by LoginServlet (GET Request),
 	 * Verifies passwords match and creates token for user
-	 * @param userName
-	 * @param password
-	 * @return
+	 * @param userName - username to be checked
+	 * @param password - password to be checked
+	 * @return - User object if login is successful, null otherwise
 	 */
-	@Transactional
-	public User login(String userName, String password) {
-		// Password Hashing Logic
-		User user = login(userName.toLowerCase());
-		if (user == null) {
-			return null;
-		}
+//	@Transactional
+//	public User login(String userName, String password) {
+//		// Password Hashing Logic
+////		User user = login(userName.toLowerCase());
+//		User user = null;
+//		if (user == null) {
+//			return null;
+//		}
+//
+//		int iterations = 10000;
+//		int keyLength = 512;
+//		char[] passwordChars = password.toCharArray();
+//
+//		String dbHash = user.getPasswordHash().substring(0, keyLength / 4);
+//		String salt = user.getPasswordHash().substring(keyLength / 4);
+//		byte[] saltBytes = hexStringToByteArray(salt);
+//
+//		byte[] hashedBytes = hashPassword(passwordChars, saltBytes, iterations, keyLength);
+//		String hashedString = Hex.encodeHexString(hashedBytes);
+//
+//		if (!hashedString.equalsIgnoreCase(dbHash)) {
+//			return null;
+//		}
+//
+//		SecureRandom random = new SecureRandom();
+//		byte tokenBytes[] = new byte[64];
+//		random.nextBytes(tokenBytes);
+//		String tokenString = Hex.encodeHexString(tokenBytes);
+//
+//		LocalDateTime loginDate = LocalDateTime.now();
+//		LocalDateTime expirationDate = null;
+//		if (user.getRoleId() == 1) {
+//			expirationDate = LocalDateTime.now().plusHours(3);
+//		} else if (user.getRoleId() == 2) {
+//			expirationDate = LocalDateTime.now().plusDays(5);
+//		}
+//
+//		int rs = updateToken(userName, tokenString, loginDate, expirationDate);
+//		if (rs == -1) {
+//			// Something went wrong in updating user token
+//			return null;
+//		}
+//
+//		user.setToken(tokenString);
+//		user.setExpirationDate(expirationDate);
+//
+//		return user;
+//	}
 
-		int iterations = 10000;
-		int keyLength = 512;
-		char[] passwordChars = password.toCharArray();
 
-		String dbHash = user.getPasswordHash().substring(0, keyLength / 4);
-		String salt = user.getPasswordHash().substring(keyLength / 4);
-		byte[] saltBytes = hexStringToByteArray(salt);
-
-		byte[] hashedBytes = hashPassword(passwordChars, saltBytes, iterations, keyLength);
-		String hashedString = Hex.encodeHexString(hashedBytes);
-
-		if (!hashedString.equalsIgnoreCase(dbHash)) {
-			return null;
-		}
-
-		SecureRandom random = new SecureRandom();
-		byte tokenBytes[] = new byte[64];
-		random.nextBytes(tokenBytes);
-		String tokenString = Hex.encodeHexString(tokenBytes);
-
-		LocalDateTime loginDate = LocalDateTime.now();
-		LocalDateTime expirationDate = null;
-		if (user.getRoleId() == 1) {
-			expirationDate = LocalDateTime.now().plusHours(3);
-		} else if (user.getRoleId() == 2) {
-			expirationDate = LocalDateTime.now().plusDays(5);
-		}
-
-		int rs = updateToken(userName, tokenString, loginDate, expirationDate);
-
-		user.setToken(tokenString);
-		user.setExpirationDate(expirationDate);
-
-		return user;
-	}
 
 	/**
 	 * TODO: Could we possibly see if there's a way to merge this function with getRoleIDandExpirationDate
@@ -212,24 +234,24 @@ public class UserRepository {
 	 * @param userName
 	 * @return
 	 */
-	private User login(String userName) {
+	private User login(CredentialsDTO credentials) {
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<User> cq = criteriaBuilder.createQuery(User.class);
 		Root<User> root = cq.from(User.class);
-		CriteriaQuery<User> query = cq.where(criteriaBuilder.equal(root.get("userName"), userName));
+//		CriteriaQuery<User> query = cq.where(criteriaBuilder.equal(root.get("userName"), userName));
+return null;
+//		return entityManager.createQuery(query).getSingleResult();
 
-		return entityManager.createQuery(query).getSingleResult();
 	}
 
 	/**
-	 * Function that updates a user's token once they login
-	 * When the token expires, the user be forced to logout
-	 * @param conn
-	 * @param userName
-	 * @param token
-	 * @param loginDate
-	 * @param expirationDate
-	 * @return
+	 * Function that updates a user's token once they log in
+	 * When the token expires, the user will be forced to log out
+	 * @param userName - username of user to be updated
+	 * @param token - token to be updated
+	 * @param loginDate - login date of user
+	 * @param expirationDate - expiration date of user's token
+	 * @return - 1 if token is updated, -1 if something went wrong
 	 */
 	private int updateToken(String userName, String token, LocalDateTime loginDate, LocalDateTime expirationDate) {
 
