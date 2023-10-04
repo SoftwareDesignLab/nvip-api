@@ -40,23 +40,6 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    //todo: is this still needed
-    @Bean
-    public WebMvcConfigurer corsConfigurer()
-    {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins(
-                                "http://localhost:4200",
-                                "https://www-staging.cve.live",
-                                "https://www.cve.live"
-                        );
-            }
-        };
-    }
-
     @Bean
     public FilterRegistrationBean corsFilterRegistration() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

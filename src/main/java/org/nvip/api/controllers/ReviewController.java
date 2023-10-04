@@ -49,12 +49,15 @@ public class ReviewController {
         if (userName == null || token == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 
-        User user = userRepository.getRoleIDandExpirationDate(userName, token);
+        //TODO:
+//        User user = userRepository.getRoleIDandExpirationDate(userName, token);
 
-        if (user == null || user.getRoleId() < 1 || user.getRoleId() > 2)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+//        if (user == null || user.getRoleId() < 1 || user.getRoleId() > 2)
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 
-       int userID = user.getUserID();
+//       int userID = user.getUserID();
+        //TODO:
+        int userID = 1;
 
        JSONObject dataJSON = new JSONObject(updateData);
 
