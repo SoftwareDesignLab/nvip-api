@@ -24,7 +24,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JWTFilter(userAuthProvider), BasicAuthenticationFilter.class)
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/login", "/register").permitAll()
+                .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/", "/login", "/register").permitAll()
                         .anyRequest().authenticated());
         return http.build();
     }
