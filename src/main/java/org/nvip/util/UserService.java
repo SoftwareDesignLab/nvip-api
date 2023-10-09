@@ -6,6 +6,7 @@ import org.nvip.api.serializers.CredentialsDTO;
 import org.nvip.api.serializers.UserDTO;
 import org.nvip.data.repositories.UserRepository;
 import org.nvip.entities.User;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,16 +32,16 @@ public class UserService {
     public UserDTO login(CredentialsDTO credentials) {
         User user = userRepository.findByUserName(credentials.getUserName());
         if (user == null)
-            throw new RuntimeException("Invalid Username or Password.");
+            throw new AppException("Invalid Username or Password.", HttpStatus.NOT_FOUND);
         if (!passwordEncoder.matches(CharBuffer.wrap(credentials.getPassword()), user.getPasswordHash()))
-            throw new RuntimeException("Invalid Username or Password.");
+            throw new AppException("Invalid Username or Password.", HttpStatus.NOT_FOUND);
         return toDTO(user);
     }
 
     public UserDTO createUser(CreateUserDTO userData) {
         User user = userRepository.findByUserName(userData.getUsername());
         if (user != null) {
-            throw new RuntimeException("User already exists!");
+            throw new AppException("User already exists!", HttpStatus.FORBIDDEN);
         }
         User newUser = new User(null, userData.getUsername(), userData.getFname(), userData.getLname(), userData.getEmail(), 2);
         // encode password using BCryptPasswordEncoder
