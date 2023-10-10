@@ -24,6 +24,8 @@ public class UserService {
                 .userID(user.getUserID())
                 .token(user.getToken())
                 .userName(user.getUserName())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .roleId(user.getRoleId())
                 .expirationDate(user.getExpirationDate())
                 .build();
