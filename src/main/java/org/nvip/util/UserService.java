@@ -41,7 +41,7 @@ public class UserService {
     public UserDTO createUser(CreateUserDTO userData) {
         User user = userRepository.findByUserName(userData.getUsername());
         if (user != null) {
-            throw new AppException("User already exists!", HttpStatus.FORBIDDEN);
+            throw new AppException(String.format("User %s already exists.", user.getUserName()), HttpStatus.FORBIDDEN);
         }
         User newUser = new User(null, userData.getUsername(), userData.getFname(), userData.getLname(), userData.getEmail(), 2);
         // encode password using BCryptPasswordEncoder
