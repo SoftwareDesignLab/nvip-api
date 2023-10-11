@@ -6,6 +6,7 @@ import org.nvip.data.repositories.UserRepository;
 import org.nvip.data.repositories.VulnerabilityRepository;
 import org.nvip.entities.*;
 
+import org.nvip.util.AppException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +50,9 @@ public class ReviewController {
         if (userName == null || token == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 
-        int userID = userRepository.findByUserName(userName).getUserID();
+        int userID = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(String.format("Unable to find admin user %s... Change not made", userName), HttpStatus.FORBIDDEN))
+                .getUserID();
 
        JSONObject dataJSON = new JSONObject(updateData);
 

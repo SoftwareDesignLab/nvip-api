@@ -32,19 +32,16 @@ public class UserService {
     }
 
     public UserDTO login(CredentialsDTO credentials) {
-        User user = userRepository.findByUserName(credentials.getUserName());
-        if (user == null)
-            throw new AppException("Invalid Username or Password.", HttpStatus.NOT_FOUND);
+        User user = userRepository.findByUserName(credentials.getUserName())
+                .orElseThrow(() -> new AppException("Invalid Username or Password.", HttpStatus.NOT_FOUND));
         if (!passwordEncoder.matches(CharBuffer.wrap(credentials.getPassword()), user.getPasswordHash()))
             throw new AppException("Invalid Username or Password.", HttpStatus.NOT_FOUND);
         return toDTO(user);
     }
 
     public UserDTO createUser(CreateUserDTO userData) {
-        User user = userRepository.findByUserName(userData.getUsername());
-        if (user != null) {
-            throw new AppException(String.format("User %s already exists.", user.getUserName()), HttpStatus.FORBIDDEN);
-        }
+        boolean alreadyExists = userRepository.findByUserName(userData.getUsername()).isPresent();
+        if (alreadyExists) throw new AppException(String.format("User %s already exists.", userData.getUsername()), HttpStatus.FORBIDDEN);
         User newUser = new User(null, userData.getUsername(), userData.getFname(), userData.getLname(), userData.getEmail(), 2);
         // encode password using BCryptPasswordEncoder
         char[] passwordToEncode = userData.getPassword();
