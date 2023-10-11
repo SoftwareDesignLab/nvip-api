@@ -5,7 +5,7 @@ import org.nvip.api.serializers.CreateUserDTO;
 import org.nvip.api.serializers.CredentialsDTO;
 import org.nvip.api.serializers.UserDTO;
 import org.nvip.util.UserAuthProvider;
-import org.nvip.util.UserService;
+import org.nvip.api.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

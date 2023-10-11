@@ -1,4 +1,4 @@
-package org.nvip.util;
+package org.nvip.api.services;
 
 import lombok.RequiredArgsConstructor;
 import org.nvip.api.serializers.CreateUserDTO;
@@ -6,6 +6,7 @@ import org.nvip.api.serializers.CredentialsDTO;
 import org.nvip.api.serializers.UserDTO;
 import org.nvip.data.repositories.UserRepository;
 import org.nvip.entities.User;
+import org.nvip.util.AppException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

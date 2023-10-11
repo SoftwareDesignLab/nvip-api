@@ -12,11 +12,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 public class RunHistory {
-    @Column (name="runhistory_id")
-    @Id private int runhistory__Id;
-
+    @Id @Column (name="runhistory_id")
+    private int runhistoryId;
     @Basic private LocalDateTime runDateTime;
-
     private int totalCveCount;
     private int newCveCount;
     private int updatedCveCount;

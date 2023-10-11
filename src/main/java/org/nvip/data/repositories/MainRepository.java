@@ -23,54 +23,13 @@
  */
 package org.nvip.data.repositories;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
-import jakarta.persistence.Tuple;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.nvip.entities.RunHistory;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Repository
-public class MainRepository {
-
-	@PersistenceContext
-	EntityManager entityManager;
-
-	private static final String[] MAIN_PAGE_COUNTS = { "CvesAdded", "CvesUpdated", "not_in_nvd_count",
-			"not_in_mitre_count", "run_date_times", "avgTimeGapNvd", "avgTimeGapMitre" };
-
-	public Map<String, String> getMainPageCounts() {
-
-		Query query = entityManager.createNativeQuery("""
-			SELECT
-				group_concat(drh.not_in_mitre_count SEPARATOR ';') not_in_mitre,
-				group_concat(drh.not_in_nvd_count SEPARATOR ';') not_in_nvd,
-				group_concat(drh.run_date_time SEPARATOR ';') run_date_time,
-				group_concat(drh.avg_time_gap_nvd SEPARATOR ';') avg_time_gap_nvd,
-				group_concat(drh.avg_time_gap_mitre SEPARATOR ';') avg_time_gap_mitre,
-				group_concat(drh.new_cve_count SEPARATOR ';') added_cve_count,
-				group_concat(drh.updated_cve_count SEPARATOR ';') updated_cve_count
-			FROM (
-				SELECT run_date_time, not_in_nvd_count, not_in_mitre_count, avg_time_gap_nvd, avg_time_gap_mitre, new_cve_count, updated_cve_count
-				FROM runhistory ORDER BY run_date_time DESC LIMIT 15
-			) AS drh;
-			""", Tuple.class);
-
-		Map<String, String> mainPageCounts = new HashMap<>();
-		Tuple res = ((Tuple) query.getSingleResult());
-		if(res.get("added_cve_count", String.class) != null) mainPageCounts.put(MAIN_PAGE_COUNTS[0], res.get("added_cve_count", String.class));
-		if(res.get("updated_cve_count", String.class) != null) mainPageCounts.put(MAIN_PAGE_COUNTS[1], res.get("updated_cve_count", String.class));
-		if(res.get("not_in_nvd", String.class) != null) mainPageCounts.put(MAIN_PAGE_COUNTS[2], res.get("not_in_nvd", String.class));
-		if(res.get("not_in_mitre", String.class) != null) mainPageCounts.put(MAIN_PAGE_COUNTS[3], res.get("not_in_mitre", String.class));
-		if(res.get("run_date_time", String.class) != null) mainPageCounts.put(MAIN_PAGE_COUNTS[4], res.get("run_date_time", String.class));
-		if(res.get("avg_time_gap_nvd", String.class) != null) mainPageCounts.put(MAIN_PAGE_COUNTS[5], res.get("avg_time_gap_nvd", String.class));
-		if(res.get("avg_time_gap_mitre", String.class) != null) mainPageCounts.put(MAIN_PAGE_COUNTS[6], res.get("avg_time_gap_mitre", String.class));
-
-		return mainPageCounts;
-	}
+public interface MainRepository extends JpaRepository<RunHistory, Integer> {
+	List<RunHistory> findTop15ByOrderByRunDateTimeDesc();
 }
