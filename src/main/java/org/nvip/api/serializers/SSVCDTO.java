@@ -31,7 +31,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class SSVCDTO {
-    private String cveId;
-    private String missionAndWellbeing;
-    private String score;
+    String cveId;
+    String missionAndWellbeing;
+    String score;
 }

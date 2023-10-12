@@ -2,7 +2,6 @@ package org.nvip.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.type.NumericBooleanConverter;
 
 @Entity
 @Table(name="ssvc")
@@ -13,9 +12,9 @@ public class SSVC {
     @Id private int id;
     @OneToOne @JoinColumn(name="cve_id", referencedColumnName="cveId")
     private Vulnerability vulnerability;
-    @Convert(converter = NumericBooleanConverter.class)
+    @Column(columnDefinition = "BIT", length = 1)
     private boolean automatable;
     private String exploitStatus;
-    @Convert(converter = NumericBooleanConverter.class)
+    @Column(columnDefinition = "BIT", length = 1)
     private boolean technicalImpact;
 }
