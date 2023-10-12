@@ -23,9 +23,8 @@
  */
 package org.nvip.api.controllers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.nvip.data.repositories.SearchRepository;
+import lombok.RequiredArgsConstructor;
+import org.nvip.api.services.SearchService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,17 +33,15 @@ import javax.servlet.http.HttpServlet;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/search")
+@RequiredArgsConstructor
 public class SearchController extends HttpServlet {
 
-	private SearchRepository searchRepository;
+	private final SearchService searchService;
 
-	public SearchController(SearchRepository searchRepository){
-		this.searchRepository = searchRepository;
-	}
-
-	@GetMapping
+	//TODO: cant this be hard coded into the UI
+	// 	why are we making a call to backend for deterministic strings we can hold in frontend
+	@GetMapping("/search")
 	public Map<String, Map<String, String[]>> getSearchInfo(){
-		return searchRepository.getSearchInfo();
+		return searchService.getSearchInfo();
 	}
 }
