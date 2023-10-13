@@ -38,26 +38,6 @@ public class VulnService {
         return type.isEmpty() ? "N/A" : type;
     }
 
-    public VulnerabilitySummaryDTO mapVuln(Vulnerability vuln) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        VulnerabilitySummaryDTO.VulnerabilitySummaryDTOBuilder builder = VulnerabilitySummaryDTO.builder();
-        builder.vulnId(vuln.getVulnId())
-                .cveId(vuln.getCveId())
-                .description(vuln.getDescriptionString().length() < 297 ? vuln.getDescriptionString() : vuln.getDescriptionString().substring(0, 297)+"...")
-                .publishedDate(
-                        vuln.getPublishedDate() != null ? vuln.getPublishedDate().format(dateTimeFormatter) : "N/A"
-                )
-                .lastModifiedDate(
-                        vuln.getLastModifiedDate() != null ? vuln.getLastModifiedDate().format(dateTimeFormatter) : "N/A")
-                .createdDate(vuln.getCreatedDate().format(dateFormatter))
-                .existInNvd(vuln.existsInNvd())
-                .existInMitre(vuln.existsInMitre())
-        ;
-
-        return builder.build();
-    }
-
     public boolean removeLowQualityCve(VulnerabilityAggregate vuln) {
         String pattern = "\\bCVE-20\\d{2}-\\d{4,5}\\b";
 
