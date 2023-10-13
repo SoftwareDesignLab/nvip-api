@@ -45,7 +45,6 @@ public class VulnService {
         builder.vulnId(vuln.getVulnId())
                 .cveId(vuln.getCveId())
                 .description(vuln.getDescriptionString().length() < 297 ? vuln.getDescriptionString() : vuln.getDescriptionString().substring(0, 297)+"...")
-//				.platform(vuln.getPlatform())
                 .publishedDate(
                         vuln.getPublishedDate() != null ? vuln.getPublishedDate().format(dateTimeFormatter) : "N/A"
                 )
@@ -54,20 +53,7 @@ public class VulnService {
                 .createdDate(vuln.getCreatedDate().format(dateFormatter))
                 .existInNvd(vuln.existsInNvd())
                 .existInMitre(vuln.existsInMitre())
-//				.domain(vuln.getDomain())
-//				.version(vuln.getVersion())
         ;
-
-//		for(VdoCharacteristic characteristic: vuln.getVdoList()){
-//			builder.vdo(
-//					VdoCharacteristicDTO.builder()
-//							.cveId(characteristic.getCveId())
-//							.vdoLabel(characteristic.getVdoLabel())
-//							.vdoConfidence(characteristic.getVdoConfidence())
-//							.vdoNounGroup(characteristic.getVdoNounGroup())
-//							.build());
-//		}
-//		builder.type(parseType(characteristics));
 
         return builder.build();
     }
