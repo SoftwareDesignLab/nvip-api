@@ -1,15 +1,10 @@
 package org.nvip.api.services;
 
-
 import lombok.RequiredArgsConstructor;
-import org.nvip.api.serializers.VulnerabilitySummaryDTO;
 import org.nvip.entities.VdoCharacteristic;
-import org.nvip.entities.Vulnerability;
 import org.nvip.entities.VulnerabilityAggregate;
 import org.nvip.util.VulnerabilityUtil;
 import org.springframework.stereotype.Service;
-
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
