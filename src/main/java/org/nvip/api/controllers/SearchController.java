@@ -38,8 +38,6 @@ public class SearchController extends HttpServlet {
 
 	private final SearchService searchService;
 
-	//TODO: cant this be hard coded into the UI
-	// 	why are we making a call to backend for deterministic strings we can hold in frontend
 	@GetMapping("/search")
 	public Map<String, Map<String, String[]>> getSearchInfo(){
 		return searchService.getSearchInfo();

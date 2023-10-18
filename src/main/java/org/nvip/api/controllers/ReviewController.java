@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.nvip.api.serializers.VdoUpdate;
 import org.nvip.api.services.ReviewService;
 import org.nvip.data.repositories.UserRepository;
-import org.nvip.data.repositories.VulnerabilityRepository;
 
 import org.nvip.util.AppException;
 import org.springframework.http.HttpStatus;
@@ -19,7 +18,6 @@ import org.json.JSONArray;
 public class ReviewController {
 
     final UserRepository userRepository;
-    final VulnerabilityRepository vulnerabilityRepository;
     final ReviewService reviewService;
 
     @PostMapping("/reviews")
