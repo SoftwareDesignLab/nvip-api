@@ -10,7 +10,9 @@ import org.nvip.data.repositories.RawDescRepository;
 import org.nvip.data.repositories.VDORepository;
 import org.nvip.data.repositories.VulnRepository;
 import org.nvip.entities.*;
+import org.nvip.util.AppException;
 import org.nvip.util.Messenger;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,7 +28,8 @@ public class ReviewService {
 
     @Transactional
     public void updateVulnerabilityDescription(String description, String cve_id, String username) {
-        Vulnerability vuln = vulnRepository.findByCveId(cve_id);
+        Vulnerability vuln = vulnRepository.findByCveId(cve_id)
+                .orElseThrow(() -> new AppException("Vulnerability not found with id: " + cve_id, HttpStatus.NOT_FOUND));
         RawDescription rawDesc = new RawDescription(
                 description,
                 vuln,
@@ -47,7 +50,15 @@ public class ReviewService {
     public void updateVulnerabilityVDO(VdoUpdate vdoUpdate, String cve_id, int user_id) {
         // persist new changes
         for (VdoUpdateRecord vdoRecord : vdoUpdate.getVdoRecords()){
-            VdoCharacteristic vdo = new VdoCharacteristic(vulnRepository.findByCveId(cve_id), vdoRecord.getCreatedDate(), vdoRecord.getLabel(), vdoRecord.getGroup(), vdoRecord.getConfidence(), user_id, vdoRecord.getIsActive());
+            VdoCharacteristic vdo = new VdoCharacteristic(
+                    vulnRepository.findByCveId(cve_id)
+                            .orElseThrow(() -> new AppException("Cannot update VDO, unable to find vuln with id" + cve_id, HttpStatus.NOT_FOUND)),
+                    vdoRecord.getCreatedDate(),
+                    vdoRecord.getLabel(),
+                    vdoRecord.getGroup(),
+                    vdoRecord.getConfidence(),
+                    user_id,
+                    vdoRecord.getIsActive());
             vdoRepository.save(vdo);
         }
 

@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.nvip.api.serializers.*;
 import org.nvip.data.repositories.VulnRepository;
 import org.nvip.entities.*;
+import org.nvip.util.AppException;
 import org.nvip.util.CvssGenUtil;
 import org.nvip.util.VulnerabilityUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -26,6 +29,7 @@ public class VulnService {
     final CvssGenUtil cvssGenUtil;
 
     VulnerabilityDTO toDTO(Vulnerability v) {
+        if (v == null) return null;
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         VulnerabilityDTO.VulnerabilityDTOBuilder builder = VulnerabilityDTO.builder();
@@ -193,7 +197,8 @@ public class VulnService {
     }
 
     public VulnerabilityDTO getVulnerability(String cveId) {
-        Vulnerability vulnerability = vulnRepository.findByCveId(cveId);
+        Vulnerability vulnerability = vulnRepository.findByCveId(cveId)
+                .orElseThrow(() -> new AppException("Vulnerability not found with id: " + cveId, HttpStatus.NOT_FOUND));
         return toDTO(vulnerability);
     }
 

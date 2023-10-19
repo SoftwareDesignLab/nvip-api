@@ -7,10 +7,11 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface VulnRepository extends JpaRepository<Vulnerability, Long> {
 
-    Vulnerability findByCveId(String cveId);
+    Optional<Vulnerability> findByCveId(String cveId);
 
     @Query("SELECT v FROM Vulnerability v WHERE v.createdDate >= :startDate AND v.createdDate < :endDate")
     List<Vulnerability> findByCreatedDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);

@@ -19,11 +19,12 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class SecurityConfig {
 
     private final UserAuthProvider userAuthProvider;
+    private final UserAuthEntryPoint userAuthEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .exceptionHandling(e -> e.authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED)))
+                .exceptionHandling(e -> e.authenticationEntryPoint(userAuthEntryPoint))
                 .addFilterBefore(new JWTFilter(userAuthProvider), BasicAuthenticationFilter.class)
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.GET, "/").permitAll())
