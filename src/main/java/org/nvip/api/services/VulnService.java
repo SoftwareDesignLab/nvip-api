@@ -143,38 +143,38 @@ public class VulnService {
 
             for (PatchCommit patch : v.getPatchCommits()) {
                 builder.patchCommit(
-                        PatchCommitDTO.builder()
-                                .cveId(v.getCveId())
-                                .sourceUrl(patch.getSourceUrl().getSourceUrl())
-                                .commitSha(patch.getCommitSha())
-                                .commitMessage(patch.getCommitMessage())
-                                .commitDate(String.valueOf(patch.getCommitDate()))
-                                .linesChanged(patch.getLinesChanged())
-                                .build()
+                    PatchCommitDTO.builder()
+                        .cveId(v.getCveId())
+                        .sourceUrl(patch.getSourceUrl().getSourceUrl())
+                        .commitSha(patch.getCommitSha())
+                        .commitMessage(patch.getCommitMessage())
+                        .commitDate(String.valueOf(patch.getCommitDate()))
+                        .linesChanged(patch.getLinesChanged())
+                        .build()
                 );
             }
 
             for (Fix fix : v.getFixes()) {
                 builder.fix(
-                        FixDTO.builder()
-                                .cveId(v.getCveId())
-                                .sourceUrl(fix.getSourceUrl())
-                                .fixDescription(fix.getFixDescription())
-                                .build()
+                    FixDTO.builder()
+                        .cveId(v.getCveId())
+                        .sourceUrl(fix.getSourceUrl())
+                        .fixDescription(fix.getFixDescription())
+                        .build()
                 );
             }
 
             for (Exploit exploit : v.getExploits()) {
                 builder.exploit(
-                        ExploitDTO.builder()
-                                .cveId(v.getCveId())
-                                .source(exploit.getSource())
-                                .sourceUrl(exploit.getSourceUrl())
-                                .description(exploit.getDescription())
-                                .dateCreated(String.valueOf(exploit.getDateCreated()))
-                                .datePublished(String.valueOf(exploit.getDatePublished()))
-                                .isRepo(exploit.isRepo())
-                                .build()
+                    ExploitDTO.builder()
+                        .cveId(v.getCveId())
+                        .source(exploit.getSource())
+                        .sourceUrl(exploit.getSourceUrl())
+                        .description(exploit.getDescription())
+                        .dateCreated(String.valueOf(exploit.getDateCreated()))
+                        .datePublished(String.valueOf(exploit.getDatePublished()))
+                        .isRepo(exploit.isRepo())
+                        .build()
                 );
             }
         }
@@ -205,7 +205,7 @@ public class VulnService {
 
     String parseDomain(List<String> cpes) {
         String domain = "N/A";
-        if (cpes != null && cpes.size() > 0) {
+        if (cpes != null && !cpes.isEmpty()) {
             domain = VulnerabilityUtil.getCompanyProduct(cpes.get(0));
         }
         return domain;
@@ -213,8 +213,8 @@ public class VulnService {
 
     String parseType(List<VdoCharacteristic> vdoCharacteristics){
         String type = vdoCharacteristics.stream()
-                .filter(x -> x.getVdoNounGroup().contains("IMPACT_METHOD"))
-                .map(x -> x.getVdoNounGroup())
+                .map(VdoCharacteristic::getVdoNounGroup)
+                .filter(vdoNounGroup -> vdoNounGroup.contains("IMPACT_METHOD"))
                 .distinct()
                 .collect(Collectors.joining(", "));
         return type.isEmpty() ? "N/A" : type;
