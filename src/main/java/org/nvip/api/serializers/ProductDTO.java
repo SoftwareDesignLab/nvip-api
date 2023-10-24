@@ -16,4 +16,5 @@ public class ProductDTO {
     String domain;
     String cpe;
     String version;
+    String purl;
 }
