@@ -26,12 +26,15 @@ package org.nvip.api.serializers;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @Builder
 public class SSVCDTO {
     String cveId;
-    String missionAndWellbeing;
-    String score;
+    SSVCScoreDTO scores;
+    boolean automatable;
+    String exploitStatus;
+    boolean technicalImpact;
 }
