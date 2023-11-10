@@ -2,6 +2,7 @@ package org.nvip.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
+@SuperBuilder
 public class RunHistory {
     @Id @Column (name="runhistory_id")
     private int runhistoryId;

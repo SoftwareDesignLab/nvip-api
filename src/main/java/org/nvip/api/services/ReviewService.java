@@ -61,7 +61,6 @@ public class ReviewService {
                     vdoRecord.getIsActive());
             vdoRepository.save(vdo);
         }
-
     }
 
     @Transactional

@@ -48,7 +48,7 @@ public class UserService {
         char[] passwordToEncode = userData.getPassword();
         newUser.setPasswordHash(passwordEncoder.encode(CharBuffer.wrap(passwordToEncode)));
         // save entity
-        newUser = userRepository.save(newUser);
+        userRepository.save(newUser);
         return toDTO(newUser);
     }
 }

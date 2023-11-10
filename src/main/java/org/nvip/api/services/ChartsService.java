@@ -29,10 +29,10 @@ public class ChartsService {
     }
 
     // convert query results to key value pairs expected by UI
-    // with run data separated by semi colons
+    // with run data separated by semicolons
     Map<String, String> groupConcat(List<RunHistory> runs) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        // return key value pairs with semi colons separating runs
+        // return key value pairs with semicolons separating runs
         return Map.of(
                 "not_in_mitre_count", runs.stream().map(RunHistory::getNotInMitreCount).map(String::valueOf).collect(Collectors.joining(";")),
                 "not_in_nvd_count", runs.stream().map(RunHistory::getNotInNvdCount).map(String::valueOf).collect(Collectors.joining(";")),

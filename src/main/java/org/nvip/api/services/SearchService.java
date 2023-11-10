@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class SearchService {
 
-    private HashMap<String, String[]> parseSearchInfo(String infoType, String infoArrStr) {
+    protected HashMap<String, String[]> parseSearchInfo(String infoType, String infoArrStr) {
         HashMap<String, String[]> infoMap = new HashMap<>();
 
         if (Objects.equals(infoType, "cvssScores")) {
