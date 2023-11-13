@@ -2,12 +2,12 @@ package org.nvip.api.serializers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
-@Getter
-@Setter
+@Data
 @Builder
+@Jacksonized
 public class SSVCScoreDTO {
     @JsonProperty("ssvcScoreLow")
     private String scoreLow;
