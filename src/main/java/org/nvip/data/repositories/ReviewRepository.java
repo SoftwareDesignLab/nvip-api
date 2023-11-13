@@ -73,7 +73,7 @@ public class ReviewRepository {
 			LocalDateTime.now(),
 			"usersource-"+username,
 			0,
-			"usersource-"+username,
+			"user",
 			"usersource-"+username
 		);
 		entityManager.persist(rawDesc);
