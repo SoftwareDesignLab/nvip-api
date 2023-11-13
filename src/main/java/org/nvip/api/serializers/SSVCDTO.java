@@ -2,17 +2,17 @@
  * Copyright 2023 Rochester Institute of Technology (RIT). Developed with
  * government support under contract 70RSAT19CB0000020 awarded by the United
  * States Department of Homeland Security.
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,34 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.nvip.entities;
+package org.nvip.api.serializers;
 
-
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-@Table
 @Getter
 @Setter
-public class Exploit {
-	@Id int id;
-	private String name;
-	private String description;
-	private String exampleFile;
-	private String author;
-	@Basic private LocalDateTime datePublished;
-	private boolean isRepo;
-	private String source;
-    private String dateCreated;
-	private boolean downloadFailed;
-	@ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
-    private Vulnerability vulnerability;
-	private String sourceUrl;
-	private boolean ignore;
-	private boolean fixed;
+@Builder
+public class SSVCDTO {
+    String cveId;
+    SSVCScoreDTO scores;
+    boolean automatable;
+    String exploitStatus;
+    boolean technicalImpact;
 }
