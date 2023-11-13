@@ -48,13 +48,16 @@ public class Messenger {
         cveArray.put(cveId);
         String mqHost = (System.getenv("MQ_HOST") == null) ? "localhost" : System.getenv("MQ_HOST");
         int mqPort = (System.getenv("MQ_PORT") == null) ? 5672 : Integer.parseInt(System.getenv("MQ_PORT"));
+        String mqVhost = (System.getenv("MQ_VHOST") == null) ? "prod" : System.getenv("MQ_VHOST");
         String mqUser = (System.getenv("MQ_USER") == null) ? "admin" :System.getenv("MQ_USER");
         String mqPassword = (System.getenv("MQ_PASSWORD") == null) ? "admin" : System.getenv("MQ_PASSWORD");
+        String queueName = (System.getenv("CRAWLER_QUEUE") == null) ? "CRAWLER_OUT" : System.getenv("CRAWLER_QUEUE");
 
         try {
             // Create a connection to the RabbitMQ server and create the channel
             ConnectionFactory factory = new ConnectionFactory();
             factory.setHost(mqHost);
+            factory.setVirtualHost(mqVhost);
             factory.setPort((int) mqPort);
             factory.setUsername(mqUser);
             factory.setPassword(mqPassword);
@@ -71,7 +74,6 @@ public class Messenger {
             Channel channel = connection.createChannel();
 
             // Declare a queue and send the message
-            String queueName = "CRAWLER_OUT";
             channel.queueDeclare(queueName, false, false, false, null);
             logger.info("Queue '{}' created successfully.", queueName);
             channel.basicPublish("", queueName, null, cveArray.toString().getBytes());
