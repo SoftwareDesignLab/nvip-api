@@ -6,6 +6,7 @@ import org.nvip.data.repositories.UserRepository;
 import org.nvip.data.repositories.VulnerabilityRepository;
 import org.nvip.entities.*;
 
+import org.nvip.util.Messenger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -80,6 +81,10 @@ public class ReviewController {
 
        reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, vulnID, userID, userName, cveID, cveDescription, vdoUpdate,
                productsToRemove);
+
+
+        //SEND MESSAGE TO RABBITMQ
+        Messenger.sendCveId(cveID);
 
        return ResponseEntity.status(HttpStatus.OK).body("");
    }
