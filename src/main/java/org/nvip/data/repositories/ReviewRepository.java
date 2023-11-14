@@ -153,9 +153,6 @@ public class ReviewRepository {
 
 		if (updateDescription) {
 			updateVulnerabilityDescription(cveDescription, cve_id, username);
-
-			//SEND MESSAGE TO RABBITMQ
-			Messenger.sendCveId(cve_id);
 		}
 
 		if (updateVDO) {
