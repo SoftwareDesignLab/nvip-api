@@ -73,13 +73,10 @@ public class ReviewRepository {
 			LocalDateTime.now(),
 			"usersource-"+username,
 			0,
-			"usersource-"+username,
+			"user",
 			"usersource-"+username
 		);
 		entityManager.persist(rawDesc);
-
-		//SEND MESSAGE TO RABBITMQ
-		Messenger.sendCveId(cve_id);
 	}
 
 	/**
