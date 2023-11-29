@@ -27,16 +27,22 @@ import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.nvip.api.serializers.VdoUpdate;
 import org.nvip.entities.*;
+import org.nvip.util.CvssGenUtil;
 import org.nvip.util.Messenger;
 
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class ReviewRepository {

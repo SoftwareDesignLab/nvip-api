@@ -5,8 +5,6 @@ import lombok.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.time.LocalDateTime;
-
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 @Entity
@@ -20,6 +18,11 @@ public class AffectedProduct {
 
     @NonNull @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
     private Vulnerability vulnerability;
+
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name="cpe_set_id", referencedColumnName = "cpeSetId")
+    private CpeSet cpeSet;
 
     private String cpe;
 

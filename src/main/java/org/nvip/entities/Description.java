@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class Description {
+    @GeneratedValue
     @Id private int descriptionId;
     private String description;
     @Basic private LocalDateTime createdDate;
@@ -42,8 +43,12 @@ public class Description {
     private String cveId;
     private int isUserGenerated;
 
-    public Description(int id, String description, LocalDateTime createdDate, String gptFunc, int isUserGenerated) {
-        this.descriptionId = id;
+    @ToString.Exclude
+    @OneToOne
+    @JoinColumn(name="description_id", referencedColumnName = "descriptionId")
+    VulnerabilityVersion vulnerabilityVersion;
+
+    public Description(String description, LocalDateTime createdDate, String gptFunc, int isUserGenerated) {
         this.description = description;
         this.createdDate = createdDate;
         this.gptFunc = gptFunc;
