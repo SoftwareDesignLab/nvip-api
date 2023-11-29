@@ -6,7 +6,9 @@ import org.nvip.data.repositories.UserRepository;
 import org.nvip.data.repositories.VulnerabilityRepository;
 import org.nvip.entities.*;
 
+import org.nvip.util.CvssGenUtil;
 import org.nvip.util.Messenger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,9 @@ import org.json.JSONArray;
 @RequestMapping("/reviews")
 public class ReviewController {
     private static final Logger logger = LogManager.getLogger(ReviewController.class);
+
+    @Autowired
+    CvssGenUtil cvssGenUtil;
 
     final UserRepository userRepository;
     final ReviewRepository reviewRepository;
@@ -78,6 +83,8 @@ public class ReviewController {
                productsToRemove[i] = jsonArray.getInt(i);
            }
        }
+
+       double cvssScore = cvssGenUtil.calculateCVSSScore(vdoUpdate.getVdoRecords());
 
        reviewRepository.complexUpdate(updateDescription, updateVDO, updateCVSS, updateAffRel, vulnID, userID, userName, cveID, cveDescription, vdoUpdate,
                productsToRemove);

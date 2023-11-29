@@ -154,23 +154,109 @@ public class ReviewRepository {
 	@Transactional
 	public int complexUpdate(boolean updateDescription, boolean updateVDO, boolean updateCVSS, boolean updateAffRel, int vuln_id, int user_id, String username, String cve_id,
 			String cveDescription, VdoUpdate vdoUpdate, int[] productsToRemove) {
+//
+//		int rs = 0;
+//
+//		if (updateDescription) {
+//			updateVulnerabilityDescription(cveDescription, cve_id, username);
+//		}
+//
+//		if (updateVDO) {
+//			updateVulnerabilityVDO(vdoUpdate, cve_id, user_id);
+//		}
+//
+//		if (updateAffRel) {
+//			rs += removeProductsFromVulnerability(productsToRemove, cve_id);
+//		}
+//
+//		return rs;
 
-		int rs = 0;
+		// step 1 insert new vulnerabilityversion
+		// step 2 insert rawdescription, description, rawdescriptionjt, link
+		Vulnerability vuln = getVulnerability(cve_id);
+		VulnerabilityVersion currentVersion = vuln.getCurrentVersion();
 
-		if (updateDescription) {
-			updateVulnerabilityDescription(cveDescription, cve_id, username);
-		}
+		// Update vdoSet
+		// persist new changes
+		final List<VdoCharacteristic> vdoCharacteristics = vdoUpdate.getVdoRecords()
+				.stream()
+				.map(
+						vdoRecord -> new VdoCharacteristic(
+								getVulnerability(cve_id),
+								vdoRecord.getCreatedDate(),
+								vdoRecord.getLabel(),
+								vdoRecord.getGroup(),
+								vdoRecord.getConfidence(),
+								user_id,
+								vdoRecord.getIsActive())
+				).collect(Collectors.toList());
 
-		if (updateVDO) {
-			updateVulnerabilityVDO(vdoUpdate, cve_id, user_id);
-		}
+		final VdoSet newVdoSet = new VdoSet(
+				LocalDateTime.now(),
+				vdoCharacteristics,
+				cvssScore, // TODO
+				user_id
+		);
 
-		if (updateAffRel) {
-			rs += removeProductsFromVulnerability(productsToRemove, cve_id);
-		}
 
-		return rs;
+		// Update cpeSet
+		final List<AffectedProduct> existingAffectedProducts = currentVersion.getCpeSet().getAffectedProducts();
+		final List<AffectedProduct> updatedAffectedProducts = existingAffectedProducts
+				.stream()
+				.filter(ap -> ArrayUtils.contains(productsToRemove, ap.getAffectedProductId()))
+				.toList();
 
+		final CpeSet newCpeSet = new CpeSet(
+				LocalDateTime.now(),
+				updatedAffectedProducts,
+				user_id
+		);
+
+
+		// TODO
+		// Update description
+		final RawDescription rawDesc = new RawDescription(
+				cveDescription,
+				vuln,
+				LocalDateTime.now(),
+				LocalDateTime.now(),
+				LocalDateTime.now(),
+				"usersource-" + username,
+				0,
+				"user",
+				"usersource-" + username
+		);
+		entityManager.persist(rawDesc);
+
+		final Description description = new Description(
+				rawDesc.getRawDescription(),
+				LocalDateTime.now(),
+				null, // "(" + existing_func + "," + rawDesc.getId() + ")"
+				1
+		);
+		entityManager.persist(description);
+
+		// persist the rawdesc
+		final RawDescriptionJT rawDescriptionJT = new RawDescriptionJT(
+				rawDesc.getId(),
+				description.getDescriptionId()
+		);
+		entityManager.persist(rawDescriptionJT);
+
+
+		final VulnerabilityVersion vv = new VulnerabilityVersion(
+				vuln,
+				newVdoSet,
+				newCpeSet,
+				description,
+				LocalDateTime.now(),
+				currentVersion.getPublishedDate(),
+				LocalDateTime.now(),
+				user_id
+		);
+		entityManager.persist(vv);
+
+		return -1; // TODO: Fix? we currently dont use the result and the param is defined as "-1" in the docstring
 	}
 
 }
