@@ -12,9 +12,9 @@ public class SSVC {
     @Id private int id;
     @OneToOne @JoinColumn(name="cve_id", referencedColumnName="cveId")
     private Vulnerability vulnerability;
-    @Column(columnDefinition = "BIT", length = 1)
+    @Column(name = "automatable", columnDefinition = "TINYINT")
     private boolean automatable;
     private String exploitStatus;
-    @Column(columnDefinition = "BIT", length = 1)
+    @Column(name = "technical_impact", columnDefinition = "TINYINT")
     private boolean technicalImpact;
 }
