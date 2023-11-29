@@ -2,6 +2,7 @@ package org.nvip.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
@@ -11,12 +12,11 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
+@SuperBuilder
 public class RunHistory {
-    @Column (name="runhistory_id")
-    @Id private int runhistory__Id;
-
+    @Id @Column (name="runhistory_id")
+    private int runhistoryId;
     @Basic private LocalDateTime runDateTime;
-
     private int totalCveCount;
     private int newCveCount;
     private int updatedCveCount;

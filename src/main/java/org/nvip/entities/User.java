@@ -55,7 +55,7 @@ public class User {
 	private LocalDateTime expirationDate;
 	private LocalDateTime lastLoginDate;
 
-	public User(String token, String userName, @NonNull String passwordHash, String firstName, String lastName, String email, int roleId) {
+	public User(String token, String userName, String firstName, String lastName, String email, int roleId) {
 		super();
 		this.token = token;
 		this.userName = userName;

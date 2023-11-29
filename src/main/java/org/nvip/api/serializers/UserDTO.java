@@ -32,8 +32,10 @@ import java.time.LocalDateTime;
 @Builder
 public class UserDTO {
 	private int userID;
-	private String token;
+	private String firstName;
+	private String lastName;
 	private String userName;
+	private String token;
 	private int roleId;
 	private LocalDateTime expirationDate;
 }
