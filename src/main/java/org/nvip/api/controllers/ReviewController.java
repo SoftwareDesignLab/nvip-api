@@ -6,7 +6,9 @@ import org.nvip.api.services.ReviewService;
 import org.nvip.data.repositories.UserRepository;
 
 import org.nvip.util.AppException;
+import org.nvip.util.CvssGenUtil;
 import org.nvip.util.Messenger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,9 @@ import org.json.JSONArray;
 @RestController
 @RequiredArgsConstructor
 public class ReviewController {
+
+    @Autowired
+    CvssGenUtil cvssGenUtil;
 
     final UserRepository userRepository;
     final ReviewService reviewService;
@@ -61,6 +66,8 @@ public class ReviewController {
             }
         }
 
+        // TODO
+//        double cvssScore = cvssGenUtil.calculateCVSSScore(vdoUpdate.getVdoRecords());
         reviewService.complexUpdate(updateDescription, updateVDO, updateAffRel, userID, userName, cveID, cveDescription, vdoUpdate,
                 productsToRemove);
 
