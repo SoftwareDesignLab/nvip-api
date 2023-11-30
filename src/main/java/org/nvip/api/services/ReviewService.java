@@ -6,6 +6,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.nvip.api.serializers.VdoUpdate;
@@ -26,9 +27,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
-
-    @Autowired
-    CvssGenUtil cvssGenUtil;
+    @NotNull
+    private final CvssGenUtil cvssGenUtil;
 
     private final VulnRepository vulnRepository;
     private final VulnVersionRepository vulnVersionRepository;
@@ -96,17 +96,6 @@ public class ReviewService {
     @Transactional
     public void complexUpdate(int user_id, String username, String cve_id,
                               String cveDescription, VdoUpdate vdoUpdate, int[] productsToRemove) {
-//        if (updateDescription) {
-//            updateVulnerabilityDescription(cveDescription, cve_id, username);
-//        }
-//
-//        if (updateVDO) {
-//            updateVulnerabilityVDO(vdoUpdate, cve_id, user_id);
-//        }
-//
-//        if (updateAffRel) {
-//            removeProductsFromVulnerability(productsToRemove);
-//        }
 
         // Get vuln by cveId and get current vuln version
         final Vulnerability vuln = vulnRepository.findByCveId(cve_id).orElseThrow();
