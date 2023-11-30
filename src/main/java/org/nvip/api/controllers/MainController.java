@@ -1,24 +1,20 @@
 package org.nvip.api.controllers;
 
-import org.nvip.data.repositories.MainRepository;
+import lombok.RequiredArgsConstructor;
+import org.nvip.api.serializers.ChartsDTO;
+import org.nvip.api.services.ChartsService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 @RestController
-@RequestMapping("/")
+@RequiredArgsConstructor
 public class MainController {
 
-    final MainRepository mainRepository;
+    final ChartsService chartsService;
 
-    public MainController(MainRepository mainRepository) {
-        this.mainRepository = mainRepository;
-    }
-
-    @GetMapping
-    public Map<String, String> getVulnerabilitySummaries(){
-        return mainRepository.getMainPageCounts();
+    @GetMapping("/")
+    public ResponseEntity<ChartsDTO> getVulnerabilitySummaries(){
+        return ResponseEntity.ok(chartsService.getMainPageCounts());
     }
 }
