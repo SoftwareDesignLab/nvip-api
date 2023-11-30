@@ -3,6 +3,8 @@ package org.nvip.util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nvip.entities.VdoCharacteristic;
+import org.nvip.entities.VdoUpdateRecord;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,15 +22,31 @@ public class CvssGenUtil {
         // use set of all vulns VDO labels to generate a
         // partial CVSS vector
         Set<VDOLabel> predictionsForVuln = mapToLabelSet(vdoCharacteristics);
-        String[] cvssVector = getCvssVector(predictionsForVuln);
-        Double score = scoreTable.get(new CVSSVector(cvssVector));
-        return score;
+        return computeFromLabels(predictionsForVuln);
+    }
+
+    public Double calculateCVSSScoreFromUpdates(List<VdoUpdateRecord> vdoRecords) {
+        Set<VDOLabel> predictionsForVuln = mapUpdateRecordsToLabelSet(vdoRecords);
+        return computeFromLabels(predictionsForVuln);
     }
 
     private Set<VDOLabel> mapToLabelSet(List<VdoCharacteristic> vdoCharacteristics) {
         return vdoCharacteristics.stream()
                 .map(v->VDOLabel.getVdoLabel(v.getVdoLabel()))
                 .collect(Collectors.toSet());
+    }
+
+    private Set<VDOLabel> mapUpdateRecordsToLabelSet(List<VdoUpdateRecord> vdoUpdateRecords) {
+        return vdoUpdateRecords.stream().map(v->VDOLabel.getVdoLabel(v.getLabel())).collect(Collectors.toSet());
+    }
+
+    private double computeFromLabels(Set<VDOLabel> labels) {
+        String[] cvssVector = getCvssVector(labels);
+        Double score = scoreTable.get(new CVSSVector(cvssVector));
+        if (score < 0) {
+            score = 0.;
+        }
+        return score;
     }
 
     /**

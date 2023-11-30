@@ -1,18 +1,28 @@
 package org.nvip.data.repositories;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Ignore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.nvip.api.serializers.VdoUpdate;
+import org.nvip.api.services.ReviewService;
+import org.nvip.entities.VdoUpdateRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,6 +38,33 @@ public class MainRepositoryTest {
 
     @Autowired
     MainRepository repository;
+
+    @Autowired
+    VulnRepository vulnRepository;
+
+    @Autowired
+    VulnVersionRepository vulnVersionRepository;
+
+    @Autowired
+    VDORepository vdoRepository;
+
+    @Autowired
+    AffProdRepository affProdRepository;
+
+    @Autowired
+    RawDescRepository rawDescRepository;
+
+    @Autowired
+    DescriptionRepository descriptionRepository;
+
+    @Autowired
+    RawDescriptionJTRepository rawDescriptionJTRepository;
+
+    @Autowired
+    CpeSetRepository cpeSetRepository;
+
+    @Autowired
+    VdoSetRepository vdoSetRepository;
 
 //    @Test
 //    @Transactional

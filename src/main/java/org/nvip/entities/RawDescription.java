@@ -27,6 +27,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Table (name="rawdescription")
 @Entity
@@ -36,7 +37,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RawDescription {
-    @Id @Column(name="raw_description_id") private int id;
+    @Id
+    @Column(name="raw_description_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private String rawDescription;
 
@@ -51,6 +55,10 @@ public class RawDescription {
     private int isGarbage;
     private String sourceType;
     private String parserType;
+
+    @ManyToMany
+    @JoinTable(name="rawdescriptionjt", joinColumns = @JoinColumn(name="raw_description_id"), inverseJoinColumns = @JoinColumn(name="description_id"))
+    Set<Description> descriptions;
 
     public RawDescription(String rawDescription, Vulnerability vuln, LocalDateTime createdDate, LocalDateTime publishedDate, LocalDateTime lastModifiedDate,
                 String sourceUrl, int isGarbage, String sourceType, String parserType) {

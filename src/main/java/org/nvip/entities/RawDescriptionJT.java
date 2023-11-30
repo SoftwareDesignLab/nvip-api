@@ -34,12 +34,25 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RawDescriptionJT {
-    @Id @Column(name="description_joint_id") private int id;
-    private int description_id;
-    private int raw_description_id;
+    @Id
+    @Column(name="description_joint_id")
+    private int id;
 
-    public RawDescriptionJT(int description_id, int raw_description_id) {
-        this.description_id = description_id;
-        this.raw_description_id = raw_description_id;
+    @OneToOne
+    @JoinColumn(name="description_id")
+    private Description description;
+
+    @OneToOne
+    @JoinColumn(name="raw_description_id")
+    private RawDescription rawDescription;
+
+//    public RawDescriptionJT(int raw_description_id, int description_id) {
+//        this.description_id = description_id;
+//        this.raw_description_id = raw_description_id;
+//    }
+
+    public RawDescriptionJT(RawDescription rawDescription, Description description) {
+        this.description = description;
+        this.rawDescription = rawDescription;
     }
 }

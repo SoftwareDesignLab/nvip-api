@@ -78,13 +78,6 @@ public class VulnService {
         }
 
         List<VdoCharacteristic> characteristics = v.getVdoCharacteristics();
-        // filter VDO labels by vdoLabel, max by createdDate
-        characteristics = characteristics.stream()
-                .collect(Collectors.groupingBy(VdoCharacteristic::getVdoLabel))
-                .values()
-                .stream()
-                .map(x -> x.stream().max(Comparator.comparing(VdoCharacteristic::getCreatedDate)).get())
-                .collect(Collectors.toList());
 
         for(VdoCharacteristic characteristic: characteristics){
             builder.characteristic(VdoCharacteristicDTO.builder()
@@ -93,10 +86,10 @@ public class VulnService {
                     .vdoConfidence(characteristic.getVdoConfidence())
                     .vdoNounGroup(characteristic.getVdoNounGroup())
                     .userId(characteristic.getUserId())
-                    .isActive(characteristic.getIsActive())
+                    .isActive(1)
                     .build());
         }
-        builder.type(parseType(v.getVdoCharacteristics()));
+//        builder.type(parseType(v.getVdoCharacteristics()));
 //TODO: we dont need cve id in these objects
         for(RawDescription rawDesc: v.getRawDescriptions()){
             builder.source(
