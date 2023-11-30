@@ -74,65 +74,6 @@ public class MainRepositoryTest {
 //    }
 
     @Test
-    void testVdo(){
-        Map<String, List<Map<String, String>>> vdoUpdateJson = new HashMap<>();
-
-        Map<String, String> obj = Map.of(
-                "label", "Trust Failure",
-                "group", "Impact Method",
-                "confidence", "1.",
-                "isActive", "1"
-        );
-
-        vdoUpdateJson.put("vdoLabels", List.of(obj));
-        System.out.println(vdoUpdateJson.toString());
-    }
-
-    @Test
-    @Ignore
-    @Transactional
-    void testDatabase(){
-        ReviewService reviewService = new ReviewService(
-                vulnRepository,
-                vulnVersionRepository,
-                vdoRepository,
-                affProdRepository,
-                rawDescRepository,
-                descriptionRepository,
-                rawDescriptionJTRepository,
-                cpeSetRepository,
-                vdoSetRepository
-        );
-
-
-        Map<String, List<Map<String, String>>> vdoUpdateJson = new HashMap<>();
-
-        Map<String, String> obj = Map.of(
-                "label", "Trust Failure",
-                "group", "Impact Method",
-                "confidence", "1.",
-                "isActive", "1"
-        );
-
-        vdoUpdateJson.put("vdoLabels", List.of(obj));
-        final VdoUpdateRecord vdoUpdateRecord = new VdoUpdateRecord(
-                "Trust Failure",
-                "Impact Method",
-                1.,
-                1
-        );
-
-        reviewService.complexUpdate(
-                16,
-                "some-username",
-                "CVE-2022-44566",
-                "sample-description",
-                new VdoUpdate(List.of(vdoUpdateRecord)),
-                new int[] {}
-        );
-    }
-
-    @Test
     @Ignore
     @Transactional
     void testPageCountsSingleHistoryEntry(){
