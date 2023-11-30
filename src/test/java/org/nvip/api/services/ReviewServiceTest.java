@@ -85,7 +85,7 @@ class ReviewServiceTest {
         Vulnerability vuln = new Vulnerability();
         vuln.setCveId(cveId);
         when(vulnRepository.findByCveId(cveId)).thenReturn(java.util.Optional.of(vuln));
-        reviewService.complexUpdate(1, "a", "CVE-2023-1234", "This is a sample description", null, null, 0);
+        reviewService.complexUpdate(1, "a", "CVE-2023-1234", "This is a sample description", null, null);
         verify(rawDescRepository, times(1)).save(any(RawDescription.class));
     }
 
@@ -100,13 +100,13 @@ class ReviewServiceTest {
                 "  \"group\": \"Logical Impact\",\n" +
                 "  \"confidence\": 0,\n" +
                 "  \"isActive\": 1\n" +
-                "}]}")), null, 0);
+                "}]}")), null);
         verify(vdoRepository, times(1)).save(any());
     }
 
     @Test
     void complexUpdateAffProd() {
-        reviewService.complexUpdate( 1, "a", "CVE-2023-1234", null, null, new int[]{1, 2, 3}, 0);
+        reviewService.complexUpdate( 1, "a", "CVE-2023-1234", null, null, new int[]{1, 2, 3});
         verify(affProdRepository, times(3)).deleteByAffectedProductId(anyInt());
     }
 
