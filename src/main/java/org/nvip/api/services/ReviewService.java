@@ -40,59 +40,6 @@ public class ReviewService {
     private final CpeSetRepository cpeSetRepository;
     private final VdoSetRepository vdoSetRepository;
 
-//    private Vulnerability getVulnerability(String cve_id) {
-//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<Vulnerability> cq = criteriaBuilder.createQuery(Vulnerability.class);
-//        Root<Vulnerability> root = cq.from(Vulnerability.class);
-//        CriteriaQuery<Vulnerability> query = cq.where(criteriaBuilder.equal(root.get("cveId"), cve_id));
-//        return entityManager.createQuery(query).getSingleResult();
-//    }
-
-    @Transactional
-    public void updateVulnerabilityDescription(String description, String cve_id, String username) {
-        Vulnerability vuln = vulnRepository.findByCveId(cve_id)
-                .orElseThrow(() -> new AppException("Vulnerability not found with id: " + cve_id, HttpStatus.NOT_FOUND));
-        RawDescription rawDesc = new RawDescription(
-                description,
-                vuln,
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                "usersource-"+username,
-                0,
-                "usersource-"+username,
-                "usersource-"+username
-        );
-        rawDescRepository.save(rawDesc);
-        //SEND MESSAGE TO RABBITMQ
-        Messenger.sendCveId(cve_id);
-    }
-
-    // TODO: Remove, deprecated
-    @Transactional
-    public void updateVulnerabilityVDO(VdoUpdate vdoUpdate, String cve_id, int user_id) {
-        // persist new changes
-        for (VdoUpdateRecord vdoRecord : vdoUpdate.getVdoRecords()){
-            VdoCharacteristic vdo = new VdoCharacteristic(
-                    vulnRepository.findByCveId(cve_id)
-                            .orElseThrow(() -> new AppException("Cannot update VDO, unable to find vuln with id" + cve_id, HttpStatus.NOT_FOUND)),
-                    vdoRecord.getCreatedDate(),
-                    vdoRecord.getLabel(),
-                    vdoRecord.getGroup(),
-                    vdoRecord.getConfidence(),
-                    user_id,
-                    vdoRecord.getIsActive());
-            vdoRepository.save(vdo);
-        }
-    }
-
-    @Transactional
-    public void removeProductsFromVulnerability(int[] productIds) {
-        for (int prodId : productIds) {
-            affProdRepository.deleteByAffectedProductId(prodId);
-        }
-    }
-
     @Transactional
     public void complexUpdate(int user_id, String username, String cve_id,
                               String cveDescription, VdoUpdate vdoUpdate, int[] productsToRemove) {
