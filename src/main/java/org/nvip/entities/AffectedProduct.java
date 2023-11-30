@@ -35,4 +35,15 @@ public class AffectedProduct {
     private String purl;
 
     private String swidTag;
+
+    public AffectedProduct(@NonNull Vulnerability vulnerability, CpeSet cpeSet, String cpe, String productName, String version, String vendor, String purl, String swidTag) {
+        this.vulnerability = vulnerability;
+        this.cpeSet = cpeSet;
+        this.cpe = cpe;
+        this.productName = productName;
+        this.version = version;
+        this.vendor = vendor;
+        this.purl = purl;
+        this.swidTag = swidTag;
+    }
 }

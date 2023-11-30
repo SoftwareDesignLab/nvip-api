@@ -12,6 +12,7 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "vdoset")
 public class VdoSet {
     @Id private int vdoSetId;
 
@@ -22,14 +23,20 @@ public class VdoSet {
     @JoinColumn(name="vdo_set_id", referencedColumnName = "vdoSetId")
     List<VdoCharacteristic> vdoCharacteristics;
 
+    @OneToOne(mappedBy = "vdoSet")
+    VulnerabilityVersion vulnerabilityVersion;
+
     private double cvssBaseScore;
 
-    private int userId;
+    private Integer userId;
+
+    private String cveId;
 
     public VdoSet(LocalDateTime createdDate, List<VdoCharacteristic> vdoCharacteristics, double cvssBaseScore, int userId) {
         this.createdDate = createdDate;
         this.vdoCharacteristics = vdoCharacteristics;
         this.cvssBaseScore = cvssBaseScore;
         this.userId = userId;
+        this.cveId = cveId;
     }
 }

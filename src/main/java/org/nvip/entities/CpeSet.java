@@ -12,6 +12,7 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "cpeset")
 public class CpeSet {
     @Id
     private int cpeSetId;
@@ -20,11 +21,13 @@ public class CpeSet {
     private LocalDateTime createdDate;
 
     @ToString.Exclude
-    @OneToMany
-    @JoinColumn(name="cpe_set_id", referencedColumnName = "vdoSetId")
+    @OneToMany(mappedBy = "cpeSet", cascade = CascadeType.ALL)
+//    @JoinColumn(name="cpe_set_id", referencedColumnName = "cpeSetId")
     List<AffectedProduct> affectedProducts;
 
-    private int userId;
+    private Integer userId;
+
+    private String cveId;
 
     public CpeSet(LocalDateTime createdDate, List<AffectedProduct> affectedProducts, int userId) {
         this.createdDate = createdDate;

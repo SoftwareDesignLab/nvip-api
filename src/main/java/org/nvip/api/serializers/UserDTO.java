@@ -31,7 +31,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class UserDTO {
-	private int userID;
+	private Integer userID;
 	private String firstName;
 	private String lastName;
 	private String userName;

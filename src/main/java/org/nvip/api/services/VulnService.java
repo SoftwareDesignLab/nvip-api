@@ -96,7 +96,7 @@ public class VulnService {
                     .isActive(characteristic.getIsActive())
                     .build());
         }
-        builder.type(parseType(v.getVdoCharacteristics()));
+//        builder.type(parseType(v.getVdoCharacteristics()));
 //TODO: we dont need cve id in these objects
         for(RawDescription rawDesc: v.getRawDescriptions()){
             builder.source(

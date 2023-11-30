@@ -36,8 +36,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RawDescription {
-    @GeneratedValue
-    @Id @Column(name="raw_description_id") private int id;
+    @Id
+    @Column(name="raw_description_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private String rawDescription;
 

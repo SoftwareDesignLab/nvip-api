@@ -31,7 +31,7 @@ import org.nvip.entities.VdoUpdateRecord;
 
 public class VdoUpdate {
 	
-	private ArrayList<VdoUpdateRecord> vdoRecords = new ArrayList<VdoUpdateRecord>();
+	private List<VdoUpdateRecord> vdoRecords = new ArrayList<VdoUpdateRecord>();
 	
 	public VdoUpdate(JSONObject vdoUpdateJSON) {
 				
@@ -43,7 +43,7 @@ public class VdoUpdate {
 		}
 	}
 
-	public ArrayList<VdoUpdateRecord> getVdoRecords() {
+	public List<VdoUpdateRecord> getVdoRecords() {
 		return vdoRecords;
 	}
 	

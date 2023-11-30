@@ -19,10 +19,6 @@ import org.json.JSONArray;
 @RestController
 @RequiredArgsConstructor
 public class ReviewController {
-
-    @Autowired
-    CvssGenUtil cvssGenUtil;
-
     final UserRepository userRepository;
     final ReviewService reviewService;
 

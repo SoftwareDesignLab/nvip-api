@@ -35,8 +35,9 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class Description {
-    @GeneratedValue
-    @Id private int descriptionId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int descriptionId;
     private String description;
     @Basic private LocalDateTime createdDate;
     private String gptFunc;
@@ -48,10 +49,17 @@ public class Description {
     @JoinColumn(name="description_id", referencedColumnName = "descriptionId")
     VulnerabilityVersion vulnerabilityVersion;
 
-    public Description(String description, LocalDateTime createdDate, String gptFunc, int isUserGenerated) {
+    @ToString.Exclude
+    @ManyToMany
+    @JoinTable(name="rawdescriptionjt", joinColumns = @JoinColumn(name="description_id"), inverseJoinColumns = @JoinColumn(name="raw_description_id"))
+    Set<RawDescription> rawDescriptions;
+
+    public Description(String description, LocalDateTime createdDate, String gptFunc, int isUserGenerated, String cveId) {
         this.description = description;
         this.createdDate = createdDate;
         this.gptFunc = gptFunc;
         this.isUserGenerated = isUserGenerated;
+        this.cveId = cveId;
+        this.rawDescriptions = new HashSet<>();
     }
 }
