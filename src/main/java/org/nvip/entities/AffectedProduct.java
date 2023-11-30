@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(value = "vulnerability")
 public class AffectedProduct {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int affectedProductId;
 
     @NonNull @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")

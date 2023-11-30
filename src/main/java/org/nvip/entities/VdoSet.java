@@ -14,12 +14,14 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "vdoset")
 public class VdoSet {
-    @Id private int vdoSetId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int vdoSetId;
 
     @Basic private LocalDateTime createdDate;
 
     @ToString.Exclude
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="vdo_set_id", referencedColumnName = "vdoSetId")
     List<VdoCharacteristic> vdoCharacteristics;
 
@@ -32,7 +34,7 @@ public class VdoSet {
 
     private String cveId;
 
-    public VdoSet(LocalDateTime createdDate, List<VdoCharacteristic> vdoCharacteristics, double cvssBaseScore, int userId) {
+    public VdoSet(LocalDateTime createdDate, List<VdoCharacteristic> vdoCharacteristics, double cvssBaseScore, int userId, String cveId) {
         this.createdDate = createdDate;
         this.vdoCharacteristics = vdoCharacteristics;
         this.cvssBaseScore = cvssBaseScore;

@@ -24,7 +24,9 @@
 package org.nvip.api.serializers;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.nvip.entities.VdoUpdateRecord;
@@ -34,13 +36,16 @@ public class VdoUpdate {
 	private List<VdoUpdateRecord> vdoRecords = new ArrayList<VdoUpdateRecord>();
 	
 	public VdoUpdate(JSONObject vdoUpdateJSON) {
-				
 		JSONArray vdoUpdates = vdoUpdateJSON.getJSONArray("vdoLabels");
 		
 		for (int i=0; i<vdoUpdates.length(); i++) {
 			JSONObject vdoRecordJSON = vdoUpdates.getJSONObject(i);
 			vdoRecords.add(new VdoUpdateRecord(vdoRecordJSON.getString("label"), vdoRecordJSON.getString("group"), vdoRecordJSON.getDouble("confidence"), vdoRecordJSON.getInt("isActive")));
 		}
+	}
+
+	public VdoUpdate(List<VdoUpdateRecord> vdoUpdateRecordList) {
+		this.vdoRecords = vdoUpdateRecordList;
 	}
 
 	public List<VdoUpdateRecord> getVdoRecords() {

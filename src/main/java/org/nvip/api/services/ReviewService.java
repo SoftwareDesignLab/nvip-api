@@ -178,6 +178,14 @@ public class ReviewService {
 
             cvssScore = cvssGenUtil.calculateCVSSScoreFromUpdates(vdoUpdate.getVdoRecords());
         }
+        VdoSet newVdoSet = new VdoSet(
+                LocalDateTime.now(),
+                vdoCharacteristics,
+                cvssScore,
+                user_id,
+                vuln.getCveId()
+        );
+        System.out.println(newVdoSet);
 
         return vdoSetRepository.save(newVdoSet);
     }

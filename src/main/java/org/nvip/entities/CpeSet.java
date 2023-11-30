@@ -15,6 +15,7 @@ import java.util.List;
 @Table(name = "cpeset")
 public class CpeSet {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int cpeSetId;
 
     @Basic
@@ -25,13 +26,17 @@ public class CpeSet {
 //    @JoinColumn(name="cpe_set_id", referencedColumnName = "cpeSetId")
     List<AffectedProduct> affectedProducts;
 
+    @OneToOne(mappedBy = "cpeSet")
+    VulnerabilityVersion vulnerabilityVersion;
+
     private Integer userId;
 
     private String cveId;
 
-    public CpeSet(LocalDateTime createdDate, List<AffectedProduct> affectedProducts, int userId) {
+    public CpeSet(LocalDateTime createdDate, List<AffectedProduct> affectedProducts, int userId, String cveId) {
         this.createdDate = createdDate;
         this.affectedProducts = affectedProducts;
         this.userId = userId;
+        this.cveId = cveId;
     }
 }

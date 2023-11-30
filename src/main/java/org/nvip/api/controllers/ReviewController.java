@@ -1,10 +1,13 @@
 package org.nvip.api.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.nvip.api.serializers.VdoUpdate;
 import org.nvip.api.services.ReviewService;
 import org.nvip.data.repositories.UserRepository;
 
+import org.nvip.entities.VdoCharacteristic;
 import org.nvip.util.AppException;
 import org.nvip.util.CvssGenUtil;
 import org.nvip.util.Messenger;
@@ -15,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +37,8 @@ public class ReviewController {
         @RequestParam(value="updateVDO", required=false, defaultValue="false") boolean updateVDO,
         @RequestParam(value="updateAffRel", required=false, defaultValue="false") boolean updateAffRel,
         @RequestBody String updateData
-    ) 
+//        @RequestBody VdoUpdate updateData
+    )
     {
 
         if (userName == null || token == null)
@@ -62,9 +69,7 @@ public class ReviewController {
             }
         }
 
-        // TODO
-//        double cvssScore = cvssGenUtil.calculateCVSSScore(vdoUpdate.getVdoRecords());
-        reviewService.complexUpdate(updateDescription, updateVDO, updateAffRel, userID, userName, cveID, cveDescription, vdoUpdate,
+        reviewService.complexUpdate(userID, userName, cveID, cveDescription, vdoUpdate,
                 productsToRemove);
 
 
