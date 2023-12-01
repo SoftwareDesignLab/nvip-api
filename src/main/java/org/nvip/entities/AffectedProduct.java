@@ -5,8 +5,6 @@ import lombok.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.time.LocalDateTime;
-
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 @Entity
@@ -16,10 +14,16 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(value = "vulnerability")
 public class AffectedProduct {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int affectedProductId;
 
     @NonNull @ManyToOne @JoinColumn(name="cve_id", referencedColumnName = "cveId")
     private Vulnerability vulnerability;
+
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name="cpe_set_id", referencedColumnName = "cpeSetId")
+    private CpeSet cpeSet;
 
     private String cpe;
 
@@ -32,4 +36,15 @@ public class AffectedProduct {
     private String purl;
 
     private String swidTag;
+
+    public AffectedProduct(@NonNull Vulnerability vulnerability, CpeSet cpeSet, String cpe, String productName, String version, String vendor, String purl, String swidTag) {
+        this.vulnerability = vulnerability;
+        this.cpeSet = cpeSet;
+        this.cpe = cpe;
+        this.productName = productName;
+        this.version = version;
+        this.vendor = vendor;
+        this.purl = purl;
+        this.swidTag = swidTag;
+    }
 }

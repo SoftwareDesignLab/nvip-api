@@ -41,7 +41,7 @@ public class User {
 
 	@Id
 	@Column(name="user_id")
-	private int userID;
+	private Integer userID;
 	private String token;
 	private String userName;
 	private String firstName;

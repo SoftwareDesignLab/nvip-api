@@ -4,11 +4,12 @@ import org.nvip.entities.Vulnerability;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
+@Repository
 public interface VulnRepository extends JpaRepository<Vulnerability, Long> {
 
     Optional<Vulnerability> findByCveId(String cveId);
@@ -19,14 +20,14 @@ public interface VulnRepository extends JpaRepository<Vulnerability, Long> {
     //TODO: can probably simplify based on which search params are given
     @Query("SELECT DISTINCT v " +
             "FROM Vulnerability v " +
+            "LEFT JOIN VulnerabilityVersion vv " +
             "LEFT JOIN v.exploits e " +
-            "LEFT JOIN v.affectedProducts ap " +
-            "LEFT JOIN v.vdoCharacteristics vc " +
-            "LEFT JOIN v.cvssScore c " +
-            "WHERE (:keyword IS NULL OR v.description.description LIKE %:keyword%) " +
+            "LEFT JOIN vv.cpeSet.affectedProducts ap " +
+            "LEFT JOIN vv.vdoSet.vdoCharacteristics vc " +
+            "WHERE (:keyword IS NULL OR vv.description.description LIKE %:keyword%) " +
             "AND (:startDate IS NULL OR v.createdDate >= :startDate) " +
             "AND (:endDate IS NULL OR v.createdDate <= :endDate) " +
-            "AND (c.baseScore IN :cvssScores) " +
+            "AND (vv.vdoSet.cvssBaseScore IN :cvssScores) " +
             "AND (:product IS NULL OR ap.cpe LIKE %:product%) " +
             "AND (vc.vdoLabel IN :vdoLabels) " +
             "GROUP BY v.vulnId " +

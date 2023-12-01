@@ -53,6 +53,11 @@ public class VdoCharacteristic {
     private Integer userId;
     private int isActive;
 
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name="vdo_set_id", referencedColumnName = "vdoSetId")
+    VdoSet vdoSet;
+
     public VdoCharacteristic(Vulnerability vulnerability, String vdoLabel, String vdoNounGroup, double vdoConfidence) {
         this.vulnerability = vulnerability;
         this.vdoLabel = vdoLabel;

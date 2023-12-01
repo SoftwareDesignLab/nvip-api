@@ -26,6 +26,9 @@ package org.nvip.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -35,18 +38,31 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class Description {
-    @Id private int descriptionId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int descriptionId;
     private String description;
     @Basic private LocalDateTime createdDate;
     private String gptFunc;
     private String cveId;
     private int isUserGenerated;
 
-    public Description(int id, String description, LocalDateTime createdDate, String gptFunc, int isUserGenerated) {
-        this.descriptionId = id;
+    @ToString.Exclude
+    @OneToOne
+    @JoinColumn(name="description_id", referencedColumnName = "descriptionId")
+    VulnerabilityVersion vulnerabilityVersion;
+
+    @ToString.Exclude
+    @ManyToMany
+    @JoinTable(name="rawdescriptionjt", joinColumns = @JoinColumn(name="description_id"), inverseJoinColumns = @JoinColumn(name="raw_description_id"))
+    Set<RawDescription> rawDescriptions;
+
+    public Description(String description, LocalDateTime createdDate, String gptFunc, int isUserGenerated, String cveId) {
         this.description = description;
         this.createdDate = createdDate;
         this.gptFunc = gptFunc;
         this.isUserGenerated = isUserGenerated;
+        this.cveId = cveId;
+        this.rawDescriptions = new HashSet<>();
     }
 }
