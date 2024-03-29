@@ -12,7 +12,7 @@ export class SsvcService {
         private ssvcRepository: Repository<SSVC>,
         private configService: ConfigService,
     ) {
-        this.ssvcApi = this.configService.get('SSVC');
+        this.ssvcApi = this.configService.get('SSVC_API_URL');
     }
 
     async findOne(cveId: string) {
