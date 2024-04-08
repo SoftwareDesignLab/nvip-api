@@ -72,12 +72,10 @@ export class CveService {
     async getCveExploits(cveId: string) {
         const exploits = await this.exploitRepository.find({
             where: {
-                vulnerability: {
-                    cveId: cveId,
-                },
+                cveId: cveId,
             },
         });
-        return exploits;
+        return exploits
     }
 
     async getCveRawDescriptions(cveId: string) {

@@ -32,6 +32,7 @@ import { VulnerabilityModule } from './vulnerability/vulnerability.module';
 import { CveModule } from './cve/cve.module';
 import { SsvcModule } from './ssvc/ssvc.module';
 import { ConfigModule } from '@nestjs/config';
+import { ExploitsModule } from './exploits/exploits.module';
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -75,6 +76,7 @@ import { ConfigModule } from '@nestjs/config';
         VulnerabilityModule,
         CveModule,
         SsvcModule,
+        ExploitsModule,
     ],
     controllers: [AppController],
     providers: [AppService],
